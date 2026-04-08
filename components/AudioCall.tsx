@@ -60,6 +60,7 @@ export default function AudioCall() {
   const subtitleIndexRef = useRef(0)
   const audio1Ref = useRef<HTMLAudioElement | null>(null)
   const audio2Ref = useRef<HTMLAudioElement | null>(null)
+  const callAudioRef = useRef<HTMLAudioElement | null>(null)
 
   // Inicia os dois sons simultaneamente
   useEffect(() => {
@@ -119,6 +120,15 @@ export default function AudioCall() {
 
   const handleAccept = () => {
     stopRingtone()
+    // Inicia o áudio da ligação
+    const callAudio = new Audio('/audioligacao.mp3')
+    callAudio.volume = 1
+    callAudioRef.current = callAudio
+    callAudio.play().catch(() => {})
+    // Quando o áudio terminar, avança automaticamente
+    callAudio.addEventListener('ended', () => {
+      setCallState('ended')
+    })
     setCallState('active')
     subtitleIndexRef.current = 0
     setElapsed(0)
@@ -126,6 +136,10 @@ export default function AudioCall() {
 
   const handleDecline = () => {
     stopRingtone()
+    if (callAudioRef.current) {
+      callAudioRef.current.pause()
+      callAudioRef.current.currentTime = 0
+    }
     router.push('/exp2')
   }
 
@@ -143,13 +157,6 @@ export default function AudioCall() {
     timerRef.current = setInterval(() => {
       setElapsed((prev) => {
         const next = prev + 1
-
-        if (next >= CALL_END_TIME) {
-          clearInterval(timerRef.current!)
-          setCallState('ended')
-          setSubtitleVisible(false)
-          return next
-        }
 
         setCallDuration(formatDuration(next))
 
@@ -178,7 +185,7 @@ export default function AudioCall() {
       {/* Skip button */}
       <button
         onClick={handleSkip}
-        className="absolute top-12 right-6 text-white/60 text-sm font-medium z-50 hover:text-white transition-colors"
+        className="absolute top-12 right-6 text-white/60 text-sm font-medium z-50 hover:text-white transition-colors min-h-[44px] flex items-center px-4 py-2"
       >
         Pular →
       </button>
@@ -212,7 +219,7 @@ function RingingScreen({
     <>
       {/* Top info */}
       <div className="flex flex-col items-center gap-3 mt-8">
-        <p className="text-white/60 text-sm font-medium tracking-widest uppercase">
+        <p className="text-white/60 text-sm font-medium tracking-wider uppercase">
           Ligação recebida
         </p>
         {/* Avatar with ring animation */}
@@ -309,7 +316,7 @@ function CallControl({ icon, label }: { icon: string; label: string }) {
       <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-2xl">
         {icon}
       </div>
-      <span className="text-white/60 text-xs">{label}</span>
+      <span className="text-white/60 text-sm">{label}</span>
     </div>
   )
 }

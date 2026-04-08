@@ -257,10 +257,10 @@ function VideoSlide({
 
       {/* CTA button — last video only, above bottom info */}
       {video.isCTA && (
-        <div className="absolute bottom-48 left-0 right-0 z-20 flex justify-center px-6">
+        <div className="absolute bottom-48 left-0 right-0 z-20 flex justify-center px-10">
           <button
             onClick={onCTA}
-            className="btn-gradient text-white font-bold text-lg py-4 px-8 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 animate-accessPulse w-full"
+            className="bg-[#22C55E] text-black font-bold text-base py-4 px-8 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 animate-greenPulse"
           >
             ACESSAR AGORA →
           </button>
@@ -268,7 +268,7 @@ function VideoSlide({
       )}
 
       {/* Bottom-left: profile info + description + song */}
-      <div className="absolute bottom-0 left-0 right-16 z-20 px-3 pb-6 flex flex-col gap-2">
+      <div className="absolute bottom-0 left-0 right-16 z-20 px-4 pb-6 flex flex-col gap-2">
         {/* Profile row */}
         <div className="flex items-center gap-2">
           <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white flex-shrink-0">
@@ -281,7 +281,7 @@ function VideoSlide({
             />
           </div>
           <span className="text-white font-semibold text-sm">Giovanna Bueno</span>
-          <button className="border border-white text-white text-xs font-semibold px-3 py-1 rounded-sm ml-1">
+          <button className="border border-white text-white text-xs font-semibold px-5 py-2.5 min-h-[44px] rounded-sm ml-1">
             Seguir
           </button>
         </div>
@@ -304,15 +304,15 @@ function VideoSlide({
           <span className="text-white text-xs flex-shrink-0">🎵</span>
           <div className="overflow-hidden flex-1">
             <div className="flex whitespace-nowrap animate-ticker" style={{ width: 'max-content' }}>
-              <span className="text-white text-xs pr-8">{video.song}</span>
-              <span className="text-white text-xs pr-8">🎵 {video.song}</span>
+              <span className="text-white text-sm pr-8">{video.song}</span>
+              <span className="text-white text-sm pr-8">🎵 {video.song}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Right sidebar */}
-      <div className="absolute bottom-6 right-2 z-20 flex flex-col items-center gap-5">
+      <div className="absolute bottom-6 right-3 z-20 flex flex-col items-center gap-5">
         {/* Avatar */}
         <div className="relative">
           <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white">
@@ -333,7 +333,7 @@ function VideoSlide({
         </div>
 
         {/* Like */}
-        <button onClick={onLike} className="flex flex-col items-center gap-0.5 active:scale-90 transition-transform">
+        <button onClick={onLike} className="flex flex-col items-center gap-0.5 min-h-[44px] active:scale-90 transition-transform">
           <svg
             width="30"
             height="30"
@@ -349,7 +349,7 @@ function VideoSlide({
         </button>
 
         {/* Comments */}
-        <button onClick={onOpenComments} className="flex flex-col items-center gap-0.5 active:scale-90 transition-transform">
+        <button onClick={onOpenComments} className="flex flex-col items-center gap-0.5 min-h-[44px] active:scale-90 transition-transform">
           <svg width="30" height="30" viewBox="0 0 24 24" fill="white" className="drop-shadow">
             <path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z" />
           </svg>
@@ -359,7 +359,7 @@ function VideoSlide({
         </button>
 
         {/* Save / Bookmark */}
-        <button onClick={onSave} className="flex flex-col items-center gap-0.5 active:scale-90 transition-transform">
+        <button onClick={onSave} className="flex flex-col items-center gap-0.5 min-h-[44px] active:scale-90 transition-transform">
           <svg
             width="28"
             height="28"
@@ -375,7 +375,7 @@ function VideoSlide({
         </button>
 
         {/* Share */}
-        <div className="flex flex-col items-center gap-0.5">
+        <div className="flex flex-col items-center gap-0.5 min-h-[44px]">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="white" className="drop-shadow">
             <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z" />
           </svg>
@@ -421,7 +421,7 @@ function CommentsModal({
           <span className="text-white font-semibold text-base">Comentários</span>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-colors"
+            className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
@@ -440,7 +440,7 @@ function CommentsModal({
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <span className="text-white/60 text-xs font-semibold">@{c.user}</span>
+                <span className="text-white/60 text-sm font-semibold">@{c.user}</span>
                 <p className="text-white text-sm leading-snug mt-0.5">{c.text}</p>
               </div>
               {/* Like count */}

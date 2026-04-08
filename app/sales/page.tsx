@@ -84,9 +84,8 @@ export default function SalesPage() {
             🔓 Acesso Liberado
           </span>
 
-          <h1 className="text-white text-3xl font-black leading-tight">
-            O sistema que faz você<br />
-            <span className="text-[#22C55E]">manter o resultado</span>
+          <h1 className="text-white text-3xl font-black leading-tight break-words">
+            O sistema que faz você <span className="text-[#22C55E]">manter o resultado</span>
           </h1>
 
           <p className="text-white/60 text-sm leading-relaxed max-w-xs">
@@ -103,7 +102,7 @@ export default function SalesPage() {
             </div>
             <div className="text-left">
               <p className="text-white font-bold text-sm">+2.847 mulheres</p>
-              <p className="text-white/50 text-[11px]">já transformaram suas vidas</p>
+              <p className="text-white/50 text-xs">já transformaram suas vidas</p>
             </div>
           </div>
 
@@ -114,7 +113,7 @@ export default function SalesPage() {
       </section>
 
       {/* ── PAIN POINTS ───────────────────────────────────────────── */}
-      <section className="px-5 pb-10">
+      <section className="px-4 sm:px-6 pb-10">
         <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
           <h2 className="text-white font-black text-xl mb-4 text-center">Você se identifica?</h2>
           <div className="flex flex-col gap-3">
@@ -131,7 +130,7 @@ export default function SalesPage() {
       </section>
 
       {/* ── REVELATION ────────────────────────────────────────────── */}
-      <section className="px-5 pb-10">
+      <section className="px-4 sm:px-6 pb-10">
         <div className="relative bg-gradient-to-br from-[#22C55E]/10 to-[#16A34A]/10 border border-[#22C55E]/30 rounded-2xl p-5 overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#22C55E]/10 blur-2xl rounded-full pointer-events-none" />
           <h2 className="text-white font-black text-xl mb-3 relative z-10">
@@ -150,7 +149,7 @@ export default function SalesPage() {
       </section>
 
       {/* ── PRODUCT ───────────────────────────────────────────────── */}
-      <section className="px-5 pb-10">
+      <section className="px-4 sm:px-6 pb-10">
         <div className="flex flex-col items-center gap-1 mb-6 text-center">
           <div className="flex items-center gap-2 mb-1 w-full">
             <div className="h-px flex-1 bg-[#22C55E]/30" />
@@ -163,7 +162,7 @@ export default function SalesPage() {
 
         <div className="grid grid-cols-2 gap-3">
           {FEATURES.map((f, i) => (
-            <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-2">
+            <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col gap-2">
               <span className="text-2xl">{f.icon}</span>
               <p className="text-white font-bold text-sm leading-tight">{f.title}</p>
               <p className="text-white/50 text-xs leading-relaxed">{f.desc}</p>
@@ -173,7 +172,7 @@ export default function SalesPage() {
       </section>
 
       {/* ── MEMBERS AREA ──────────────────────────────────────────── */}
-      <section className="px-5 pb-10">
+      <section className="px-4 sm:px-6 pb-10">
         <h2 className="text-white font-black text-xl mb-2 text-center">Acesso Imediato à Área de Membros</h2>
         <p className="text-white/50 text-sm text-center mb-5">Veja o que você vai receber assim que entrar</p>
 
@@ -206,7 +205,7 @@ export default function SalesPage() {
       </section>
 
       {/* ── TESTIMONIALS ──────────────────────────────────────────── */}
-      <section className="px-5 pb-10">
+      <section className="px-4 sm:px-6 pb-10">
         <h2 className="text-white font-black text-xl mb-1 text-center">Depoimentos das Empoderadas</h2>
         <p className="text-white/40 text-sm text-center mb-5">Resultados reais de alunas reais</p>
 
@@ -243,7 +242,7 @@ export default function SalesPage() {
       </section>
 
       {/* ── OFFER ─────────────────────────────────────────────────── */}
-      <section id="oferta" className="px-5 pb-10">
+      <section id="oferta" className="px-4 sm:px-6 pb-10">
         <div className="relative bg-gradient-to-br from-[#0a160a] to-[#0a0a0a] border-2 border-[#22C55E]/50 rounded-2xl overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#22C55E] to-transparent" />
 
@@ -300,7 +299,7 @@ export default function SalesPage() {
               ].map((b, i) => (
                 <div key={i} className="flex flex-col items-center gap-1">
                   <span className="text-xl">{b.icon}</span>
-                  <p className="text-white/40 text-[10px] text-center leading-tight">{b.label}</p>
+                  <p className="text-white/40 text-xs text-center leading-tight">{b.label}</p>
                 </div>
               ))}
             </div>
@@ -309,7 +308,7 @@ export default function SalesPage() {
       </section>
 
       {/* ── FAQ ───────────────────────────────────────────────────── */}
-      <section className="px-5 pb-10">
+      <section className="px-4 sm:px-6 pb-10">
         <a
           href="https://wa.me/5511915306467?text=Ol%C3%A1%20Geo%2C%20quero%20mais%20informa%C3%A7%C3%B5es%20dos%20seus%20m%C3%A9todos..."
           target="_blank"
@@ -344,7 +343,7 @@ export default function SalesPage() {
       </section>
 
       {/* ── FINAL CTA ─────────────────────────────────────────────── */}
-      <section className="px-5 pb-14">
+      <section className="px-4 sm:px-6 pb-14">
         <div className="relative bg-gradient-to-br from-[#22C55E]/10 to-[#16A34A]/5 border border-[#22C55E]/30 rounded-2xl p-6 flex flex-col items-center gap-5 text-center overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#22C55E20_0%,_transparent_70%)] pointer-events-none" />
           <p className="text-white/60 text-sm leading-relaxed relative z-10">

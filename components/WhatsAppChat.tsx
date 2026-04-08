@@ -75,6 +75,62 @@ function formatTime() {
   return now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
 }
 
+// Sons do WhatsApp via Web Audio API
+function playMessageSound(type: 'incoming' | 'outgoing' | 'alert') {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+
+    if (type === 'incoming') {
+      // Som de mensagem recebida: dois tons suaves (estilo WhatsApp)
+      osc.frequency.setValueAtTime(820, ctx.currentTime)
+      osc.frequency.setValueAtTime(680, ctx.currentTime + 0.1)
+      gain.gain.setValueAtTime(0.18, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25)
+      osc.start(ctx.currentTime)
+      osc.stop(ctx.currentTime + 0.25)
+    } else if (type === 'outgoing') {
+      // Som de mensagem enviada: tom único mais agudo
+      osc.frequency.setValueAtTime(1000, ctx.currentTime)
+      osc.frequency.setValueAtTime(1200, ctx.currentTime + 0.06)
+      gain.gain.setValueAtTime(0.12, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18)
+      osc.start(ctx.currentTime)
+      osc.stop(ctx.currentTime + 0.18)
+    } else {
+      // Som de alerta dramático: sirene pulsante em 3 pulsos
+      osc.type = 'sawtooth'
+      const t = ctx.currentTime
+
+      // Pulso 1
+      osc.frequency.setValueAtTime(880, t)
+      osc.frequency.linearRampToValueAtTime(440, t + 0.15)
+      gain.gain.setValueAtTime(0.35, t)
+      gain.gain.setValueAtTime(0.0, t + 0.18)
+
+      // Pulso 2
+      osc.frequency.setValueAtTime(880, t + 0.22)
+      osc.frequency.linearRampToValueAtTime(440, t + 0.37)
+      gain.gain.setValueAtTime(0.35, t + 0.22)
+      gain.gain.setValueAtTime(0.0, t + 0.40)
+
+      // Pulso 3
+      osc.frequency.setValueAtTime(880, t + 0.44)
+      osc.frequency.linearRampToValueAtTime(440, t + 0.59)
+      gain.gain.setValueAtTime(0.35, t + 0.44)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.65)
+
+      osc.start(t)
+      osc.stop(t + 0.65)
+    }
+
+    osc.onended = () => ctx.close()
+  } catch (_) {}
+}
+
 export default function WhatsAppChat() {
   const router = useRouter()
   const [visibleMessages, setVisibleMessages] = useState<number[]>([])
@@ -117,6 +173,11 @@ export default function WhatsAppChat() {
       if (cancelled) return
       setVisibleMessages((prev) => [...prev, msg.id])
 
+      // Toca som conforme tipo da mensagem
+      if (msg.isAlert) playMessageSound('alert')
+      else if (msg.isOutgoing) playMessageSound('outgoing')
+      else playMessageSound('incoming')
+
       if (msg.id === 50) {
         setTimeout(() => {
           if (!cancelled) setShowCTA(true)
@@ -146,10 +207,10 @@ export default function WhatsAppChat() {
       </div>
 
       {/* Header */}
-      <div className="bg-[#128C7E] pb-3 px-3 flex items-center gap-3 shadow-md flex-shrink-0">
+      <div className="bg-[#128C7E] pb-3 px-4 flex items-center gap-3 shadow-md flex-shrink-0">
         <button
           onClick={() => router.push('/exp1')}
-          className="text-white p-1"
+          className="text-white w-10 h-10 flex items-center justify-center flex-shrink-0"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
@@ -164,7 +225,7 @@ export default function WhatsAppChat() {
         {/* Contact info */}
         <div className="flex-1 min-w-0">
           <p className="text-white font-semibold text-base leading-tight">Geovana Bueno</p>
-          <p className="text-green-200 text-xs">
+          <p className="text-green-200 text-sm">
             {isTyping ? 'digitando...' : 'online'}
           </p>
         </div>
@@ -172,14 +233,18 @@ export default function WhatsAppChat() {
         {/* Icons */}
         <div className="flex gap-4 text-white">
           <button>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
-              <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" />
-            </svg>
+            <div className="w-10 h-10 flex items-center justify-center">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+                <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" />
+              </svg>
+            </div>
           </button>
           <button>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
-              <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
-            </svg>
+            <div className="w-10 h-10 flex items-center justify-center">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+                <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
+              </svg>
+            </div>
           </button>
         </div>
       </div>
@@ -188,7 +253,7 @@ export default function WhatsAppChat() {
       <div className="absolute top-16 right-4 z-50">
         <button
           onClick={() => router.push('/exp3')}
-          className="text-white/70 text-xs font-medium bg-black/30 px-3 py-1.5 rounded-full backdrop-blur-sm"
+          className="text-white/70 text-xs font-medium bg-black/30 px-4 py-3 min-h-[44px] flex items-center rounded-full backdrop-blur-sm"
         >
           Pular →
         </button>
@@ -196,12 +261,12 @@ export default function WhatsAppChat() {
 
       {/* Chat area */}
       <div
-        className="flex-1 overflow-y-auto px-3 py-4 whatsapp-bg"
+        className="flex-1 overflow-y-auto px-4 py-4 whatsapp-bg"
         style={{ paddingBottom: '16px' }}
       >
         {/* Date badge */}
         <div className="flex justify-center mb-4">
-          <span className="bg-white/80 text-gray-600 text-xs px-3 py-1 rounded-full shadow-sm">
+          <span className="bg-white/80 text-gray-600 text-sm px-3 py-1 rounded-full shadow-sm">
             Hoje
           </span>
         </div>
@@ -224,9 +289,9 @@ export default function WhatsAppChat() {
               <div className="w-full bg-[#FFF9C4] border-2 border-yellow-400 rounded-xl p-4 shadow-md">
                 <p className="text-gray-700 text-xs font-medium mb-2 text-center">🔐 sua senha de acesso exclusivo:</p>
                 <div className="bg-white border border-yellow-300 rounded-lg py-3 px-4 text-center">
-                  <span className="text-[#E91E8C] font-black text-2xl tracking-widest">SISTEMA747</span>
+                  <span className="text-[#E91E8C] font-black text-xl tracking-wider">SISTEMA747</span>
                 </div>
-                <p className="text-gray-500 text-[10px] text-center mt-2">anota ou tira print — você vai precisar</p>
+                <p className="text-gray-500 text-xs text-center mt-2">anota ou tira print — você vai precisar</p>
               </div>
               {/* Botão */}
               <button
@@ -243,11 +308,11 @@ export default function WhatsAppChat() {
       </div>
 
       {/* Input bar (decorative) */}
-      <div className="bg-[#F0F0F0] px-3 py-2 flex items-center gap-2 flex-shrink-0 border-t border-gray-200">
+      <div className="bg-[#F0F0F0] px-4 py-3 flex items-center gap-2 flex-shrink-0 border-t border-gray-200">
         <div className="flex-1 bg-white rounded-full px-4 py-2 text-gray-400 text-sm shadow-sm">
           Mensagem
         </div>
-        <div className="w-10 h-10 rounded-full bg-[#128C7E] flex items-center justify-center flex-shrink-0">
+        <div className="w-12 h-12 rounded-full bg-[#128C7E] flex items-center justify-center flex-shrink-0">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
             <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />
           </svg>

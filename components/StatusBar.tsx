@@ -50,9 +50,9 @@ export default function StatusBar({ dark = true }: StatusBarProps) {
     : fillColor
 
   return (
-    <div className={`flex items-center justify-between px-4 py-1.5 w-full ${color}`} style={{ fontSize: '12px' }}>
+    <div className={`flex items-center justify-between px-4 py-2 w-full ${color}`} style={{ fontSize: '14px' }}>
       {/* Horário */}
-      <span className="font-semibold tabular-nums" style={{ fontSize: '13px' }}>{time}</span>
+      <span className="font-semibold font-bold tabular-nums" style={{ fontSize: '15px' }}>{time}</span>
 
       {/* Direita: sinal + wifi + bateria */}
       <div className="flex items-center gap-1.5">
@@ -68,7 +68,7 @@ export default function StatusBar({ dark = true }: StatusBarProps) {
         </div>
 
         {/* WiFi */}
-        <svg width="15" height="12" viewBox="0 0 24 18" fill="currentColor" className="opacity-90">
+        <svg width="18" height="14" viewBox="0 0 24 18" fill="currentColor" className="opacity-90">
           <path d="M12 6.5C9.1 6.5 6.5 7.6 4.5 9.4L2.8 7.7C5.2 5.5 8.5 4.1 12 4.1s6.8 1.4 9.2 3.6l-1.7 1.7C17.5 7.6 14.9 6.5 12 6.5z"/>
           <path d="M12 10.8c-1.7 0-3.2.7-4.3 1.8L6 11c1.5-1.5 3.6-2.5 6-2.5s4.5 1 6 2.5l-1.7 1.6C15.2 11.5 13.7 10.8 12 10.8z"/>
           <circle cx="12" cy="16" r="2"/>
@@ -90,7 +90,7 @@ export default function StatusBar({ dark = true }: StatusBarProps) {
         </div>
 
         {/* Percentual */}
-        <span className="font-medium" style={{ fontSize: '11px' }}>{batteryFill}%</span>
+        <span className="font-medium" style={{ fontSize: '12px' }}>{batteryFill}%</span>
       </div>
     </div>
   )

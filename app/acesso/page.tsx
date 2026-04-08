@@ -59,6 +59,9 @@ export default function AcessoPage() {
         <StatusBar dark={true} />
       </div>
 
+      {/* Spacing after status bar */}
+      <div className="pt-6" />
+
       {/* Fundo animado */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-1 bg-red-500/60 animate-pulse" />
@@ -69,7 +72,7 @@ export default function AcessoPage() {
       <div className="w-full flex flex-col items-center gap-2 mt-4">
         <div className="flex items-center gap-2 bg-red-900/40 border border-red-500/50 rounded-full px-4 py-1.5">
           <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block" />
-          <span className="text-red-400 text-xs font-bold tracking-widest uppercase">Acesso Restrito</span>
+          <span className="text-red-400 text-sm font-bold tracking-widest uppercase">Acesso Restrito</span>
         </div>
 
         <h1 className={`text-white text-2xl font-black text-center leading-tight mt-3 ${glitch ? 'opacity-60 translate-x-0.5' : ''} transition-all duration-75`}>
@@ -87,11 +90,11 @@ export default function AcessoPage() {
 
         {/* Senha */}
         <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col items-center gap-3">
-          <p className="text-white/40 text-xs tracking-wider uppercase">sua senha</p>
+          <p className="text-white/40 text-sm tracking-wider uppercase">sua senha</p>
           <div
             className={`bg-black border-2 ${urgency ? 'border-red-500 animate-pulse' : 'border-[#E91E8C]/60'} rounded-xl py-4 px-6 w-full text-center`}
           >
-            <span className={`font-black text-3xl tracking-[0.2em] ${glitch ? 'text-red-400' : 'text-[#E91E8C]'} transition-colors duration-75`}>
+            <span className={`font-black text-2xl md:text-3xl tracking-wider ${glitch ? 'text-red-400' : 'text-[#E91E8C]'} transition-colors duration-75`}>
               {PASSWORD}
             </span>
           </div>
@@ -140,7 +143,7 @@ export default function AcessoPage() {
                   {seconds}
                 </span>
               </div>
-              <p className="text-white/30 text-[10px] text-center">após esse tempo o conteúdo é removido</p>
+              <p className="text-white/30 text-xs text-center">após esse tempo o conteúdo é removido</p>
             </>
           )}
         </div>
@@ -150,7 +153,7 @@ export default function AcessoPage() {
       <div className="w-full flex flex-col gap-3">
         {!isExpired && (
           <button
-            onClick={() => router.push('/exp3')}
+            onClick={() => router.push('/imc')}
             className="w-full btn-gradient text-white font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 relative overflow-hidden"
           >
             <span className="relative z-10">ACESSAR O MÉTODO →</span>
@@ -163,7 +166,7 @@ export default function AcessoPage() {
             <p className="text-red-400/60 text-xs mt-1">volte ao início para gerar um novo acesso</p>
           </div>
         )}
-        <p className="text-white/20 text-[10px] text-center">
+        <p className="text-white/20 text-xs text-center">
           conteúdo exclusivo • acesso monitorado
         </p>
       </div>
