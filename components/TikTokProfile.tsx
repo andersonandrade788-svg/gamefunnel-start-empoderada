@@ -32,7 +32,7 @@ interface VideoData {
 const VIDEOS: VideoData[] = [
   {
     id: 1,
-    videoSrc: '/Video TK 01.Mp4',
+    videoSrc: '/Video%20TK%2001.Mp4',
     description: 'você não falhou… você foi colocada no sistema errado 😮 #emagrecimento #mulher',
     song: 'áudio original - Giovanna Bueno',
     likes: '14.2K',
@@ -50,7 +50,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 2,
-    videoSrc: '/Video TK 02.Mp4',
+    videoSrc: '/Video%20TK%2002.Mp4',
     description: 'disciplina não é o problema. nunca foi 👀 #verdade #sistemaerrado',
     song: 'áudio original - Giovanna Bueno',
     likes: '22.7K',
@@ -68,7 +68,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 3,
-    videoSrc: '/Video Tk 03.Mp4',
+    videoSrc: '/Video%20Tk%2003.Mp4',
     description: 'o que ninguém te ensinou sobre manter o resultado 🔥 #método #transformação',
     song: 'áudio original - Giovanna Bueno',
     likes: '31.5K',
@@ -86,7 +86,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 4,
-    videoSrc: '/Video Tk 04.Mp4',
+    videoSrc: '/Video%20Tk%2004.Mp4',
     description: 'antes eu desistia em menos de 1 semana. hoje é diferente 💪 #resultado #prova',
     song: 'áudio original - Giovanna Bueno',
     likes: '18.9K',
@@ -104,7 +104,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 5,
-    videoSrc: '/Video Tk 05.Mp4',
+    videoSrc: '/Video%20Tk%2005.Mp4',
     description: 'se você tá cansada de recomeçar… entra aqui 👇 o link tá na bio #startempoderada',
     song: 'áudio original - Giovanna Bueno',
     likes: '41.3K',
@@ -153,6 +153,7 @@ function formatCount(n: number): string {
 export default function TikTokProfile() {
   const router = useRouter()
   const [states, setStates] = useState<VideoState[]>(() => initState(VIDEOS))
+  const [globalMuted, setGlobalMuted] = useState(true)
 
   function toggleLike(idx: number) {
     setStates((prev) =>
@@ -208,6 +209,8 @@ export default function TikTokProfile() {
           onSave={() => toggleSave(idx)}
           onOpenComments={() => openComments(idx)}
           onCloseComments={() => closeComments(idx)}
+          muted={globalMuted}
+          onToggleMute={() => setGlobalMuted((m) => !m)}
           onCTA={() => router.push('/sales')}
         />
       ))}
@@ -220,6 +223,8 @@ export default function TikTokProfile() {
 interface VideoSlideProps {
   video: VideoData
   state: VideoState
+  muted: boolean
+  onToggleMute: () => void
   onLike: () => void
   onSave: () => void
   onOpenComments: () => void
@@ -230,6 +235,8 @@ interface VideoSlideProps {
 function VideoSlide({
   video,
   state,
+  muted,
+  onToggleMute,
   onLike,
   onSave,
   onOpenComments,
@@ -238,10 +245,21 @@ function VideoSlide({
 }: VideoSlideProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isPlaying, setIsPlaying] = useState(true)
-  const [showPauseIcon, setShowPauseIcon] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [showTapIcon, setShowTapIcon] = useState(false)
+
+  // Sync muted state to the video element
+  useEffect(() => {
+    const vid = videoRef.current
+    if (!vid) return
+    vid.muted = muted
+  }, [muted])
 
   // Auto-play/pause based on visibility (IntersectionObserver)
+  // autoPlay is intentionally NOT set on the element — we control it here only
+  const mutedRef = useRef(true)
+  useEffect(() => { mutedRef.current = muted }, [muted])
+
   useEffect(() => {
     const el = containerRef.current
     const vid = videoRef.current
@@ -250,7 +268,11 @@ function VideoSlide({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          vid.play().catch(() => {})
+          vid.muted = true // must be muted for autoplay policy
+          vid.play().then(() => {
+            // After play starts, apply the user's mute preference
+            vid.muted = mutedRef.current
+          }).catch(() => {})
           setIsPlaying(true)
         } else {
           vid.pause()
@@ -273,8 +295,8 @@ function VideoSlide({
       vid.pause()
       setIsPlaying(false)
     }
-    setShowPauseIcon(true)
-    setTimeout(() => setShowPauseIcon(false), 700)
+    setShowTapIcon(true)
+    setTimeout(() => setShowTapIcon(false), 700)
   }
 
   return (
@@ -284,19 +306,19 @@ function VideoSlide({
       style={{ height: '100dvh', scrollSnapAlign: 'start', flexShrink: 0 }}
       onClick={handleTap}
     >
-      {/* Background video */}
+      {/* Background video — no autoPlay attr; controlled via IntersectionObserver */}
       <video
         ref={videoRef}
         src={video.videoSrc}
-        autoPlay
         muted
         loop
         playsInline
+        preload="metadata"
         className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
       />
 
       {/* Tap feedback icon */}
-      {showPauseIcon && (
+      {showTapIcon && (
         <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
           <div className="bg-black/50 rounded-full p-4 animate-ping-once">
             {isPlaying ? (
@@ -322,6 +344,24 @@ function VideoSlide({
       <div className="absolute top-0 left-0 right-0 z-20">
         <StatusBar dark={true} />
       </div>
+
+      {/* Mute / Unmute button */}
+      <button
+        onClick={(e) => { e.stopPropagation(); onToggleMute() }}
+        className="absolute top-14 right-3 z-20 w-9 h-9 rounded-full bg-black/50 flex items-center justify-center active:scale-90 transition-transform"
+      >
+        {muted ? (
+          // Speaker off
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+            <path d="M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
+          </svg>
+        ) : (
+          // Speaker on
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+          </svg>
+        )}
+      </button>
 
       {/* CTA button — last video only, above bottom info */}
       {video.isCTA && (
