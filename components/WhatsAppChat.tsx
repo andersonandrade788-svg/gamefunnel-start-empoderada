@@ -67,7 +67,6 @@ const MESSAGES: Message[] = [
 
 export const ACCESS_PASSWORD = 'SISTEMA747'
 
-// Typing indicator shows before certain incoming messages
 const TYPING_BEFORE: number[] = [6, 18, 34]
 
 function formatTime() {
@@ -75,7 +74,6 @@ function formatTime() {
   return now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
 }
 
-// Sons do WhatsApp via Web Audio API
 function playMessageSound(type: 'incoming' | 'outgoing' | 'alert') {
   try {
     const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
@@ -85,7 +83,6 @@ function playMessageSound(type: 'incoming' | 'outgoing' | 'alert') {
     gain.connect(ctx.destination)
 
     if (type === 'incoming') {
-      // Som de mensagem recebida: dois tons suaves (estilo WhatsApp)
       osc.frequency.setValueAtTime(820, ctx.currentTime)
       osc.frequency.setValueAtTime(680, ctx.currentTime + 0.1)
       gain.gain.setValueAtTime(0.18, ctx.currentTime)
@@ -93,7 +90,6 @@ function playMessageSound(type: 'incoming' | 'outgoing' | 'alert') {
       osc.start(ctx.currentTime)
       osc.stop(ctx.currentTime + 0.25)
     } else if (type === 'outgoing') {
-      // Som de mensagem enviada: tom único mais agudo
       osc.frequency.setValueAtTime(1000, ctx.currentTime)
       osc.frequency.setValueAtTime(1200, ctx.currentTime + 0.06)
       gain.gain.setValueAtTime(0.12, ctx.currentTime)
@@ -101,32 +97,23 @@ function playMessageSound(type: 'incoming' | 'outgoing' | 'alert') {
       osc.start(ctx.currentTime)
       osc.stop(ctx.currentTime + 0.18)
     } else {
-      // Som de alerta dramático: sirene pulsante em 3 pulsos
       osc.type = 'sawtooth'
       const t = ctx.currentTime
-
-      // Pulso 1
       osc.frequency.setValueAtTime(880, t)
       osc.frequency.linearRampToValueAtTime(440, t + 0.15)
       gain.gain.setValueAtTime(0.35, t)
       gain.gain.setValueAtTime(0.0, t + 0.18)
-
-      // Pulso 2
       osc.frequency.setValueAtTime(880, t + 0.22)
       osc.frequency.linearRampToValueAtTime(440, t + 0.37)
       gain.gain.setValueAtTime(0.35, t + 0.22)
       gain.gain.setValueAtTime(0.0, t + 0.40)
-
-      // Pulso 3
       osc.frequency.setValueAtTime(880, t + 0.44)
       osc.frequency.linearRampToValueAtTime(440, t + 0.59)
       gain.gain.setValueAtTime(0.35, t + 0.44)
       gain.gain.exponentialRampToValueAtTime(0.001, t + 0.65)
-
       osc.start(t)
       osc.stop(t + 0.65)
     }
-
     osc.onended = () => ctx.close()
   } catch (_) {}
 }
@@ -136,8 +123,11 @@ export default function WhatsAppChat() {
   const [visibleMessages, setVisibleMessages] = useState<number[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const [showCTA, setShowCTA] = useState(false)
+  const [pendingReply, setPendingReply] = useState<Message | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const currentTime = useRef(formatTime())
+  // Holds the resolve() of the Promise that pauses the flow at each outgoing msg
+  const resumeRef = useRef<(() => void) | null>(null)
 
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -145,17 +135,16 @@ export default function WhatsAppChat() {
 
   useEffect(() => {
     scrollToBottom()
-  }, [visibleMessages, isTyping, showCTA])
+  }, [visibleMessages, isTyping, showCTA, pendingReply])
 
   useEffect(() => {
     let cancelled = false
-    let totalDelay = 0
 
     const showMessage = async (index: number) => {
       const msg = MESSAGES[index]
-      if (!msg) return
+      if (!msg || cancelled) return
 
-      // Show typing indicator before certain incoming messages (not outgoing)
+      // Show typing indicator before certain incoming messages
       if (TYPING_BEFORE.includes(msg.id) && !msg.isOutgoing) {
         const typingDelay = msg.id === 18 ? 4000 : 3000
         await new Promise<void>((resolve) => {
@@ -171,33 +160,49 @@ export default function WhatsAppChat() {
       }
 
       if (cancelled) return
-      setVisibleMessages((prev) => [...prev, msg.id])
 
-      // Toca som conforme tipo da mensagem
-      if (msg.isAlert) playMessageSound('alert')
-      else if (msg.isOutgoing) playMessageSound('outgoing')
-      else playMessageSound('incoming')
+      // ── Outgoing message: pause and wait for user tap ──
+      if (msg.isOutgoing) {
+        setPendingReply(msg)
+        await new Promise<void>((resolve) => {
+          resumeRef.current = resolve
+        })
+        if (cancelled) return
+        setPendingReply(null)
+        // Small delay after sending before next incoming message
+        await new Promise<void>((resolve) => setTimeout(resolve, 600))
+        if (cancelled) return
+      } else {
+        // Incoming / alert: show automatically
+        setVisibleMessages((prev) => [...prev, msg.id])
+        if (msg.isAlert) playMessageSound('alert')
+        else playMessageSound('incoming')
 
-      if (msg.id === 50) {
-        setTimeout(() => {
-          if (!cancelled) setShowCTA(true)
-        }, 800)
-        return
+        if (msg.id === 50) {
+          setTimeout(() => {
+            if (!cancelled) setShowCTA(true)
+          }, 800)
+          return
+        }
+
+        await new Promise<void>((resolve) => setTimeout(resolve, msg.delay || 1000))
+        if (cancelled) return
       }
 
-      await new Promise<void>((resolve) => setTimeout(resolve, msg.delay || 1000))
-
-      if (!cancelled && index + 1 < MESSAGES.length) {
-        showMessage(index + 1)
-      }
+      showMessage(index + 1)
     }
 
     setTimeout(() => showMessage(0), 1000)
-
-    return () => {
-      cancelled = true
-    }
+    return () => { cancelled = true }
   }, [])
+
+  function handleReply() {
+    if (!pendingReply) return
+    setVisibleMessages((prev) => [...prev, pendingReply.id])
+    playMessageSound('outgoing')
+    resumeRef.current?.()
+    resumeRef.current = null
+  }
 
   return (
     <div className="mobile-frame bg-white flex flex-col" style={{ height: '100dvh' }}>
@@ -217,12 +222,10 @@ export default function WhatsAppChat() {
           </svg>
         </button>
 
-        {/* Avatar */}
         <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
           <img src="/geovana.jpg" alt="Geovana Bueno" className="w-full h-full object-cover object-top" />
         </div>
 
-        {/* Contact info */}
         <div className="flex-1 min-w-0">
           <p className="text-white font-semibold text-base leading-tight">Geovana Bueno</p>
           <p className="text-green-200 text-sm">
@@ -230,7 +233,6 @@ export default function WhatsAppChat() {
           </p>
         </div>
 
-        {/* Icons */}
         <div className="flex gap-4 text-white">
           <button>
             <div className="w-10 h-10 flex items-center justify-center">
@@ -264,14 +266,12 @@ export default function WhatsAppChat() {
         className="flex-1 overflow-y-auto px-4 py-4 whatsapp-bg"
         style={{ paddingBottom: '16px' }}
       >
-        {/* Date badge */}
         <div className="flex justify-center mb-4">
           <span className="bg-white/80 text-gray-600 text-sm px-3 py-1 rounded-full shadow-sm">
             Hoje
           </span>
         </div>
 
-        {/* Messages */}
         <div className="flex flex-col gap-1">
           {MESSAGES.filter((m) => visibleMessages.includes(m.id)).map((msg) => (
             msg.isAlert
@@ -279,13 +279,10 @@ export default function WhatsAppChat() {
               : <MessageBubble key={msg.id} text={msg.text} time={currentTime.current} isOutgoing={!!msg.isOutgoing} />
           ))}
 
-          {/* Typing indicator */}
           {isTyping && <TypingIndicator />}
 
-          {/* Senha + CTA */}
           {showCTA && (
             <div className="flex flex-col items-center gap-3 mt-4 animate-fadeIn px-2">
-              {/* Card da senha */}
               <div className="w-full bg-[#FFF9C4] border-2 border-yellow-400 rounded-xl p-4 shadow-md">
                 <p className="text-gray-700 text-xs font-medium mb-2 text-center">🔐 sua senha de acesso exclusivo:</p>
                 <div className="bg-white border border-yellow-300 rounded-lg py-3 px-4 text-center">
@@ -293,7 +290,6 @@ export default function WhatsAppChat() {
                 </div>
                 <p className="text-gray-500 text-xs text-center mt-2">anota ou tira print — você vai precisar</p>
               </div>
-              {/* Botão */}
               <button
                 onClick={() => router.push('/acesso')}
                 className="w-full btn-gradient text-white font-bold text-base py-4 rounded-2xl shadow-xl active:scale-95 transition-all duration-200"
@@ -307,17 +303,47 @@ export default function WhatsAppChat() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input bar (decorative) */}
-      <div className="bg-[#F0F0F0] px-4 py-3 flex items-center gap-2 flex-shrink-0 border-t border-gray-200">
-        <div className="flex-1 bg-white rounded-full px-4 py-2 text-gray-400 text-sm shadow-sm">
-          Mensagem
+      {/* Reply area — shown when flow pauses for user interaction */}
+      {pendingReply ? (
+        <div className="flex-shrink-0 bg-[#F0F0F0] border-t border-gray-200">
+          {/* Hint label */}
+          <div className="flex justify-center pt-2 pb-1">
+            <span className="text-gray-400 text-[11px] font-medium tracking-wide uppercase">
+              Toque para responder
+            </span>
+          </div>
+          {/* Reply chip */}
+          <div className="px-3 pb-3 flex items-center gap-2">
+            <button
+              onClick={handleReply}
+              className="flex-1 bg-[#DCF8C6] border border-green-300 rounded-2xl px-4 py-3 text-left shadow-md active:scale-95 transition-transform duration-150 animate-replyPulse"
+            >
+              <p className="text-gray-800 text-sm font-medium">{pendingReply.text}</p>
+            </button>
+            {/* Send button */}
+            <button
+              onClick={handleReply}
+              className="w-12 h-12 rounded-full bg-[#128C7E] flex items-center justify-center flex-shrink-0 shadow-md active:scale-90 transition-transform"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />
+              </svg>
+            </button>
+          </div>
         </div>
-        <div className="w-12 h-12 rounded-full bg-[#128C7E] flex items-center justify-center flex-shrink-0">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-            <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />
-          </svg>
+      ) : (
+        /* Decorative input bar when no pending reply */
+        <div className="bg-[#F0F0F0] px-4 py-3 flex items-center gap-2 flex-shrink-0 border-t border-gray-200">
+          <div className="flex-1 bg-white rounded-full px-4 py-2 text-gray-400 text-sm shadow-sm">
+            Mensagem
+          </div>
+          <div className="w-12 h-12 rounded-full bg-[#128C7E] flex items-center justify-center flex-shrink-0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+              <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />
+            </svg>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
@@ -341,7 +367,7 @@ function MessageBubble({
         }`}
       >
         <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-line">{text}</p>
-        <div className={`flex items-center gap-1 mt-0.5 ${isOutgoing ? 'justify-end' : 'justify-end'}`}>
+        <div className="flex items-center gap-1 mt-0.5 justify-end">
           <span className="text-gray-400 text-[10px]">{time}</span>
           {isOutgoing && (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="#4FC3F7">
