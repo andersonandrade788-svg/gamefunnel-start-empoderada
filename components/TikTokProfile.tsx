@@ -256,6 +256,7 @@ function VideoSlide({
   const containerRef = useRef<HTMLDivElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showTapIcon, setShowTapIcon] = useState(false)
+  const [videoEnded, setVideoEnded] = useState(false)
 
   // Sync muted state to the video element
   useEffect(() => {
@@ -277,9 +278,10 @@ function VideoSlide({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          vid.currentTime = 0
+          setVideoEnded(false)
           vid.muted = true // must be muted for autoplay policy
           vid.play().then(() => {
-            // After play starts, apply the user's mute preference
             vid.muted = mutedRef.current
           }).catch(() => {})
           setIsPlaying(true)
@@ -315,14 +317,14 @@ function VideoSlide({
       style={{ height: '100dvh', scrollSnapAlign: 'start', flexShrink: 0 }}
       onClick={handleTap}
     >
-      {/* Background video — no autoPlay attr; controlled via IntersectionObserver */}
+      {/* Background video — no autoPlay/loop; controlled via IntersectionObserver */}
       <video
         ref={videoRef}
         src={video.videoSrc}
         muted
-        loop
         playsInline
         preload="metadata"
+        onEnded={() => setVideoEnded(true)}
         className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
       />
 
@@ -339,6 +341,32 @@ function VideoSlide({
                 <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
               </svg>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Swipe-down prompt — shown when video ends (not on CTA slide) */}
+      {videoEnded && !video.isCTA && (
+        <div className="absolute inset-0 z-25 flex flex-col items-center justify-end pb-36 pointer-events-none animate-fadeIn">
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-white font-bold text-base text-center drop-shadow-lg">
+              Deslize para baixo
+            </p>
+            <p className="text-white/70 text-sm text-center">
+              para assistir o próximo vídeo
+            </p>
+            {/* Animated arrows */}
+            <div className="flex flex-col items-center gap-0 mt-1">
+              <svg className="animate-swipeArrow1" width="28" height="28" viewBox="0 0 24 24" fill="white" style={{ opacity: 0.4 }}>
+                <path d="M7 10l5 5 5-5z" />
+              </svg>
+              <svg className="animate-swipeArrow2" width="28" height="28" viewBox="0 0 24 24" fill="white" style={{ opacity: 0.7 }}>
+                <path d="M7 10l5 5 5-5z" />
+              </svg>
+              <svg className="animate-swipeArrow3" width="28" height="28" viewBox="0 0 24 24" fill="white">
+                <path d="M7 10l5 5 5-5z" />
+              </svg>
+            </div>
           </div>
         </div>
       )}

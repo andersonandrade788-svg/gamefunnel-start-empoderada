@@ -58,6 +58,11 @@ const config: Config = {
           '90%':  { opacity: '1', transform: 'translateX(0)' },
           '100%': { opacity: '1', transform: 'translateX(0)' },
         },
+        swipeArrow: {
+          '0%':   { opacity: '0', transform: 'translateY(-6px)' },
+          '50%':  { opacity: '1', transform: 'translateY(0)' },
+          '100%': { opacity: '0', transform: 'translateY(6px)' },
+        },
       },
       animation: {
         fadeIn: 'fadeIn 0.4s ease-out forwards',
@@ -67,6 +72,9 @@ const config: Config = {
         dotTyping: 'dotTyping 1.4s infinite ease-in-out',
         'ping-once': 'pingOnce 0.7s ease-out forwards',
         muteHint: 'muteHint 3s ease-in-out infinite',
+        swipeArrow1: 'swipeArrow 1.2s ease-in-out infinite',
+        swipeArrow2: 'swipeArrow 1.2s ease-in-out 0.2s infinite',
+        swipeArrow3: 'swipeArrow 1.2s ease-in-out 0.4s infinite',
       },
     },
   },
