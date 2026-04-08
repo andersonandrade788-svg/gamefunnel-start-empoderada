@@ -45,6 +45,11 @@ const config: Config = {
           '20%': { opacity: '1' },
           '100%': { opacity: '0.2' },
         },
+        pingOnce: {
+          '0%': { transform: 'scale(1)', opacity: '1' },
+          '80%': { transform: 'scale(1.3)', opacity: '0.6' },
+          '100%': { transform: 'scale(1)', opacity: '0' },
+        },
       },
       animation: {
         fadeIn: 'fadeIn 0.4s ease-out forwards',
@@ -52,6 +57,7 @@ const config: Config = {
         slideUp: 'slideUp 0.5s ease-out forwards',
         blink: 'blink 1s step-end infinite',
         dotTyping: 'dotTyping 1.4s infinite ease-in-out',
+        'ping-once': 'pingOnce 0.7s ease-out forwards',
       },
     },
   },

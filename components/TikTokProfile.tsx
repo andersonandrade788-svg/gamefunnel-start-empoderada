@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import StatusBar from '@/components/StatusBar'
@@ -15,6 +15,7 @@ interface Comment {
 
 interface VideoData {
   id: number
+  videoSrc: string
   description: string
   song: string
   likes: string
@@ -31,6 +32,7 @@ interface VideoData {
 const VIDEOS: VideoData[] = [
   {
     id: 1,
+    videoSrc: '/Video TK 01.Mp4',
     description: 'você não falhou… você foi colocada no sistema errado 😮 #emagrecimento #mulher',
     song: 'áudio original - Giovanna Bueno',
     likes: '14.2K',
@@ -48,6 +50,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 2,
+    videoSrc: '/Video TK 02.Mp4',
     description: 'disciplina não é o problema. nunca foi 👀 #verdade #sistemaerrado',
     song: 'áudio original - Giovanna Bueno',
     likes: '22.7K',
@@ -65,6 +68,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 3,
+    videoSrc: '/Video Tk 03.Mp4',
     description: 'o que ninguém te ensinou sobre manter o resultado 🔥 #método #transformação',
     song: 'áudio original - Giovanna Bueno',
     likes: '31.5K',
@@ -82,6 +86,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 4,
+    videoSrc: '/Video Tk 04.Mp4',
     description: 'antes eu desistia em menos de 1 semana. hoje é diferente 💪 #resultado #prova',
     song: 'áudio original - Giovanna Bueno',
     likes: '18.9K',
@@ -99,6 +104,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 5,
+    videoSrc: '/Video Tk 05.Mp4',
     description: 'se você tá cansada de recomeçar… entra aqui 👇 o link tá na bio #startempoderada',
     song: 'áudio original - Giovanna Bueno',
     likes: '41.3K',
@@ -230,19 +236,81 @@ function VideoSlide({
   onCloseComments,
   onCTA,
 }: VideoSlideProps) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [isPlaying, setIsPlaying] = useState(true)
+  const [showPauseIcon, setShowPauseIcon] = useState(false)
+
+  // Auto-play/pause based on visibility (IntersectionObserver)
+  useEffect(() => {
+    const el = containerRef.current
+    const vid = videoRef.current
+    if (!el || !vid) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          vid.play().catch(() => {})
+          setIsPlaying(true)
+        } else {
+          vid.pause()
+          setIsPlaying(false)
+        }
+      },
+      { threshold: 0.6 },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  function handleTap() {
+    const vid = videoRef.current
+    if (!vid) return
+    if (vid.paused) {
+      vid.play().catch(() => {})
+      setIsPlaying(true)
+    } else {
+      vid.pause()
+      setIsPlaying(false)
+    }
+    setShowPauseIcon(true)
+    setTimeout(() => setShowPauseIcon(false), 700)
+  }
+
   return (
     <div
+      ref={containerRef}
       className="relative bg-black overflow-hidden"
       style={{ height: '100dvh', scrollSnapAlign: 'start', flexShrink: 0 }}
+      onClick={handleTap}
     >
-      {/* Background image */}
-      <Image
-        src="/geovana.jpg"
-        alt=""
-        fill
-        className="object-cover object-top select-none pointer-events-none"
-        priority
+      {/* Background video */}
+      <video
+        ref={videoRef}
+        src={video.videoSrc}
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
       />
+
+      {/* Tap feedback icon */}
+      {showPauseIcon && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+          <div className="bg-black/50 rounded-full p-4 animate-ping-once">
+            {isPlaying ? (
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="white">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            ) : (
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="white">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+              </svg>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Gradient overlay — color per video + dark bottom vignette */}
       <div
@@ -259,7 +327,7 @@ function VideoSlide({
       {video.isCTA && (
         <div className="absolute bottom-48 left-0 right-0 z-20 flex justify-center px-10">
           <button
-            onClick={onCTA}
+            onClick={(e) => { e.stopPropagation(); onCTA() }}
             className="bg-[#22C55E] text-black font-bold text-base py-4 px-8 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 animate-greenPulse"
           >
             ACESSAR AGORA →
@@ -333,7 +401,7 @@ function VideoSlide({
         </div>
 
         {/* Like */}
-        <button onClick={onLike} className="flex flex-col items-center gap-0.5 min-h-[44px] active:scale-90 transition-transform">
+        <button onClick={(e) => { e.stopPropagation(); onLike() }} className="flex flex-col items-center gap-0.5 min-h-[44px] active:scale-90 transition-transform">
           <svg
             width="30"
             height="30"
@@ -349,7 +417,7 @@ function VideoSlide({
         </button>
 
         {/* Comments */}
-        <button onClick={onOpenComments} className="flex flex-col items-center gap-0.5 min-h-[44px] active:scale-90 transition-transform">
+        <button onClick={(e) => { e.stopPropagation(); onOpenComments() }} className="flex flex-col items-center gap-0.5 min-h-[44px] active:scale-90 transition-transform">
           <svg width="30" height="30" viewBox="0 0 24 24" fill="white" className="drop-shadow">
             <path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z" />
           </svg>
@@ -359,7 +427,7 @@ function VideoSlide({
         </button>
 
         {/* Save / Bookmark */}
-        <button onClick={onSave} className="flex flex-col items-center gap-0.5 min-h-[44px] active:scale-90 transition-transform">
+        <button onClick={(e) => { e.stopPropagation(); onSave() }} className="flex flex-col items-center gap-0.5 min-h-[44px] active:scale-90 transition-transform">
           <svg
             width="28"
             height="28"
