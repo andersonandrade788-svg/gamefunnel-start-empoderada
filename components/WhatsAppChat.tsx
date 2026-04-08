@@ -23,7 +23,7 @@ const MESSAGES: Message[] = [
   { id: 8,  text: 'olha isso com calma', delay: 2000 },
   { id: 9,  text: 'te ensinaram que pra emagrecer você precisa:', delay: 1000 },
   { id: 10, text: 'treinar', delay: 500 },
-  { id: 11, text: 'fechar dieta', delay: 500 },
+  { id: 11, text: 'fazer dieta', delay: 500 },
   { id: 12, text: 'ter disciplina', delay: 2000 },
   { id: 13, text: 'sim... sempre fiz isso tudo', delay: 1500, isOutgoing: true },
   { id: 14, text: 'parece certo né', delay: 2000 },
