@@ -50,6 +50,14 @@ const config: Config = {
           '80%': { transform: 'scale(1.3)', opacity: '0.6' },
           '100%': { transform: 'scale(1)', opacity: '0' },
         },
+        muteHint: {
+          '0%':   { opacity: '0', transform: 'translateX(8px)' },
+          '15%':  { opacity: '1', transform: 'translateX(0)' },
+          '70%':  { opacity: '1', transform: 'translateX(0)' },
+          '80%':  { opacity: '1', transform: 'translateX(-4px)' },
+          '90%':  { opacity: '1', transform: 'translateX(0)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
       },
       animation: {
         fadeIn: 'fadeIn 0.4s ease-out forwards',
@@ -58,6 +66,7 @@ const config: Config = {
         blink: 'blink 1s step-end infinite',
         dotTyping: 'dotTyping 1.4s infinite ease-in-out',
         'ping-once': 'pingOnce 0.7s ease-out forwards',
+        muteHint: 'muteHint 3s ease-in-out infinite',
       },
     },
   },

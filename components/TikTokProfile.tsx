@@ -154,6 +154,12 @@ export default function TikTokProfile() {
   const router = useRouter()
   const [states, setStates] = useState<VideoState[]>(() => initState(VIDEOS))
   const [globalMuted, setGlobalMuted] = useState(true)
+  const [showMuteHint, setShowMuteHint] = useState(true)
+
+  function handleToggleMute() {
+    setGlobalMuted((m) => !m)
+    setShowMuteHint(false)
+  }
 
   function toggleLike(idx: number) {
     setStates((prev) =>
@@ -210,7 +216,8 @@ export default function TikTokProfile() {
           onOpenComments={() => openComments(idx)}
           onCloseComments={() => closeComments(idx)}
           muted={globalMuted}
-          onToggleMute={() => setGlobalMuted((m) => !m)}
+          showMuteHint={showMuteHint && idx === 0}
+          onToggleMute={handleToggleMute}
           onCTA={() => router.push('/sales')}
         />
       ))}
@@ -224,6 +231,7 @@ interface VideoSlideProps {
   video: VideoData
   state: VideoState
   muted: boolean
+  showMuteHint: boolean
   onToggleMute: () => void
   onLike: () => void
   onSave: () => void
@@ -236,6 +244,7 @@ function VideoSlide({
   video,
   state,
   muted,
+  showMuteHint,
   onToggleMute,
   onLike,
   onSave,
@@ -344,6 +353,17 @@ function VideoSlide({
       <div className="absolute top-0 left-0 right-0 z-20">
         <StatusBar dark={true} />
       </div>
+
+      {/* Mute hint tooltip */}
+      {showMuteHint && muted && (
+        <div className="absolute top-14 right-14 z-20 flex items-center gap-2 pointer-events-none animate-muteHint">
+          <div className="bg-white text-black text-xs font-bold px-3 py-2 rounded-xl shadow-lg leading-tight max-w-[140px] text-center">
+            Toque aqui para<br />ativar o som 🔊
+          </div>
+          {/* Arrow pointing right toward the button */}
+          <div className="w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[8px] border-l-white flex-shrink-0" />
+        </div>
+      )}
 
       {/* Mute / Unmute button */}
       <button
