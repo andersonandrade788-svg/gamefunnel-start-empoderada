@@ -4,6 +4,104 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import StatusBar from '@/components/StatusBar'
 
+// ─── Classificação ────────────────────────────────────────────────────────────
+
+type Categoria = 'abaixo' | 'normal' | 'sobrepeso' | 'ob1' | 'ob2' | 'ob3'
+
+interface Classificacao {
+  categoria: Categoria
+  label: string
+  grau?: string
+  color: string
+  bg: string
+  border: string
+  emoji: string
+  texto: string
+  pergunta: string
+  btn1: string
+  btn2: string
+}
+
+function getClassificacao(imc: number): Classificacao {
+  if (imc < 18.5) return {
+    categoria: 'abaixo',
+    label: 'Abaixo do peso',
+    color: 'text-yellow-500',
+    bg: 'bg-yellow-50',
+    border: 'border-yellow-300',
+    emoji: '⚠️',
+    texto: 'Mas presta atenção:\nisso não significa, automaticamente, um corpo bonito ou firme.\nMuitas mulheres estão magras…\nmas sem estrutura, sem forma e sem definição.\nO seu foco não é emagrecer.\nO seu foco é construir corpo.',
+    pergunta: 'Quer que eu te mostre como ganhar forma, firmeza e curvas do jeito certo?',
+    btn1: 'Quero ganhar forma',
+    btn2: 'Ver como funciona',
+  }
+  if (imc < 25) return {
+    categoria: 'normal',
+    label: 'Peso normal',
+    color: 'text-green-500',
+    bg: 'bg-green-50',
+    border: 'border-green-300',
+    emoji: '✅',
+    texto: 'Agora vem a verdade que ninguém te fala:\nTer IMC normal não significa ter o corpo que você quer.\nVocê pode estar no peso…\ne ainda assim ter barriga, flacidez, culote ou falta de definição.\nOu seja: o problema pode não ser o peso.\nPode ser que seu corpo esteja sem modelagem.',
+    pergunta: 'Quer que eu te mostre como afinar cintura, levantar bumbum e dar forma ao corpo?',
+    btn1: 'Quero modelar meu corpo',
+    btn2: 'Me mostra',
+  }
+  if (imc < 30) return {
+    categoria: 'sobrepeso',
+    label: 'Sobrepeso',
+    color: 'text-orange-500',
+    bg: 'bg-orange-50',
+    border: 'border-orange-300',
+    emoji: '🔶',
+    texto: 'Isso mostra que seu corpo provavelmente está acumulando mais gordura do que deveria.\nE isso costuma aparecer em forma de:\nbarriga persistente, roupa apertando, corpo sem definição e dificuldade de se sentir bem no espelho.\nA boa notícia?\nIsso tem solução quando você para de fazer tudo aleatoriamente.',
+    pergunta: 'Quer que eu te mostre o caminho mais rápido para destravar isso?',
+    btn1: 'Quero destravar',
+    btn2: 'Me mostra o sistema',
+  }
+  if (imc < 35) return {
+    categoria: 'ob1',
+    label: 'Obesidade',
+    grau: 'Grau I',
+    color: 'text-red-500',
+    bg: 'bg-red-50',
+    border: 'border-red-300',
+    emoji: '🔴',
+    texto: 'Esse resultado mostra que seu corpo precisa de uma estratégia séria e direcionada.\nNão é sobre passar fome.\nNão é sobre treinar até se acabar.\nÉ sobre ter um sistema que faça seu corpo responder com constância.',
+    pergunta: 'Quer que eu te mostre como começar de forma prática e possível?',
+    btn1: 'Quero começar',
+    btn2: 'Me mostra o plano',
+  }
+  if (imc < 40) return {
+    categoria: 'ob2',
+    label: 'Obesidade',
+    grau: 'Grau II',
+    color: 'text-red-600',
+    bg: 'bg-red-50',
+    border: 'border-red-400',
+    emoji: '🔴',
+    texto: 'Esse resultado mostra que seu corpo precisa de uma estratégia séria e direcionada.\nNão é sobre passar fome.\nNão é sobre treinar até se acabar.\nÉ sobre ter um sistema que faça seu corpo responder com constância.',
+    pergunta: 'Quer que eu te mostre como começar de forma prática e possível?',
+    btn1: 'Quero começar',
+    btn2: 'Me mostra o plano',
+  }
+  return {
+    categoria: 'ob3',
+    label: 'Obesidade',
+    grau: 'Grau III',
+    color: 'text-red-700',
+    bg: 'bg-red-50',
+    border: 'border-red-500',
+    emoji: '🔴',
+    texto: 'Esse resultado mostra que seu corpo precisa de uma estratégia séria e direcionada.\nNão é sobre passar fome.\nNão é sobre treinar até se acabar.\nÉ sobre ter um sistema que faça seu corpo responder com constância.',
+    pergunta: 'Quer que eu te mostre como começar de forma prática e possível?',
+    btn1: 'Quero começar',
+    btn2: 'Me mostra o plano',
+  }
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function DiagnosticoPage() {
   const router = useRouter()
   const [imc, setImc] = useState<number | null>(null)
@@ -23,14 +121,7 @@ export default function DiagnosticoPage() {
     return () => clearTimeout(t)
   }, [])
 
-  const getClassificacao = (v: number) => {
-    if (v < 18.5) return { label: 'Abaixo do peso', color: 'text-yellow-500', bg: 'bg-yellow-50', border: 'border-yellow-200' }
-    if (v < 25)   return { label: 'Peso normal', color: 'text-green-500', bg: 'bg-green-50', border: 'border-green-200' }
-    if (v < 30)   return { label: 'Sobrepeso', color: 'text-orange-500', bg: 'bg-orange-50', border: 'border-orange-200' }
-    return { label: 'Obesidade', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-200' }
-  }
-
-  const classe = imc ? getClassificacao(imc) : null
+  const classe = imc != null ? getClassificacao(imc) : null
 
   if (loading) {
     return (
@@ -47,14 +138,19 @@ export default function DiagnosticoPage() {
     )
   }
 
+  if (!classe || imc == null) return null
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-white overflow-x-hidden">
       <div className="sticky top-0 z-50 bg-[#f8fafc]">
         <StatusBar dark={false} />
       </div>
 
-      <div className={`max-w-md mx-auto px-5 sm:px-6 py-8 flex flex-col gap-6 transition-all duration-500 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-
+      <div
+        className={`max-w-md mx-auto px-5 sm:px-6 py-8 flex flex-col gap-6 transition-all duration-500 ${
+          visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+        }`}
+      >
         {/* Título */}
         <div className="text-center animate-fadeInUp" style={{ animationDelay: '0ms' }}>
           <p className="text-gray-400 text-sm font-medium uppercase tracking-widest mb-2">Diagnóstico Corporal</p>
@@ -64,16 +160,21 @@ export default function DiagnosticoPage() {
           </h1>
         </div>
 
-        {/* Card IMC */}
-        <div className={`bg-white shadow-lg rounded-2xl p-6 border ${classe?.border ?? 'border-gray-100'} animate-scaleIn`} style={{ animationDelay: '150ms' }}>
+        {/* Card IMC + classificação */}
+        <div
+          className={`bg-white shadow-lg rounded-2xl p-6 border ${classe.border} animate-scaleIn`}
+          style={{ animationDelay: '150ms' }}
+        >
           <p className="text-gray-500 text-sm text-center mb-3">Seu IMC atual é:</p>
           <div className="flex flex-col items-center gap-2">
-            <span className={`text-6xl font-black ${classe?.color ?? 'text-gray-800'}`}>
-              {imc?.toFixed(1) ?? '--'}
+            <span className={`text-6xl font-black ${classe.color}`}>
+              {imc.toFixed(1)}
             </span>
-            <span className={`text-sm font-bold px-4 py-1.5 rounded-full ${classe?.bg} ${classe?.color} border ${classe?.border}`}>
-              {classe?.label ?? '—'}
-            </span>
+            <div className="flex flex-col items-center gap-1">
+              <span className={`text-sm font-bold px-4 py-1.5 rounded-full ${classe.bg} ${classe.color} border ${classe.border}`}>
+                {classe.emoji} {classe.label}{classe.grau ? ` — ${classe.grau}` : ''}
+              </span>
+            </div>
           </div>
 
           {/* Barra visual */}
@@ -85,12 +186,10 @@ export default function DiagnosticoPage() {
               <span>Obesidade</span>
             </div>
             <div className="relative h-3 rounded-full overflow-hidden bg-gradient-to-r from-yellow-300 via-green-400 via-orange-400 to-red-500">
-              {imc && (
-                <div
-                  className="absolute top-0 w-3 h-3 bg-white border-2 border-gray-700 rounded-full shadow-md -translate-x-1/2"
-                  style={{ left: `${Math.min(Math.max(((imc - 15) / 25) * 100, 2), 98)}%` }}
-                />
-              )}
+              <div
+                className="absolute top-0 w-3 h-3 bg-white border-2 border-gray-700 rounded-full shadow-md -translate-x-1/2"
+                style={{ left: `${Math.min(Math.max(((imc - 15) / 25) * 100, 2), 98)}%` }}
+              />
             </div>
             <div className="flex justify-between text-xs text-gray-400 mt-1 px-0.5">
               <span>15</span>
@@ -102,64 +201,50 @@ export default function DiagnosticoPage() {
           </div>
         </div>
 
-        {/* Interpretação emocional */}
-        <div className="bg-white shadow-sm rounded-2xl p-5 border border-red-100 animate-fadeInUp" style={{ animationDelay: '250ms' }}>
-          <p className="text-gray-800 text-sm leading-relaxed font-medium">
-            Isso indica que seu corpo já está acumulando mais gordura do que deveria…
+        {/* Texto da classificação */}
+        <div
+          className={`bg-white shadow-sm rounded-2xl p-5 border ${classe.border} animate-fadeInUp`}
+          style={{ animationDelay: '250ms' }}
+        >
+          <p className={`text-xs font-bold uppercase tracking-widest mb-3 ${classe.color}`}>
+            Classificação: {classe.label}{classe.grau ? ` — ${classe.grau}` : ''}
           </p>
-          <p className="text-gray-500 text-sm mt-2 mb-3">e isso explica:</p>
-          <div className="flex flex-col gap-2">
-            {['dificuldade pra emagrecer', 'flacidez', 'metabolismo lento'].map((item, i) => (
-              <div key={i} className="flex items-center gap-2 bg-red-50 rounded-xl px-3 py-2">
-                <span className="text-red-500 font-bold text-sm">❌</span>
-                <span className="text-gray-700 text-sm">{item}</span>
-              </div>
-            ))}
-          </div>
+          {classe.texto.split('\n').map((linha, i) => (
+            linha.trim() === '' ? null : (
+              <p key={i} className="text-gray-700 text-sm leading-relaxed mb-2">
+                {linha}
+              </p>
+            )
+          ))}
         </div>
 
-        {/* Projeção de tempo */}
-        <div className="bg-white shadow-sm rounded-2xl p-5 border border-gray-100 animate-fadeInUp" style={{ animationDelay: '350ms' }}>
-          <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Se você continuar como está…</p>
-          <p className="text-gray-800 text-sm leading-relaxed">
-            Você pode levar de{' '}
-            <span className="font-black text-red-500">2 a 5 anos</span>{' '}
-            pra chegar no corpo que você quer.
+        {/* Pergunta + botões */}
+        <div
+          className="bg-gradient-to-br from-[#f0fdf4] to-white rounded-2xl p-5 border border-[#22C55E]/30 shadow-sm animate-fadeInUp flex flex-col gap-4"
+          style={{ animationDelay: '380ms' }}
+        >
+          <p className="text-gray-800 text-base font-bold leading-snug text-center">
+            {classe.pergunta}
           </p>
-          <p className="text-gray-400 text-xs mt-1">(isso SE não desistir antes)</p>
-          <div className="mt-4 h-px bg-gray-100" />
-          <p className="text-gray-600 text-sm mt-4 font-medium leading-relaxed">
-            "E é exatamente por isso que a maioria{' '}
-            <span className="font-black text-gray-800">nunca consegue.</span>"
-          </p>
-        </div>
 
-        {/* Virada */}
-        <div className="bg-gradient-to-br from-[#f0fdf4] to-white rounded-2xl p-5 border border-[#22C55E]/30 shadow-sm animate-fadeInUp" style={{ animationDelay: '450ms' }}>
-          <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Mas aqui vai a diferença…</p>
-          <p className="text-gray-800 text-sm leading-relaxed font-medium">
-            Eu não trabalho com tentativa.<br />
-            Eu trabalho com <span className="text-[#22C55E] font-black">método.</span>
-          </p>
-          <div className="mt-4 bg-white rounded-xl p-4 border border-[#22C55E]/20 shadow-sm">
-            <p className="text-gray-700 text-sm leading-relaxed">
-              Com base no seu resultado, eu consigo te mostrar um plano específico pra você mudar seu corpo em{' '}
-              <span className="font-black text-[#22C55E]">semanas — não anos.</span>
-            </p>
-          </div>
-        </div>
-
-        {/* CTA */}
-        <div className="animate-fadeInUp pb-8" style={{ animationDelay: '550ms' }}>
           <button
             onClick={() => router.push('/exp3')}
-            className="w-full min-h-[56px] bg-[#22C55E] hover:bg-[#16A34A] text-black font-black text-base rounded-2xl shadow-xl active:scale-95 transition-all duration-200 animate-greenPulse break-words px-4"
+            className="w-full min-h-[56px] bg-[#22C55E] text-black font-black text-base rounded-2xl shadow-xl active:scale-95 transition-all duration-200 animate-greenPulse px-4"
           >
-            DESBLOQUEAR MEU PLANO AGORA
+            {classe.btn1}
           </button>
-          <p className="text-gray-400 text-xs text-center mt-3">🔒 acesso seguro · sem compromisso</p>
+
+          <button
+            onClick={() => router.push('/exp3')}
+            className="w-full min-h-[52px] bg-white border-2 border-[#22C55E] text-[#16A34A] font-bold text-base rounded-2xl active:scale-95 transition-all duration-200 px-4"
+          >
+            {classe.btn2}
+          </button>
         </div>
 
+        <p className="text-gray-400 text-xs text-center pb-6 animate-fadeInUp" style={{ animationDelay: '480ms' }}>
+          🔒 acesso seguro · sem compromisso
+        </p>
       </div>
     </div>
   )
