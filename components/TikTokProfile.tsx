@@ -4,21 +4,6 @@ import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import StatusBar from '@/components/StatusBar'
-import { initiateCheckout } from '@/lib/pixel'
-
-function sendServerEvent(eventName: string) {
-  fetch('/api/pixel', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      eventName,
-      eventSourceUrl: window.location.href,
-      clientUserAgent: navigator.userAgent,
-      fbc: document.cookie.match(/_fbc=([^;]+)/)?.[1] ?? '',
-      fbp: document.cookie.match(/_fbp=([^;]+)/)?.[1] ?? '',
-    }),
-  }).catch(() => {})
-}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -233,11 +218,7 @@ export default function TikTokProfile() {
           muted={globalMuted}
           showMuteHint={showMuteHint && idx === 0}
           onToggleMute={handleToggleMute}
-          onCTA={() => {
-            initiateCheckout()
-            sendServerEvent('InitiateCheckout')
-            router.push('/sales')
-          }}
+          onCTA={() => router.push('/sales')}
         />
       ))}
     </div>
