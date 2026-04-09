@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import StatusBar from '@/components/StatusBar'
+import { initiateCheckout } from '@/lib/pixel'
 
 const FAQS = [
   {
@@ -64,8 +65,27 @@ const PAINS = [
   'Sente que algo está errado com você',
 ]
 
+function sendServerEvent(eventName: string) {
+  fetch('/api/pixel', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      eventName,
+      eventSourceUrl: window.location.href,
+      clientUserAgent: navigator.userAgent,
+      fbc: document.cookie.match(/_fbc=([^;]+)/)?.[1] ?? '',
+      fbp: document.cookie.match(/_fbp=([^;]+)/)?.[1] ?? '',
+    }),
+  }).catch(() => {})
+}
+
 export default function SalesPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+
+  const handleCheckout = useCallback(() => {
+    initiateCheckout()
+    sendServerEvent('InitiateCheckout')
+  }, [])
 
   return (
     <div className="mobile-frame bg-[#0A0A0A] overflow-y-auto" style={{ minHeight: '100dvh' }}>
@@ -106,7 +126,7 @@ export default function SalesPage() {
             </div>
           </div>
 
-          <a href="https://pay.cakto.com.br/36sdo2o_810308" target="_blank" rel="noopener noreferrer" className="w-full bg-[#22C55E] hover:bg-[#16A34A] text-black font-black text-base py-4 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 mt-2 text-center block">
+          <a href="https://pay.cakto.com.br/36sdo2o_810308" target="_blank" rel="noopener noreferrer" onClick={handleCheckout} className="w-full bg-[#22C55E] hover:bg-[#16A34A] text-black font-black text-base py-4 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 mt-2 text-center block">
             QUERO COMEÇAR AGORA
           </a>
         </div>
