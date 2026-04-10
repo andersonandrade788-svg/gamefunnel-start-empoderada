@@ -129,7 +129,6 @@ export default function AudioCall() {
       setCallState('ended')
     })
     setCallState('active')
-    subtitleIndexRef.current = 0
     setElapsed(0)
   }
 
