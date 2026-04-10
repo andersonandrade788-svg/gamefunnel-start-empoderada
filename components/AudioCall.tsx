@@ -320,6 +320,16 @@ function ActiveCallScreen({
         </div>
       </div>
 
+      {/* Alerta fixo — não desligue */}
+      <div className="w-full px-6">
+        <div className="flex items-center gap-3 bg-red-950/80 border border-red-500/40 rounded-2xl px-4 py-3 shadow-lg">
+          <span className="text-red-400 text-xl animate-pulse flex-shrink-0">🚨</span>
+          <p className="text-red-200 text-sm font-bold leading-snug">
+            Não desligue o telefone, você não terá outra oportunidade de conhecer meu método
+          </p>
+        </div>
+      </div>
+
       {/* Alerta sincronizado com o áudio */}
       <div className="flex-1 flex items-center justify-center w-full px-6">
         <div
