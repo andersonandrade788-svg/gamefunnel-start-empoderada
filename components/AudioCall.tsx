@@ -212,8 +212,6 @@ export default function AudioCall() {
         <ActiveCallScreen
           callDuration={callDuration}
           onHangUp={handleDecline}
-          subtitle={currentSubtitle}
-          subtitleVisible={subtitleVisible}
           progress={Math.min((elapsed / (callAudioRef.current?.duration || CALL_END_TIME)) * 100, 100)}
         />
       )}
@@ -286,14 +284,10 @@ function RingingScreen({
 function ActiveCallScreen({
   callDuration,
   onHangUp,
-  subtitle,
-  subtitleVisible,
   progress,
 }: {
   callDuration: string
   onHangUp: () => void
-  subtitle: string
-  subtitleVisible: boolean
   progress: number
 }) {
   return (
@@ -320,29 +314,16 @@ function ActiveCallScreen({
         </div>
       </div>
 
-      {/* Alerta fixo — não desligue */}
-      <div className="w-full px-6">
-        <div className="flex items-center gap-3 bg-red-950/80 border border-red-500/40 rounded-2xl px-4 py-3 shadow-lg">
-          <span className="text-red-400 text-xl animate-pulse flex-shrink-0">🚨</span>
-          <p className="text-red-200 text-sm font-bold leading-snug">
-            Não desligue o telefone, você não terá outra oportunidade de conhecer meu método
-          </p>
-        </div>
-      </div>
-
-      {/* Alerta sincronizado com o áudio */}
+      {/* Alerta centralizado — não desligue */}
       <div className="flex-1 flex items-center justify-center w-full px-6">
-        <div
-          className={`w-full max-w-xs transition-all duration-300 ${
-            subtitleVisible && subtitle ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-          }`}
-        >
-          <div className="flex items-start gap-3 bg-[#1a1a1a] border border-white/15 rounded-2xl px-4 py-4 shadow-xl">
-            <div className="w-8 h-8 rounded-full bg-yellow-400/20 border border-yellow-400/40 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-yellow-400 text-base">💡</span>
-            </div>
-            <p className="text-white text-sm font-semibold leading-snug flex-1">
-              {subtitle}
+        <div className="flex flex-col items-center gap-4 animate-pulse">
+          <span className="text-5xl">🚨</span>
+          <div className="bg-red-950/80 border border-red-500/40 rounded-2xl px-5 py-4 shadow-lg text-center">
+            <p className="text-red-200 text-base font-bold leading-snug">
+              Não desligue o telefone
+            </p>
+            <p className="text-red-300/70 text-sm mt-1 leading-snug">
+              você não terá outra oportunidade de conhecer meu método
             </p>
           </div>
         </div>
