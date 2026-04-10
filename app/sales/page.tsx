@@ -367,39 +367,52 @@ export default function SalesPage() {
                 ⚡ Oferta Especial
               </span>
               <h2 className="text-white font-black text-2xl mt-3">Start Empoderada</h2>
-              <p className="text-white/40 text-sm line-through mt-1">De R$ 997,00</p>
-              <p className="text-white/60 text-base font-semibold mt-1">Por apenas</p>
-              <div className="flex items-end justify-center gap-1">
-                <span className="text-white/60 text-xl font-bold self-start mt-3">R$</span>
-                <span className="text-white font-black text-6xl leading-none">397</span>
-              </div>
-              <p className="text-white/50 text-sm mt-1">ou 12x de <strong className="text-white">R$41,01</strong></p>
             </div>
 
-            <div className="flex flex-col gap-2.5">
-              {[
-                'Acesso completo ao sistema',
-                'Treinos para fazer em casa',
-                'Treinos para fazer na academia',
-                'Guia alimentar prático',
-                'Comunidade exclusiva',
-                'Acompanhamento por 6 meses',
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/50 flex items-center justify-center flex-shrink-0">
-                    <span className="text-[#22C55E] text-[10px] font-bold">✓</span>
+            {/* Ancoragem de valor */}
+            <div className="bg-white/3 border border-white/10 rounded-2xl overflow-hidden">
+              <div className="px-4 py-3 border-b border-white/8">
+                <p className="text-white/50 text-xs font-bold uppercase tracking-widest text-center">O que você recebe</p>
+              </div>
+              <div className="flex flex-col divide-y divide-white/5">
+                {[
+                  { item: 'Plano de treino personalizado',    valor: 'R$ 297' },
+                  { item: 'Treinos em casa e na academia',    valor: 'R$ 197' },
+                  { item: 'Guia alimentar prático',           valor: 'R$ 97'  },
+                  { item: 'Comunidade exclusiva de mulheres', valor: 'R$ 197' },
+                  { item: 'Acompanhamento por 6 meses',       valor: 'R$ 497' },
+                  { item: 'Bônus: Lives em grupo',            valor: 'R$ 97'  },
+                  { item: 'Bônus: Desafios mensais',          valor: 'R$ 97'  },
+                ].map((row, i) => (
+                  <div key={i} className="flex items-center justify-between px-4 py-2.5 gap-3">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <div className="w-4 h-4 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/50 flex items-center justify-center flex-shrink-0">
+                        <span className="text-[#22C55E] text-[8px] font-bold">✓</span>
+                      </div>
+                      <span className="text-white/80 text-xs leading-tight">{row.item}</span>
+                    </div>
+                    <span className="text-white/40 text-xs line-through flex-shrink-0">{row.valor}</span>
                   </div>
-                  <span className="text-white/80 text-sm">{item}</span>
-                </div>
-              ))}
-              {['Bônus: Lives em grupo', 'Bônus: Desafios mensais'].map((item, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-yellow-500/20 border border-yellow-500/50 flex items-center justify-center flex-shrink-0">
-                    <span className="text-yellow-400 text-[10px] font-bold">★</span>
-                  </div>
-                  <span className="text-yellow-300/80 text-sm">{item}</span>
-                </div>
-              ))}
+                ))}
+              </div>
+              <div className="px-4 py-3 bg-white/5 border-t border-white/10 flex items-center justify-between">
+                <span className="text-white/60 text-xs font-bold">Valor total</span>
+                <span className="text-white/50 text-sm font-black line-through">R$ 1.479</span>
+              </div>
+            </div>
+
+            {/* Preço com ancoragem */}
+            <div className="text-center">
+              <p className="text-white/40 text-sm">Tudo isso por apenas</p>
+              <div className="flex items-end justify-center gap-1 mt-1">
+                <span className="text-white/60 text-xl font-bold self-start mt-2">R$</span>
+                <span className="text-white font-black text-6xl leading-none">397</span>
+              </div>
+              {/* Parcelamento em destaque */}
+              <div className="mt-3 bg-[#22C55E]/10 border border-[#22C55E]/30 rounded-2xl px-4 py-3">
+                <p className="text-[#22C55E] font-black text-xl">12x de R$ 41,01</p>
+                <p className="text-white/40 text-xs mt-1">menos que um jantar fora 🍽️</p>
+              </div>
             </div>
 
             {/* Urgência inline */}
