@@ -154,7 +154,17 @@ export default function DashboardPage() {
     }
   }, [])
 
+  // Restaura sessão salva ao carregar
+  useEffect(() => {
+    const saved = localStorage.getItem('_dash_pwd')
+    if (!saved) return
+    setPwd(saved)
+    setAuthed(true)
+    fetchData(saved)
+  }, [fetchData])
+
   function handleLogin(password: string) {
+    localStorage.setItem('_dash_pwd', password)
     setPwd(password)
     setAuthed(true)
     fetchData(password)
