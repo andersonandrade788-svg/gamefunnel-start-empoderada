@@ -80,10 +80,50 @@ function sendServerEvent(eventName: string) {
   }).catch(() => {})
 }
 
+function formatCountdown(seconds: number) {
+  const h = Math.floor(seconds / 3600)
+  const m = Math.floor((seconds % 3600) / 60)
+  const s = seconds % 60
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+}
+
 export default function SalesPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [timeLeft, setTimeLeft] = useState(0)
+  const [vagas, setVagas] = useState(7)
 
   useEffect(() => { trackStep('Vendas', 6) }, [])
+
+  useEffect(() => {
+    const TIMER_KEY = '_funnel_timer'
+    const VAGAS_KEY = '_funnel_vagas'
+
+    // Timer — persiste por 24h desde a primeira visita
+    const saved = localStorage.getItem(TIMER_KEY)
+    let expiry: number
+    if (saved) {
+      const parsed = parseInt(saved)
+      expiry = (!isNaN(parsed) && parsed > Date.now()) ? parsed : Date.now() + 24 * 60 * 60 * 1000
+    } else {
+      expiry = Date.now() + 24 * 60 * 60 * 1000
+    }
+    localStorage.setItem(TIMER_KEY, String(expiry))
+
+    // Vagas — fixo por sessão, começa em número entre 5-8
+    const savedVagas = localStorage.getItem(VAGAS_KEY)
+    if (savedVagas) {
+      setVagas(parseInt(savedVagas))
+    } else {
+      const initial = Math.floor(Math.random() * 4) + 5 // 5–8
+      localStorage.setItem(VAGAS_KEY, String(initial))
+      setVagas(initial)
+    }
+
+    const tick = () => setTimeLeft(Math.max(0, Math.floor((expiry - Date.now()) / 1000)))
+    tick()
+    const interval = setInterval(tick, 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   const handleCheckout = useCallback(() => {
     initiateCheckout()
@@ -96,6 +136,25 @@ export default function SalesPage() {
       {/* Status bar */}
       <div className="sticky top-0 z-50 bg-[#0A0A0A]">
         <StatusBar dark={true} />
+      </div>
+
+      {/* ── URGÊNCIA STICKY ───────────────────────────────────────── */}
+      <div className="sticky top-[28px] z-40 bg-gradient-to-r from-red-900/95 to-red-800/95 backdrop-blur-sm border-b border-red-500/30 px-4 py-2.5 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <span className="text-red-400 text-base flex-shrink-0 animate-pulse">🔥</span>
+          <div className="min-w-0">
+            <p className="text-white text-[11px] font-semibold leading-tight truncate">Oferta expira em:</p>
+            <p className="text-red-300 font-black text-base leading-tight tabular-nums">{formatCountdown(timeLeft)}</p>
+          </div>
+        </div>
+        <div className="h-8 w-px bg-red-500/30 flex-shrink-0" />
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="text-yellow-400 text-base">⚠️</span>
+          <div className="text-right">
+            <p className="text-white text-[11px] font-semibold leading-tight">Restam apenas</p>
+            <p className="text-yellow-300 font-black text-base leading-tight">{vagas} vagas</p>
+          </div>
+        </div>
       </div>
 
       {/* ── HERO ──────────────────────────────────────────────────── */}
@@ -308,6 +367,21 @@ export default function SalesPage() {
                   <span className="text-yellow-300/80 text-sm">{item}</span>
                 </div>
               ))}
+            </div>
+
+            {/* Urgência inline */}
+            <div className="bg-red-950/60 border border-red-500/30 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-red-400 animate-pulse">🔥</span>
+                <div>
+                  <p className="text-white/60 text-[10px]">Oferta expira em</p>
+                  <p className="text-red-300 font-black text-base tabular-nums leading-none">{formatCountdown(timeLeft)}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-white/60 text-[10px]">Vagas restantes</p>
+                <p className="text-yellow-300 font-black text-base leading-none">{vagas} vagas</p>
+              </div>
             </div>
 
             <a href="https://pay.cakto.com.br/36sdo2o_810308" target="_blank" rel="noopener noreferrer" className="w-full bg-[#22C55E] hover:bg-[#16A34A] text-black font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 text-center block">
