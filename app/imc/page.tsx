@@ -1,14 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import StatusBar from '@/components/StatusBar'
+import { trackStep } from '@/lib/analytics'
 
 type Step = 'nome' | 'idade' | 'peso' | 'altura' | 'calculando'
 
 export default function ImcPage() {
   const router = useRouter()
   const [step, setStep] = useState<Step>('nome')
+
+  useEffect(() => { trackStep('IMC', 4) }, [])
   const [nome, setNome] = useState('')
   const [idade, setIdade] = useState('')
   const [peso, setPeso] = useState('')

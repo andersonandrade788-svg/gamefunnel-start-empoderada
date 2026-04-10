@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import StatusBar from '@/components/StatusBar'
+import { trackStep } from '@/lib/analytics'
 
 interface Message {
   id: number
@@ -125,6 +126,8 @@ export default function WhatsAppChat() {
   const [showCTA, setShowCTA] = useState(false)
   const [pendingReply, setPendingReply] = useState<Message | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => { trackStep('WhatsApp', 2) }, [])
   const currentTime = useRef(formatTime())
   // Holds the resolve() of the Promise that pauses the flow at each outgoing msg
   const resumeRef = useRef<(() => void) | null>(null)

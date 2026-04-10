@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import StatusBar from '@/components/StatusBar'
+import { trackStep } from '@/lib/analytics'
 
 type CallState = 'ringing' | 'active' | 'ended'
 
@@ -61,6 +62,9 @@ export default function AudioCall() {
   const audio1Ref = useRef<HTMLAudioElement | null>(null)
   const audio2Ref = useRef<HTMLAudioElement | null>(null)
   const callAudioRef = useRef<HTMLAudioElement | null>(null)
+
+  // Rastreia entrada na etapa
+  useEffect(() => { trackStep('Ligacao', 1) }, [])
 
   // Inicia os dois sons simultaneamente
   useEffect(() => {

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import StatusBar from '@/components/StatusBar'
+import { trackStep } from '@/lib/analytics'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -154,6 +155,8 @@ export default function TikTokProfile() {
   const router = useRouter()
   const [states, setStates] = useState<VideoState[]>(() => initState(VIDEOS))
   const [globalMuted, setGlobalMuted] = useState(true)
+
+  useEffect(() => { trackStep('TikTok', 3) }, [])
   const [showMuteHint, setShowMuteHint] = useState(true)
 
   function handleToggleMute() {

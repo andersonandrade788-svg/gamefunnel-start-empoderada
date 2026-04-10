@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import StatusBar from '@/components/StatusBar'
 import { initiateCheckout } from '@/lib/pixel'
+import { trackStep } from '@/lib/analytics'
 
 const FAQS = [
   {
@@ -81,6 +82,8 @@ function sendServerEvent(eventName: string) {
 
 export default function SalesPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+
+  useEffect(() => { trackStep('Vendas', 6) }, [])
 
   const handleCheckout = useCallback(() => {
     initiateCheckout()

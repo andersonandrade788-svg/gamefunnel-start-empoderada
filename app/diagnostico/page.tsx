@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import StatusBar from '@/components/StatusBar'
+import { trackStep } from '@/lib/analytics'
 
 // ─── Classificação ────────────────────────────────────────────────────────────
 
@@ -108,6 +109,8 @@ export default function DiagnosticoPage() {
   const [nome, setNome] = useState('')
   const [loading, setLoading] = useState(true)
   const [visible, setVisible] = useState(false)
+
+  useEffect(() => { trackStep('Diagnostico', 5) }, [])
 
   useEffect(() => {
     const stored = localStorage.getItem('imc')
