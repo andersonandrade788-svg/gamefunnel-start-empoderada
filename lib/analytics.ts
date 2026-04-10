@@ -33,6 +33,11 @@ function detectSource(): 'ad' | 'organic' {
 export function trackStep(stepName: string, stepNumber: number) {
   if (typeof window === 'undefined') return
 
+  // Garante que cada step é registrado apenas uma vez por sessão
+  const dedupeKey = `_tracked_${getSessionId()}_${stepName}`
+  if (localStorage.getItem(dedupeKey)) return
+  localStorage.setItem(dedupeKey, '1')
+
   const source = detectSource()
 
   // GA4
