@@ -46,41 +46,86 @@ function LoginScreen({ onLogin }: { onLogin: (pwd: string) => void }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        {/* Logo area */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#22C55E] to-[#16A34A] mb-4 shadow-lg shadow-green-500/20">
-            <span className="text-2xl">📊</span>
+    <div className="min-h-screen bg-[#0D0D0D] flex">
+
+      {/* Painel esquerdo — visível só no desktop */}
+      <div className="hidden lg:flex flex-1 flex-col items-center justify-center bg-gradient-to-br from-[#0a1a0a] to-[#0D0D0D] border-r border-white/5 p-12 gap-10">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-[#22C55E] to-[#16A34A] mb-6 shadow-2xl shadow-green-500/30">
+            <span className="text-4xl">📊</span>
           </div>
-          <h1 className="text-white font-black text-2xl">Dashboard</h1>
-          <p className="text-white/40 text-sm mt-1">Start Empoderada — Funil Analytics</p>
+          <h1 className="text-white font-black text-4xl leading-tight">GameFunnel</h1>
+          <p className="text-[#22C55E] font-bold text-lg mt-1">Start Empoderada</p>
+          <p className="text-white/30 text-sm mt-3 max-w-xs">Acompanhe cada etapa do funil em tempo real e saiba exatamente onde seus leads estão.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="relative">
-            <input
-              type="password"
-              placeholder="Senha de acesso"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-[#22C55E] focus:bg-white/8 transition-all text-sm"
-            />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 text-lg">🔐</span>
-          </div>
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-center">
-              <p className="text-red-400 text-sm">{error}</p>
+        {/* Mini preview do funil */}
+        <div className="w-full max-w-xs flex flex-col gap-2">
+          {[
+            { label: 'Ligação',     color: '#a78bfa', w: '100%' },
+            { label: 'WhatsApp',    color: '#34d399', w: '82%'  },
+            { label: 'TikTok',      color: '#f472b6', w: '68%'  },
+            { label: 'IMC',         color: '#60a5fa', w: '54%'  },
+            { label: 'Diagnóstico', color: '#fbbf24', w: '40%'  },
+            { label: 'Vendas',      color: '#22c55e', w: '25%'  },
+          ].map((s, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <span className="text-white/40 text-xs w-20 text-right flex-shrink-0">{s.label}</span>
+              <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: s.w, background: s.color + '80' }} />
+              </div>
             </div>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-[#22C55E] to-[#16A34A] text-black font-black py-4 rounded-2xl shadow-lg shadow-green-500/20 active:scale-95 transition-all disabled:opacity-50"
-          >
-            {loading ? 'Verificando...' : 'Acessar Dashboard'}
-          </button>
-        </form>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+          <span className="text-white/30 text-xs">Atualização em tempo real</span>
+        </div>
+      </div>
+
+      {/* Painel direito — formulário */}
+      <div className="flex-1 lg:max-w-md flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm">
+          {/* Logo mobile */}
+          <div className="lg:hidden text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#22C55E] to-[#16A34A] mb-4 shadow-lg shadow-green-500/20">
+              <span className="text-2xl">📊</span>
+            </div>
+            <h1 className="text-white font-black text-2xl">Dashboard</h1>
+            <p className="text-white/40 text-sm mt-1">Start Empoderada</p>
+          </div>
+
+          <div className="mb-8 hidden lg:block">
+            <h2 className="text-white font-black text-2xl">Bem-vindo de volta</h2>
+            <p className="text-white/40 text-sm mt-1">Entre com sua senha para acessar o dashboard</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="relative">
+              <input
+                type="password"
+                placeholder="Senha de acesso"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-[#22C55E] transition-all text-sm"
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 text-lg">🔐</span>
+            </div>
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-center">
+                <p className="text-red-400 text-sm">{error}</p>
+              </div>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-[#22C55E] to-[#16A34A] text-black font-black py-4 rounded-2xl shadow-lg shadow-green-500/20 active:scale-95 transition-all disabled:opacity-50"
+            >
+              {loading ? 'Verificando...' : 'Acessar Dashboard'}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   )
