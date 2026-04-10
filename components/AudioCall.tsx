@@ -320,16 +320,21 @@ function ActiveCallScreen({
         </div>
       </div>
 
-      {/* Subtítulo — coração da experiência */}
-      <div className="flex-1 flex items-center justify-center w-full px-8">
-        <div className="bg-black/40 rounded-2xl px-6 py-5 w-full max-w-xs min-h-[80px] flex items-center justify-center">
-          <p
-            className={`text-white text-center text-lg font-semibold leading-snug transition-all duration-300 ${
-              subtitleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-            }`}
-          >
-            {subtitle}
-          </p>
+      {/* Alerta sincronizado com o áudio */}
+      <div className="flex-1 flex items-center justify-center w-full px-6">
+        <div
+          className={`w-full max-w-xs transition-all duration-300 ${
+            subtitleVisible && subtitle ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+          }`}
+        >
+          <div className="flex items-start gap-3 bg-[#1a1a1a] border border-white/15 rounded-2xl px-4 py-4 shadow-xl">
+            <div className="w-8 h-8 rounded-full bg-yellow-400/20 border border-yellow-400/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-yellow-400 text-base">💡</span>
+            </div>
+            <p className="text-white text-sm font-semibold leading-snug flex-1">
+              {subtitle}
+            </p>
+          </div>
         </div>
       </div>
 
