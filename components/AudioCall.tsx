@@ -124,12 +124,10 @@ export default function AudioCall() {
 
   const handleAccept = () => {
     stopRingtone()
-    // Inicia o áudio da ligação
     const callAudio = new Audio('/audioligacao.mp3')
     callAudio.volume = 1
     callAudioRef.current = callAudio
     callAudio.play().catch(() => {})
-    // Quando o áudio terminar, avança automaticamente
     callAudio.addEventListener('ended', () => {
       setCallState('ended')
     })
@@ -137,6 +135,13 @@ export default function AudioCall() {
     subtitleIndexRef.current = 0
     setElapsed(0)
   }
+
+  // Auto-aceita após 6 segundos se o usuário não interagir
+  useEffect(() => {
+    if (callState !== 'ringing') return
+    const t = setTimeout(() => handleAccept(), 6000)
+    return () => clearTimeout(t)
+  }, [callState]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDecline = () => {
     stopRingtone()
@@ -202,6 +207,9 @@ export default function AudioCall() {
         <ActiveCallScreen
           callDuration={callDuration}
           onHangUp={handleDecline}
+          subtitle={currentSubtitle}
+          subtitleVisible={subtitleVisible}
+          progress={Math.min((elapsed / CALL_END_TIME) * 100, 100)}
         />
       )}
 
@@ -273,14 +281,20 @@ function RingingScreen({
 function ActiveCallScreen({
   callDuration,
   onHangUp,
+  subtitle,
+  subtitleVisible,
+  progress,
 }: {
   callDuration: string
   onHangUp: () => void
+  subtitle: string
+  subtitleVisible: boolean
+  progress: number
 }) {
   return (
     <>
       {/* Top status */}
-      <div className="flex flex-col items-center gap-3 mt-8">
+      <div className="flex flex-col items-center gap-3 mt-8 w-full px-6">
         <p className="text-green-400 text-sm font-medium tracking-wider animate-pulse">
           ● Em ligação
         </p>
@@ -289,6 +303,29 @@ function ActiveCallScreen({
         </div>
         <h1 className="text-white text-2xl font-bold">Geovana Bueno</h1>
         <p className="text-white/50 text-base font-mono">{callDuration}</p>
+
+        {/* Barra de progresso da ligação */}
+        <div className="w-full max-w-xs mt-1">
+          <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-green-400/60 rounded-full transition-all duration-1000"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Subtítulo — coração da experiência */}
+      <div className="flex-1 flex items-center justify-center w-full px-8">
+        <div className="bg-black/40 rounded-2xl px-6 py-5 w-full max-w-xs min-h-[80px] flex items-center justify-center">
+          <p
+            className={`text-white text-center text-lg font-semibold leading-snug transition-all duration-300 ${
+              subtitleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+            }`}
+          >
+            {subtitle}
+          </p>
+        </div>
       </div>
 
       {/* Controls row */}
