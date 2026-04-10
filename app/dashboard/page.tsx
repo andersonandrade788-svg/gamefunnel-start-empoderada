@@ -8,7 +8,7 @@ const STEPS_META = [
   { name: 'TikTok',      emoji: '🎵', label: 'TikTok',      color: '#f472b6' },
   { name: 'IMC',         emoji: '📊', label: 'IMC',         color: '#60a5fa' },
   { name: 'Diagnostico', emoji: '🔍', label: 'Diagnóstico', color: '#fbbf24' },
-  { name: 'Vendas',      emoji: '💰', label: 'Vendas',      color: '#22c55e' },
+  { name: 'Vendas',      emoji: '👀', label: 'Viu a Oferta', color: '#22c55e' },
 ]
 
 interface Step { name: string; label: string; number: number; count: number }
@@ -67,7 +67,7 @@ function LoginScreen({ onLogin }: { onLogin: (pwd: string) => void }) {
             { label: 'TikTok',      color: '#f472b6', w: '68%'  },
             { label: 'IMC',         color: '#60a5fa', w: '54%'  },
             { label: 'Diagnóstico', color: '#fbbf24', w: '40%'  },
-            { label: 'Vendas',      color: '#22c55e', w: '25%'  },
+            { label: 'Viu a Oferta', color: '#22c55e', w: '25%'  },
           ].map((s, i) => (
             <div key={i} className="flex items-center gap-3">
               <span className="text-white/40 text-xs w-20 text-right flex-shrink-0">{s.label}</span>
@@ -192,8 +192,8 @@ export default function DashboardPage() {
     { label: 'Leads Adquiridos',  value: leadsAdq,      desc: 'Chegaram ao TikTok',        icon: '🙋',  color: 'from-pink-500/20 to-pink-500/5',      border: 'border-pink-500/30',    text: 'text-pink-400'   },
     { label: 'Taxa de Interação', value: `${taxaInt}%`, desc: 'Visitantes → TikTok',       icon: '📈',  color: 'from-blue-500/20 to-blue-500/5',      border: 'border-blue-500/30',    text: 'text-blue-400'   },
     { label: 'Leads Qualificados',value: leadsQual,     desc: 'Chegaram ao Diagnóstico',   icon: '👍',  color: 'from-yellow-500/20 to-yellow-500/5',  border: 'border-yellow-500/30',  text: 'text-yellow-400' },
-    { label: 'Fluxos Finalizados',value: finalizados,   desc: 'Chegaram à oferta',         icon: '✅',  color: 'from-green-500/20 to-green-500/5',    border: 'border-green-500/30',   text: 'text-green-400'  },
-    { label: 'Conversão Geral',   value: `${taxaConv}%`,desc: 'Entrada → Vendas',          icon: '🏆',  color: 'from-orange-500/20 to-orange-500/5',  border: 'border-orange-500/30',  text: 'text-orange-400' },
+    { label: 'Viram a Oferta',    value: finalizados,   desc: 'Chegaram à pág. de vendas', icon: '👀',  color: 'from-green-500/20 to-green-500/5',    border: 'border-green-500/30',   text: 'text-green-400'  },
+    { label: 'Chegaram à Oferta', value: `${taxaConv}%`,desc: 'Entrada → Pág. de vendas',  icon: '🏆',  color: 'from-orange-500/20 to-orange-500/5',  border: 'border-orange-500/30',  text: 'text-orange-400' },
   ]
 
   return (
