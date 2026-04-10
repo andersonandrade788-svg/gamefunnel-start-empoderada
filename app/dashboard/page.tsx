@@ -12,7 +12,7 @@ const STEPS_META = [
 ]
 
 interface Step { name: string; label: string; number: number; count: number }
-interface RecentEvent { step_name: string; session_id: string; created_at: string }
+interface RecentEvent { step_name: string; session_id: string; created_at: string; source?: string }
 interface DashboardData { steps: Step[]; recent: RecentEvent[] }
 
 function timeAgo(dateStr: string) {
@@ -139,11 +139,13 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const [activeTab, setActiveTab] = useState<'funil' | 'recentes'>('funil')
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'ad' | 'organic'>('all')
 
-  const fetchData = useCallback(async (password: string) => {
+  const fetchData = useCallback(async (password: string, source: 'all' | 'ad' | 'organic' = 'all') => {
     setLoading(true)
     try {
-      const res = await fetch('/api/dashboard', {
+      const url = source === 'all' ? '/api/dashboard' : `/api/dashboard?source=${source}`
+      const res = await fetch(url, {
         headers: { 'x-dashboard-password': password },
       })
       if (!res.ok) return
@@ -160,21 +162,26 @@ export default function DashboardPage() {
     if (!saved) return
     setPwd(saved)
     setAuthed(true)
-    fetchData(saved)
+    fetchData(saved, 'all')
   }, [fetchData])
 
   function handleLogin(password: string) {
     localStorage.setItem('_dash_pwd', password)
     setPwd(password)
     setAuthed(true)
-    fetchData(password)
+    fetchData(password, 'all')
+  }
+
+  function handleSourceChange(source: 'all' | 'ad' | 'organic') {
+    setSourceFilter(source)
+    fetchData(pwd, source)
   }
 
   useEffect(() => {
     if (!authed || !pwd) return
-    const interval = setInterval(() => fetchData(pwd), 30000)
+    const interval = setInterval(() => fetchData(pwd, sourceFilter), 30000)
     return () => clearInterval(interval)
-  }, [authed, pwd, fetchData])
+  }, [authed, pwd, sourceFilter, fetchData])
 
   if (!authed) return <LoginScreen onLogin={handleLogin} />
 
@@ -211,7 +218,29 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            {/* Filtro de fonte */}
+            <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+              {([
+                { key: 'all',     label: 'Todos',     icon: '👥' },
+                { key: 'ad',      label: 'Anúncios',  icon: '📢' },
+                { key: 'organic', label: 'Orgânico',  icon: '🌱' },
+              ] as const).map((opt) => (
+                <button
+                  key={opt.key}
+                  onClick={() => handleSourceChange(opt.key)}
+                  className={`flex items-center gap-1 px-3 py-2 text-xs font-bold transition-all ${
+                    sourceFilter === opt.key
+                      ? 'bg-[#22C55E] text-black'
+                      : 'text-white/40 hover:text-white'
+                  }`}
+                >
+                  <span>{opt.icon}</span>
+                  <span className="hidden sm:inline">{opt.label}</span>
+                </button>
+              ))}
+            </div>
+
             {/* Live indicator */}
             <div className="hidden sm:flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
@@ -220,7 +249,7 @@ export default function DashboardPage() {
               </span>
             </div>
             <button
-              onClick={() => fetchData(pwd)}
+              onClick={() => fetchData(pwd, sourceFilter)}
               disabled={loading}
               className="bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs px-4 py-2 rounded-xl transition-all active:scale-95 disabled:opacity-40 flex items-center gap-1.5"
             >
@@ -393,7 +422,14 @@ export default function DashboardPage() {
                           </p>
                         </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right flex flex-col items-end gap-1">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          ev.source === 'ad'
+                            ? 'bg-blue-500/15 text-blue-400'
+                            : 'bg-white/5 text-white/30'
+                        }`}>
+                          {ev.source === 'ad' ? '📢 Anúncio' : '🌱 Orgânico'}
+                        </span>
                         <p className="text-white/50 text-xs">{timeAgo(ev.created_at)}</p>
                         <p className="text-white/20 text-[10px]">{formatTime(ev.created_at)}</p>
                       </div>

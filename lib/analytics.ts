@@ -15,8 +15,25 @@ function getSessionId(): string {
   return id
 }
 
+function detectSource(): 'ad' | 'organic' {
+  if (typeof window === 'undefined') return 'organic'
+
+  // Verifica se veio de anúncio agora (URL tem fbclid)
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('fbclid')) {
+    localStorage.setItem('_funnel_source', 'ad')
+    return 'ad'
+  }
+
+  // Verifica se já veio de anúncio nessa sessão
+  const saved = localStorage.getItem('_funnel_source')
+  return saved === 'ad' ? 'ad' : 'organic'
+}
+
 export function trackStep(stepName: string, stepNumber: number) {
   if (typeof window === 'undefined') return
+
+  const source = detectSource()
 
   // GA4
   if (window.gtag) {
@@ -24,6 +41,7 @@ export function trackStep(stepName: string, stepNumber: number) {
       event_category: 'Funil',
       event_label: stepName,
       step_number: stepNumber,
+      source,
     })
   }
 
@@ -35,6 +53,7 @@ export function trackStep(stepName: string, stepNumber: number) {
       stepName,
       stepNumber,
       sessionId: getSessionId(),
+      source,
     }),
   }).catch(() => {})
 }

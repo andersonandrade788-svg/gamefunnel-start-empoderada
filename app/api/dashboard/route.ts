@@ -7,8 +7,37 @@ const STEPS = [
   { name: 'TikTok',      number: 3, label: 'TikTok' },
   { name: 'IMC',         number: 4, label: 'IMC' },
   { name: 'Diagnostico', number: 5, label: 'Diagnóstico' },
-  { name: 'Vendas',      number: 6, label: 'Vendas' },
+  { name: 'Vendas',      number: 6, label: 'Viu a Oferta' },
 ]
+
+async function countSteps(source?: 'ad' | 'organic') {
+  return Promise.all(
+    STEPS.map(async (step) => {
+      let query = supabase
+        .from('funnel_events')
+        .select('session_id', { count: 'exact', head: true })
+        .eq('step_name', step.name)
+
+      if (source) query = query.eq('source', source)
+
+      const { count } = await query
+      return { ...step, count: count ?? 0 }
+    })
+  )
+}
+
+async function getRecent(source?: 'ad' | 'organic') {
+  let query = supabase
+    .from('funnel_events')
+    .select('step_name, session_id, created_at, source')
+    .order('created_at', { ascending: false })
+    .limit(20)
+
+  if (source) query = query.eq('source', source)
+
+  const { data } = await query
+  return data ?? []
+}
 
 export async function GET(req: NextRequest) {
   const password = req.headers.get('x-dashboard-password')
@@ -16,24 +45,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Count unique sessions per step
-  const results = await Promise.all(
-    STEPS.map(async (step) => {
-      const { count } = await supabase
-        .from('funnel_events')
-        .select('session_id', { count: 'exact', head: true })
-        .eq('step_name', step.name)
+  const { searchParams } = new URL(req.url)
+  const sourceFilter = searchParams.get('source') as 'ad' | 'organic' | null
 
-      return { ...step, count: count ?? 0 }
-    })
-  )
+  const [steps, recent] = await Promise.all([
+    countSteps(sourceFilter ?? undefined),
+    getRecent(sourceFilter ?? undefined),
+  ])
 
-  // Recent events (last 20)
-  const { data: recent } = await supabase
-    .from('funnel_events')
-    .select('step_name, session_id, created_at')
-    .order('created_at', { ascending: false })
-    .limit(20)
-
-  return NextResponse.json({ steps: results, recent: recent ?? [] })
+  return NextResponse.json({ steps, recent })
 }
