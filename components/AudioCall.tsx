@@ -53,12 +53,9 @@ const CALL_END_TIME = 168
 export default function AudioCall() {
   const router = useRouter()
   const [callState, setCallState] = useState<CallState>('ringing')
-  const [currentSubtitle, setCurrentSubtitle] = useState<string>('')
-  const [subtitleVisible, setSubtitleVisible] = useState(false)
   const [elapsed, setElapsed] = useState(0)
   const [callDuration, setCallDuration] = useState('00:00')
   const timerRef = useRef<NodeJS.Timeout | null>(null)
-  const subtitleIndexRef = useRef(0)
   const audio1Ref = useRef<HTMLAudioElement | null>(null)
   const audio2Ref = useRef<HTMLAudioElement | null>(null)
   const callAudioRef = useRef<HTMLAudioElement | null>(null)
@@ -163,32 +160,15 @@ export default function AudioCall() {
   useEffect(() => {
     if (callState !== 'active') return
 
-    subtitleIndexRef.current = 0
-
     const tick = () => {
       const audio = callAudioRef.current
       if (!audio) return
-
-      const t = audio.currentTime
-      const duration = audio.duration || CALL_END_TIME
-
-      setElapsed(t)
-      setCallDuration(formatDuration(Math.floor(t)))
-
-      const idx = subtitleIndexRef.current
-      if (idx < SUBTITLES.length && SUBTITLES[idx].time <= t) {
-        setCurrentSubtitle(SUBTITLES[idx].text)
-        setSubtitleVisible(false)
-        setTimeout(() => setSubtitleVisible(true), 50)
-        subtitleIndexRef.current = idx + 1
-      }
+      setElapsed(audio.currentTime)
+      setCallDuration(formatDuration(Math.floor(audio.currentTime)))
     }
 
     timerRef.current = setInterval(tick, 250)
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
   }, [callState])
 
   return (
