@@ -179,7 +179,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!authed || !pwd) return
-    const interval = setInterval(() => fetchData(pwd, sourceFilter), 30000)
+    const interval = setInterval(() => fetchData(pwd, sourceFilter), 60000)
     return () => clearInterval(interval)
   }, [authed, pwd, sourceFilter, fetchData])
 
@@ -442,7 +442,7 @@ export default function DashboardPage() {
         )}
 
         <p className="text-white/15 text-xs text-center pb-4">
-          ↺ Atualiza automaticamente a cada 30 segundos
+          ↺ Atualiza automaticamente a cada 60 segundos
         </p>
       </main>
     </div>
