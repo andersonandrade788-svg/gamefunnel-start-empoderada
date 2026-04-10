@@ -163,23 +163,28 @@ export default function AudioCall() {
   useEffect(() => {
     if (callState !== 'active') return
 
-    timerRef.current = setInterval(() => {
-      setElapsed((prev) => {
-        const next = prev + 1
+    subtitleIndexRef.current = 0
 
-        setCallDuration(formatDuration(next))
+    const tick = () => {
+      const audio = callAudioRef.current
+      if (!audio) return
 
-        const idx = subtitleIndexRef.current
-        if (idx < SUBTITLES.length && SUBTITLES[idx].time <= next) {
-          setCurrentSubtitle(SUBTITLES[idx].text)
-          setSubtitleVisible(false)
-          setTimeout(() => setSubtitleVisible(true), 50)
-          subtitleIndexRef.current = idx + 1
-        }
+      const t = audio.currentTime
+      const duration = audio.duration || CALL_END_TIME
 
-        return next
-      })
-    }, 1000)
+      setElapsed(t)
+      setCallDuration(formatDuration(Math.floor(t)))
+
+      const idx = subtitleIndexRef.current
+      if (idx < SUBTITLES.length && SUBTITLES[idx].time <= t) {
+        setCurrentSubtitle(SUBTITLES[idx].text)
+        setSubtitleVisible(false)
+        setTimeout(() => setSubtitleVisible(true), 50)
+        subtitleIndexRef.current = idx + 1
+      }
+    }
+
+    timerRef.current = setInterval(tick, 250)
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current)
@@ -209,7 +214,7 @@ export default function AudioCall() {
           onHangUp={handleDecline}
           subtitle={currentSubtitle}
           subtitleVisible={subtitleVisible}
-          progress={Math.min((elapsed / CALL_END_TIME) * 100, 100)}
+          progress={Math.min((elapsed / (callAudioRef.current?.duration || CALL_END_TIME)) * 100, 100)}
         />
       )}
 
