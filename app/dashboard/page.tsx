@@ -93,11 +93,15 @@ export default function DashboardPage() {
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const [activeTab, setActiveTab] = useState<'funil' | 'recentes'>('funil')
   const [sourceFilter, setSourceFilter] = useState<'all' | 'ad' | 'organic'>('all')
+  const [period, setPeriod] = useState<'today' | '7d' | 'all'>('today')
 
-  const fetchData = useCallback(async (password: string, source: 'all' | 'ad' | 'organic' = 'all') => {
+  const fetchData = useCallback(async (password: string, source: 'all' | 'ad' | 'organic' = 'all', per: 'today' | '7d' | 'all' = 'today') => {
     setLoading(true)
     try {
-      const url = source === 'all' ? '/api/dashboard' : `/api/dashboard?source=${source}`
+      const params = new URLSearchParams()
+      if (source !== 'all') params.set('source', source)
+      params.set('period', per)
+      const url = `/api/dashboard?${params.toString()}`
       const res = await fetch(url, { headers: { 'x-dashboard-password': password } })
       if (!res.ok) return
       setData(await res.json())
@@ -112,26 +116,31 @@ export default function DashboardPage() {
     if (!saved) return
     setPwd(saved)
     setAuthed(true)
-    fetchData(saved, 'all')
+    fetchData(saved, 'all', 'today')
   }, [fetchData])
 
   function handleLogin(password: string) {
     localStorage.setItem('_dash_pwd', password)
     setPwd(password)
     setAuthed(true)
-    fetchData(password, 'all')
+    fetchData(password, 'all', 'today')
   }
 
   function handleSourceChange(source: 'all' | 'ad' | 'organic') {
     setSourceFilter(source)
-    fetchData(pwd, source)
+    fetchData(pwd, source, period)
+  }
+
+  function handlePeriodChange(p: 'today' | '7d' | 'all') {
+    setPeriod(p)
+    fetchData(pwd, sourceFilter, p)
   }
 
   useEffect(() => {
     if (!authed || !pwd) return
-    const interval = setInterval(() => fetchData(pwd, sourceFilter), 60000)
+    const interval = setInterval(() => fetchData(pwd, sourceFilter, period), 60000)
     return () => clearInterval(interval)
-  }, [authed, pwd, sourceFilter, fetchData])
+  }, [authed, pwd, sourceFilter, period, fetchData])
 
   if (!authed) return <LoginScreen onLogin={handleLogin} />
 
@@ -172,7 +181,26 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            {/* Filtro período */}
+            <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden text-xs font-bold">
+              {([
+                { key: 'today', label: 'Hoje' },
+                { key: '7d',    label: '7 dias' },
+                { key: 'all',   label: 'Total' },
+              ] as const).map((opt) => (
+                <button
+                  key={opt.key}
+                  onClick={() => handlePeriodChange(opt.key)}
+                  className={`px-3 py-2 transition-all ${
+                    period === opt.key ? 'bg-[#22C55E] text-black' : 'text-white/40 hover:text-white'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
             {/* Filtro fonte */}
             <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden text-xs font-bold">
               {([
