@@ -221,7 +221,7 @@ export default function TikTokProfile() {
           muted={globalMuted}
           showMuteHint={showMuteHint && idx === 0}
           onToggleMute={handleToggleMute}
-          onCTA={() => router.push('/sales')}
+          onCTA={() => router.push('/imc')}
         />
       ))}
     </div>
