@@ -115,30 +115,44 @@ export default function QuizPage() {
 
         {/* ── TELA 1: HOOK ── */}
         {screen.type === 'hook' && (
-          <div className="flex-1 flex flex-col items-center justify-center px-6 gap-8 text-center py-10">
-            <div className="flex flex-col gap-5">
-              <div className="w-16 h-16 rounded-full bg-[#22C55E]/10 border-2 border-[#22C55E]/40 flex items-center justify-center mx-auto">
-                <span className="text-3xl">💬</span>
+          <div className="flex-1 flex flex-col">
+            {/* Imagem hero com overlay */}
+            <div className="relative w-full" style={{ height: '52vw', maxHeight: '260px', minHeight: '180px' }}>
+              <img
+                src="/tela%20inicial.jpg"
+                alt="Start Empoderada"
+                className="w-full h-full object-cover object-top"
+              />
+              {/* Gradiente sobre a imagem */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-white" />
+            </div>
+
+            {/* Conteúdo abaixo da imagem */}
+            <div className="flex flex-col items-center px-6 gap-6 text-center pb-10 pt-2 flex-1 justify-between">
+              <div className="flex flex-col gap-4">
+                <h1 className="text-gray-900 font-black text-2xl leading-snug">
+                  Posso ser direta com você?
+                </h1>
+                <div className="flex flex-col gap-3 text-gray-500 text-base leading-relaxed">
+                  <p>
+                    Em <strong className="text-gray-900">2 minutos</strong> eu consigo te mostrar por que você ainda não conseguiu o corpo que quer…
+                  </p>
+                  <p className="text-[#22C55E] font-bold text-lg">
+                    E provavelmente não é culpa sua.
+                  </p>
+                </div>
               </div>
-              <h1 className="text-gray-900 font-black text-2xl leading-snug">
-                Posso ser direta com você?
-              </h1>
-              <div className="flex flex-col gap-3 text-gray-600 text-base leading-relaxed">
-                <p>
-                  Em <strong className="text-gray-900">2 minutos</strong> eu consigo te mostrar por que você ainda não conseguiu o corpo que quer…
-                </p>
-                <p className="text-[#22C55E] font-bold">
-                  E provavelmente não é culpa sua.
-                </p>
+
+              <div className="w-full flex flex-col gap-3">
+                <button
+                  onClick={() => next({ type: 'identification' })}
+                  className="w-full bg-[#22C55E] text-white font-black text-lg py-5 rounded-2xl shadow-xl shadow-green-500/25 active:scale-95 transition-all"
+                >
+                  👉 Quero descobrir
+                </button>
+                <p className="text-gray-300 text-xs">Teste gratuito · 2 minutos · sem compromisso</p>
               </div>
             </div>
-            <button
-              onClick={() => next({ type: 'identification' })}
-              className="w-full bg-[#22C55E] text-white font-black text-lg py-5 rounded-2xl shadow-lg shadow-green-500/20 active:scale-95 transition-all"
-            >
-              👉 Quero descobrir
-            </button>
-            <p className="text-gray-300 text-xs">Teste gratuito · 2 minutos</p>
           </div>
         )}
 
