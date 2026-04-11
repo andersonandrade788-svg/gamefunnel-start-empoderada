@@ -5,6 +5,111 @@ import StatusBar from '@/components/StatusBar'
 import { initiateCheckout } from '@/lib/pixel'
 import { trackStep } from '@/lib/analytics'
 
+// ── Roleta ─────────────────────────────────────────────────────────────────────
+const SEGMENTS = [
+  { lines: ['Acesso', 'VIP'],      color: '#7c3aed' },
+  { lines: ['R$ 20', 'de off'],    color: '#0369a1' },
+  { lines: ['Bônus', 'Surpresa'],  color: '#b45309' },
+  { lines: ['1º mês', 'R$ 37'],   color: '#16a34a', prize: true },
+  { lines: ['Consul-', 'toria'],   color: '#dc2626' },
+  { lines: ['Material', 'VIP'],    color: '#6d28d9' },
+  { lines: ['R$ 10', 'de off'],    color: '#0e7490' },
+  { lines: ['Bônus', 'Extra'],     color: '#c2410c' },
+]
+const FINAL_ROTATION = 2002.5 // sempre cai no segmento 3 (1º mês R$ 37)
+function toRad(deg: number) { return deg * Math.PI / 180 }
+function segPath(i: number) {
+  const cx = 150, cy = 150, r = 130
+  const s = i * 45, e = (i + 1) * 45
+  const x1 = cx + r * Math.sin(toRad(s)), y1 = cy - r * Math.cos(toRad(s))
+  const x2 = cx + r * Math.sin(toRad(e)), y2 = cy - r * Math.cos(toRad(e))
+  return `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2} Z`
+}
+function textPos(i: number) {
+  const cx = 150, cy = 150, r = 80, mid = (i + 0.5) * 45
+  return { x: cx + r * Math.sin(toRad(mid)), y: cy - r * Math.cos(toRad(mid)), rotation: mid }
+}
+
+function Roleta({ onClaim }: { onClaim: () => void }) {
+  const [spun, setSpun] = useState(false)
+  const [spinning, setSpinning] = useState(false)
+  const [won, setWon] = useState(false)
+  const wheelRef = useRef<HTMLDivElement>(null)
+
+  function handleSpin() {
+    if (spinning || spun) return
+    setSpinning(true)
+    if (wheelRef.current) {
+      wheelRef.current.style.transition = 'transform 4.5s cubic-bezier(0.17, 0.67, 0.08, 0.99)'
+      wheelRef.current.style.transform = `rotate(${FINAL_ROTATION}deg)`
+    }
+    setTimeout(() => { setSpinning(false); setSpun(true); setTimeout(() => setWon(true), 400) }, 4500)
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-4 w-full">
+      {!won ? (
+        <>
+          <div className="relative flex items-center justify-center w-full">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20" style={{ marginTop: '-2px' }}>
+              <div className="w-0 h-0" style={{ borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '24px solid #facc15' }} />
+            </div>
+            <div className="w-[260px] h-[260px] rounded-full border-4 border-yellow-400/50 shadow-2xl relative overflow-hidden">
+              <div ref={wheelRef} className="w-full h-full" style={{ willChange: 'transform' }}>
+                <svg viewBox="0 0 300 300" width="260" height="260">
+                  {SEGMENTS.map((seg, i) => {
+                    const tp = textPos(i)
+                    return (
+                      <g key={i}>
+                        <path d={segPath(i)} fill={seg.color} stroke="#0D0D0D" strokeWidth="2" />
+                        <text x={tp.x} y={tp.y} fill="#fff" fontSize={seg.prize ? "10" : "9"} fontWeight="800"
+                          textAnchor="middle" dominantBaseline="middle"
+                          transform={`rotate(${tp.rotation}, ${tp.x}, ${tp.y})`}>
+                          {seg.lines.map((line, li) => (
+                            <tspan key={li} x={tp.x} dy={li === 0 ? '-6' : '13'}>{line}</tspan>
+                          ))}
+                        </text>
+                      </g>
+                    )
+                  })}
+                  <circle cx="150" cy="150" r="18" fill="#0D0D0D" stroke="#facc15" strokeWidth="3" />
+                  <text x="150" y="150" textAnchor="middle" dominantBaseline="middle" fontSize="12" fill="#facc15">★</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={handleSpin}
+            disabled={spinning || spun}
+            className={`w-full py-4 rounded-2xl font-black text-base transition-all active:scale-95 ${spinning || spun ? 'bg-white/10 text-white/30' : 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-black shadow-lg shadow-yellow-500/30'}`}
+          >
+            {spinning ? '⟳ Girando...' : spun ? 'Aguarde...' : '🎰 Girar a Roleta'}
+          </button>
+        </>
+      ) : (
+        <div className="w-full flex flex-col gap-3 animate-fadeIn">
+          <div className="bg-[#16a34a]/20 border-2 border-[#22C55E]/60 rounded-2xl p-5 text-center">
+            <div className="text-4xl mb-2">🎉</div>
+            <p className="text-[#22C55E] font-bold text-xs uppercase tracking-widest mb-1">Você ganhou!</p>
+            <p className="text-white font-black text-xl leading-tight">1º mês por apenas</p>
+            <div className="flex items-end justify-center gap-1 mt-1">
+              <span className="text-white/60 text-lg font-bold self-start mt-1">R$</span>
+              <span className="text-[#22C55E] font-black text-5xl leading-none">37</span>
+            </div>
+            <p className="text-white/40 text-xs mt-1">depois R$ 67/mês · cancele quando quiser</p>
+          </div>
+          <button
+            onClick={onClaim}
+            className="w-full bg-[#22C55E] text-black font-black text-lg py-4 rounded-2xl shadow-lg active:scale-95 transition-all"
+          >
+            GARANTIR MEU DESCONTO →
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 const FAQS = [
   {
     q: 'Quanto tempo leva pra ver resultado?',
@@ -91,8 +196,20 @@ export default function SalesPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [timeLeft, setTimeLeft] = useState(0)
   const [vagas, setVagas] = useState(7)
+  const [showRoleta, setShowRoleta] = useState(false)
 
   useEffect(() => { trackStep('Vendas', 6) }, [])
+
+  // Abre roleta automaticamente após 1.5s (só uma vez por sessão)
+  useEffect(() => {
+    const key = '_roleta_shown'
+    if (localStorage.getItem(key)) return
+    const t = setTimeout(() => {
+      localStorage.setItem(key, '1')
+      setShowRoleta(true)
+    }, 1500)
+    return () => clearTimeout(t)
+  }, [])
 
   useEffect(() => {
     const TIMER_KEY = '_funnel_timer'
@@ -504,6 +621,31 @@ export default function SalesPage() {
           </div>
         </div>
       </section>
+
+      {/* ── ROLETA POPUP ──────────────────────────────────────────── */}
+      {showRoleta && (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="relative w-full max-w-sm bg-[#0f1a0f] border border-[#22C55E]/40 rounded-3xl overflow-hidden shadow-2xl">
+            <div className="h-1 w-full bg-gradient-to-r from-yellow-400 via-[#22C55E] to-yellow-400" />
+            <div className="p-5 flex flex-col gap-4">
+              <div className="text-center">
+                <span className="text-2xl">🎰</span>
+                <h2 className="text-white font-black text-xl mt-1 leading-tight">
+                  Gire e ganhe seu prêmio!
+                </h2>
+                <p className="text-white/40 text-xs mt-1">Você tem direito a 1 giro gratuito</p>
+              </div>
+              <Roleta onClaim={() => setShowRoleta(false)} />
+              <button
+                onClick={() => setShowRoleta(false)}
+                className="text-white/20 text-xs text-center hover:text-white/40 transition-colors"
+              >
+                Fechar e ver a oferta completa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── BOTÃO FLUTUANTE WHATSAPP ──────────────────────────────── */}
       <a

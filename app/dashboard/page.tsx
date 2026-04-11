@@ -7,7 +7,6 @@ const STEPS_META = [
   { name: 'TikTok',      emoji: '🎵', label: 'TikTok',       color: '#f472b6' },
   { name: 'IMC',         emoji: '📊', label: 'IMC',          color: '#60a5fa' },
   { name: 'Diagnostico', emoji: '🔍', label: 'Diagnóstico',  color: '#fbbf24' },
-  { name: 'Roleta',      emoji: '🎰', label: 'Roleta',       color: '#fb923c' },
   { name: 'Vendas',      emoji: '👀', label: 'Viu a Oferta', color: '#22c55e' },
 ]
 
@@ -62,12 +61,11 @@ function LoginScreen({ onLogin }: { onLogin: (pwd: string) => void }) {
         {/* Mini preview do funil */}
         <div className="w-full max-w-xs flex flex-col gap-2">
           {[
-            { label: 'Quiz',        color: '#a78bfa', w: '100%' },
-            { label: 'TikTok',      color: '#f472b6', w: '82%'  },
-            { label: 'IMC',         color: '#60a5fa', w: '68%'  },
-            { label: 'Diagnóstico', color: '#fbbf24', w: '52%'  },
-            { label: 'Roleta',      color: '#fb923c', w: '36%'  },
-            { label: 'Viu a Oferta', color: '#22c55e', w: '22%' },
+            { label: 'Quiz',         color: '#a78bfa', w: '100%' },
+            { label: 'TikTok',       color: '#f472b6', w: '82%'  },
+            { label: 'IMC',          color: '#60a5fa', w: '64%'  },
+            { label: 'Diagnóstico',  color: '#fbbf24', w: '46%'  },
+            { label: 'Viu a Oferta', color: '#22c55e', w: '28%'  },
           ].map((s, i) => (
             <div key={i} className="flex items-center gap-3">
               <span className="text-white/40 text-xs w-20 text-right flex-shrink-0">{s.label}</span>

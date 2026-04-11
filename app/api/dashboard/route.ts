@@ -6,8 +6,7 @@ const STEPS = [
   { name: 'TikTok',      number: 2, label: 'TikTok' },
   { name: 'IMC',         number: 3, label: 'IMC' },
   { name: 'Diagnostico', number: 4, label: 'Diagnóstico' },
-  { name: 'Roleta',      number: 5, label: 'Roleta' },
-  { name: 'Vendas',      number: 6, label: 'Viu a Oferta' },
+  { name: 'Vendas',      number: 5, label: 'Viu a Oferta' },
 ]
 
 async function countSteps(source?: 'ad' | 'organic') {
