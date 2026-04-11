@@ -7,63 +7,53 @@ import { trackStep } from '@/lib/analytics'
 
 const QUESTIONS = [
   {
-    emoji: '🎯',
     question: 'Qual é seu maior objetivo agora?',
     options: [
-      { emoji: '🔥', text: 'Emagrecer de vez' },
-      { emoji: '💪', text: 'Definir e tonificar' },
-      { emoji: '📈', text: 'Ganhar massa magra' },
-      { emoji: '⚡', text: 'Manter o resultado' },
+      { emoji: '🔥', text: 'Emagrecer e perder barriga' },
+      { emoji: '💪', text: 'Definir e tonificar o corpo' },
+      { emoji: '⚡', text: 'Ter mais energia no dia a dia' },
+      { emoji: '🏆', text: 'Manter o resultado de vez' },
     ],
   },
   {
-    emoji: '😩',
-    question: 'Qual é sua maior dificuldade hoje?',
+    question: 'Você sente algum desses sintomas há mais de 30 dias?',
+    image: '/antes%20-%20e%20-%20depois%20-2.jpg',
     options: [
-      { emoji: '⏰', text: 'Falta de tempo' },
-      { emoji: '🤷', text: 'Não sei por onde começar' },
-      { emoji: '😤', text: 'Já tentei e não funcionou' },
-      { emoji: '🧠', text: 'Fico sem motivação' },
+      { emoji: '😔', text: 'Sim, me identifico com vários' },
+      { emoji: '😐', text: 'Sinto alguns, mas não todos' },
     ],
   },
   {
-    emoji: '🔄',
-    question: 'Quantas vezes já tentou mudar o corpo?',
+    question: 'Quantas vezes você já tentou mudar o corpo?',
     options: [
       { emoji: '🌱', text: 'É minha primeira vez' },
       { emoji: '🔄', text: '2 a 3 vezes' },
-      { emoji: '😅', text: 'Umas 4 ou 5' },
+      { emoji: '😅', text: 'Umas 4 ou 5 vezes' },
       { emoji: '💀', text: 'Perdi a conta' },
     ],
   },
   {
-    emoji: '⏱️',
-    question: 'Quanto tempo você tem por dia para treinar?',
-    options: [
-      { emoji: '⚡', text: '15 minutos' },
-      { emoji: '🕐', text: '30 minutos' },
-      { emoji: '💪', text: '1 hora' },
-      { emoji: '🏆', text: 'Mais de 1 hora' },
-    ],
-  },
-  {
-    emoji: '😔',
     question: 'O que mais te faz desistir?',
     options: [
-      { emoji: '🥗', text: 'A dieta é difícil demais' },
-      { emoji: '😴', text: 'A rotina me esgota' },
-      { emoji: '⏳', text: 'Os resultados demoram' },
-      { emoji: '🌪️', text: 'A vida corrida atrapalha' },
+      { emoji: '⏰', text: 'A rotina corrida não deixa' },
+      { emoji: '😤', text: 'Os resultados demoram demais' },
+      { emoji: '🧠', text: 'Fico sem motivação rápido' },
+      { emoji: '🤷', text: 'Não sei por onde começar' },
     ],
   },
   {
-    emoji: '💭',
     question: 'Como você se sente com seu corpo hoje?',
     options: [
-      { emoji: '😔', text: 'Muito insatisfeita' },
-      { emoji: '😐', text: 'Quero mudar mas estou travada' },
-      { emoji: '💛', text: 'Já melhorei, quero mais' },
+      { emoji: '😔', text: 'Muito insatisfeita, preciso mudar' },
+      { emoji: '😐', text: 'Quero melhorar mas estou travada' },
       { emoji: '🔥', text: 'Pronta pra transformar tudo' },
+    ],
+  },
+  {
+    question: 'Você teria interesse em receber um plano personalizado para transformar seu corpo?',
+    options: [
+      { emoji: '🤩', text: 'Sim, quero demais!' },
+      { emoji: '😌', text: 'Tenho interesse mas tenho dúvidas' },
     ],
   },
 ]
@@ -72,23 +62,21 @@ export default function QuizPage() {
   const router = useRouter()
   const [current, setCurrent] = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
-  const [points, setPoints] = useState(0)
-  const [finished, setFinished] = useState(false)
   const [animating, setAnimating] = useState(false)
+  const [finishing, setFinishing] = useState(false)
 
   useEffect(() => { trackStep('Quiz', 1) }, [])
 
   useEffect(() => {
-    if (finished) {
-      const t = setTimeout(() => router.push('/exp3'), 2800)
+    if (finishing) {
+      const t = setTimeout(() => router.push('/exp3'), 2500)
       return () => clearTimeout(t)
     }
-  }, [finished, router])
+  }, [finishing, router])
 
   function handleSelect(optionIndex: number) {
     if (selected !== null || animating) return
     setSelected(optionIndex)
-    setPoints(p => p + 10)
 
     setTimeout(() => {
       setAnimating(true)
@@ -98,41 +86,31 @@ export default function QuizPage() {
           setSelected(null)
           setAnimating(false)
         } else {
-          setFinished(true)
+          setFinishing(true)
         }
       }, 300)
-    }, 600)
+    }, 500)
   }
 
   const q = QUESTIONS[current]
-  const progress = ((current) / QUESTIONS.length) * 100
+  const progress = Math.round(((current) / QUESTIONS.length) * 100)
 
-  if (finished) {
+  if (finishing) {
     return (
-      <div className="mobile-frame bg-[#0D0D0D] flex flex-col items-center justify-center px-6 gap-8">
-        <StatusBar dark />
-        <div className="flex flex-col items-center gap-6 text-center">
-          <div className="w-20 h-20 rounded-full bg-[#22C55E]/20 border-2 border-[#22C55E] flex items-center justify-center">
+      <div className="mobile-frame bg-white flex flex-col items-center justify-center px-6 gap-8">
+        <StatusBar dark={false} />
+        <div className="flex flex-col items-center gap-5 text-center">
+          <div className="w-20 h-20 rounded-full bg-[#22C55E]/10 border-2 border-[#22C55E] flex items-center justify-center">
             <span className="text-4xl">🧬</span>
           </div>
           <div>
-            <p className="text-[#22C55E] text-sm font-bold uppercase tracking-widest mb-2">Analisando seu perfil...</p>
-            <h2 className="text-white font-black text-2xl leading-tight">Montando seu diagnóstico personalizado</h2>
+            <p className="text-[#22C55E] text-sm font-black uppercase tracking-widest mb-2">Analisando seu perfil...</p>
+            <h2 className="text-gray-900 font-black text-2xl leading-tight">Montando seu plano personalizado</h2>
+            <p className="text-gray-400 text-sm mt-2">Isso vai levar só alguns segundos</p>
           </div>
-          <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-6 py-3">
-            <span className="text-2xl">⭐</span>
-            <div className="text-left">
-              <p className="text-white/50 text-xs">Pontuação conquistada</p>
-              <p className="text-[#22C55E] font-black text-xl">{points} pts</p>
-            </div>
-          </div>
-          <div className="flex gap-1">
+          <div className="flex gap-1.5">
             {[...Array(3)].map((_, i) => (
-              <div
-                key={i}
-                className="w-2 h-2 rounded-full bg-[#22C55E] animate-bounce"
-                style={{ animationDelay: `${i * 0.2}s` }}
-              />
+              <div key={i} className="w-2.5 h-2.5 rounded-full bg-[#22C55E] animate-bounce" style={{ animationDelay: `${i * 0.2}s` }} />
             ))}
           </div>
         </div>
@@ -141,69 +119,61 @@ export default function QuizPage() {
   }
 
   return (
-    <div className="mobile-frame bg-[#0D0D0D] flex flex-col" style={{ minHeight: '100dvh' }}>
-      <div className="bg-[#0D0D0D] flex-shrink-0">
-        <StatusBar dark />
+    <div className="mobile-frame bg-white flex flex-col" style={{ minHeight: '100dvh' }}>
+      <div className="bg-white flex-shrink-0">
+        <StatusBar dark={false} />
       </div>
 
-      {/* Header com pontos e progresso */}
+      {/* Barra de progresso */}
       <div className="px-5 pt-4 pb-2 flex-shrink-0">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-white/40 text-xs font-semibold uppercase tracking-widest">
-            {current + 1} de {QUESTIONS.length}
-          </span>
-          <div className="flex items-center gap-1.5 bg-[#22C55E]/10 border border-[#22C55E]/30 rounded-full px-3 py-1">
-            <span className="text-sm">⭐</span>
-            <span className="text-[#22C55E] font-black text-sm">{points} pts</span>
-          </div>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-gray-400 text-xs font-semibold">{current + 1} de {QUESTIONS.length}</span>
+          <span className="text-[#22C55E] text-xs font-black">{progress}%</span>
         </div>
-        {/* Barra de progresso */}
-        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+        <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[#22C55E] to-[#4ade80] rounded-full transition-all duration-500"
+            className="h-full bg-[#22C55E] rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
       </div>
 
-      {/* Pergunta */}
-      <div className={`flex-1 flex flex-col px-5 py-6 gap-6 transition-opacity duration-300 ${animating ? 'opacity-0' : 'opacity-100'}`}>
-        <div className="flex flex-col items-center text-center gap-3">
-          <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-            <span className="text-4xl">{q.emoji}</span>
+      {/* Conteúdo */}
+      <div className={`flex-1 flex flex-col px-5 py-5 gap-5 transition-opacity duration-300 ${animating ? 'opacity-0' : 'opacity-100'}`}>
+
+        {/* Pergunta */}
+        <h2 className="text-gray-900 font-black text-xl leading-snug text-center">{q.question}</h2>
+
+        {/* Imagem opcional entre pergunta e opções */}
+        {q.image && (
+          <div className="rounded-2xl overflow-hidden shadow-md">
+            <img src={q.image} alt="Resultado" className="w-full object-cover max-h-52" />
           </div>
-          <h2 className="text-white font-black text-xl leading-snug">{q.question}</h2>
-        </div>
+        )}
 
         {/* Opções */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-3">
           {q.options.map((opt, i) => {
             const isSelected = selected === i
             return (
               <button
                 key={i}
                 onClick={() => handleSelect(i)}
-                className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 min-h-[100px] transition-all duration-200 active:scale-95 ${
+                className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl font-bold text-base text-left transition-all duration-200 active:scale-95 border-2 ${
                   isSelected
-                    ? 'bg-[#22C55E]/20 border-[#22C55E] scale-95'
-                    : 'bg-white/5 border-white/10 hover:border-white/20'
+                    ? 'bg-[#22C55E] border-[#22C55E] text-white scale-95'
+                    : 'bg-[#22C55E]/10 border-[#22C55E]/30 text-gray-800 hover:bg-[#22C55E]/20'
                 }`}
               >
-                <span className="text-3xl">{opt.emoji}</span>
-                <p className={`text-xs font-bold text-center leading-tight ${isSelected ? 'text-[#22C55E]' : 'text-white/80'}`}>
-                  {opt.text}
-                </p>
-                {isSelected && (
-                  <div className="w-5 h-5 rounded-full bg-[#22C55E] flex items-center justify-center">
-                    <span className="text-black text-[10px] font-black">✓</span>
-                  </div>
-                )}
+                <span className="text-xl flex-shrink-0">{opt.emoji}</span>
+                <span className="leading-snug">{opt.text}</span>
+                {isSelected && <span className="ml-auto text-white font-black">✓</span>}
               </button>
             )
           })}
         </div>
 
-        <p className="text-white/20 text-xs text-center">Toque em uma opção para continuar</p>
+        <p className="text-gray-300 text-xs text-center mt-auto">Toque em uma opção para continuar</p>
       </div>
     </div>
   )
