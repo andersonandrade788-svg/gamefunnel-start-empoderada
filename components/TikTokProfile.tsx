@@ -33,7 +33,7 @@ interface VideoData {
 const VIDEOS: VideoData[] = [
   {
     id: 1,
-    videoSrc: 'https://res.cloudinary.com/dkzesb6gm/video/upload/f_auto,q_auto:eco,vc_h264/v1775930585/Video_TK_01_ajgbli.mov',
+    videoSrc: 'https://res.cloudinary.com/dkzesb6gm/video/upload/f_auto,q_auto:low,vc_h264/v1775930585/Video_TK_01_ajgbli.mov',
     description: 'você não falhou… você foi colocada no sistema errado 😮 #emagrecimento #mulher',
     song: 'áudio original - Giovanna Bueno',
     likes: '14.2K',
@@ -51,7 +51,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 2,
-    videoSrc: 'https://res.cloudinary.com/dkzesb6gm/video/upload/f_auto,q_auto:eco,vc_h264/v1775930588/Video_TK_02_szc15z.mov',
+    videoSrc: 'https://res.cloudinary.com/dkzesb6gm/video/upload/f_auto,q_auto:low,vc_h264/v1775930588/Video_TK_02_szc15z.mov',
     description: 'disciplina não é o problema. nunca foi 👀 #verdade #sistemaerrado',
     song: 'áudio original - Giovanna Bueno',
     likes: '22.7K',
@@ -69,7 +69,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 3,
-    videoSrc: 'https://res.cloudinary.com/dkzesb6gm/video/upload/f_auto,q_auto:eco,vc_h264/v1775930585/Video_Tk_03_pvuczc.mov',
+    videoSrc: 'https://res.cloudinary.com/dkzesb6gm/video/upload/f_auto,q_auto:low,vc_h264/v1775930585/Video_Tk_03_pvuczc.mov',
     description: 'o que ninguém te ensinou sobre manter o resultado 🔥 #método #transformação',
     song: 'áudio original - Giovanna Bueno',
     likes: '31.5K',
@@ -87,7 +87,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 4,
-    videoSrc: 'https://res.cloudinary.com/dkzesb6gm/video/upload/f_auto,q_auto:eco,vc_h264/v1775930583/Video_Tk_04_yxlstc.mov',
+    videoSrc: 'https://res.cloudinary.com/dkzesb6gm/video/upload/f_auto,q_auto:low,vc_h264/v1775930583/Video_Tk_04_yxlstc.mov',
     description: 'antes eu desistia em menos de 1 semana. hoje é diferente 💪 #resultado #prova',
     song: 'áudio original - Giovanna Bueno',
     likes: '18.9K',
@@ -105,7 +105,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 5,
-    videoSrc: 'https://res.cloudinary.com/dkzesb6gm/video/upload/f_auto,q_auto:eco,vc_h264/v1775930585/Video_Tk_05_omjxms.mov',
+    videoSrc: 'https://res.cloudinary.com/dkzesb6gm/video/upload/f_auto,q_auto:low,vc_h264/v1775930585/Video_Tk_05_omjxms.mov',
     description: 'se você tá cansada de recomeçar… entra aqui 👇 o link tá na bio #startempoderada',
     song: 'áudio original - Giovanna Bueno',
     likes: '41.3K',
