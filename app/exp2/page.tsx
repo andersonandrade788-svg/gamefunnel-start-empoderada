@@ -1,5 +1,5 @@
-import WhatsAppChat from '@/components/WhatsAppChat'
+import { redirect } from 'next/navigation'
 
 export default function Exp2Page() {
-  return <WhatsAppChat />
+  redirect('/exp3')
 }

@@ -231,14 +231,14 @@ export default function DiagnosticoPage() {
           </p>
 
           <button
-            onClick={() => router.push('/exp3')}
+            onClick={() => router.push('/roleta')}
             className="w-full min-h-[56px] bg-[#22C55E] text-black font-black text-base rounded-2xl shadow-xl active:scale-95 transition-all duration-200 animate-greenPulse px-4"
           >
             {classe.btn1}
           </button>
 
           <button
-            onClick={() => router.push('/exp3')}
+            onClick={() => router.push('/roleta')}
             className="w-full min-h-[52px] bg-white border-2 border-[#22C55E] text-[#16A34A] font-bold text-base rounded-2xl active:scale-95 transition-all duration-200 px-4"
           >
             {classe.btn2}

@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
 const STEPS = [
-  { name: 'Ligacao',     number: 1, label: 'Ligação' },
-  { name: 'WhatsApp',    number: 2, label: 'WhatsApp' },
-  { name: 'TikTok',      number: 3, label: 'TikTok' },
-  { name: 'IMC',         number: 4, label: 'IMC' },
-  { name: 'Diagnostico', number: 5, label: 'Diagnóstico' },
+  { name: 'Quiz',        number: 1, label: 'Quiz' },
+  { name: 'TikTok',      number: 2, label: 'TikTok' },
+  { name: 'IMC',         number: 3, label: 'IMC' },
+  { name: 'Diagnostico', number: 4, label: 'Diagnóstico' },
+  { name: 'Roleta',      number: 5, label: 'Roleta' },
   { name: 'Vendas',      number: 6, label: 'Viu a Oferta' },
 ]
 
