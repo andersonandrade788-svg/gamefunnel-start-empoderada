@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import StatusBar from '@/components/StatusBar'
 import { trackStep } from '@/lib/analytics'
@@ -12,6 +12,8 @@ type Screen =
   | { type: 'belief' }
   | { type: 'result' }
   | { type: 'transition' }
+
+type Notif = { id: number; kg: number }
 
 const QUESTIONS = [
   {
@@ -52,7 +54,16 @@ const QUESTIONS = [
   },
 ]
 
-const TOTAL_STEPS = 9 // hook + ident + 4 questions + belief + result + transition
+// kg queimado por etapa — soma exata 5.0kg
+const WEIGHT_DROPS: Record<string, number> = {
+  identification: 0.5,
+  'question-0': 0.8,
+  'question-1': 0.7,
+  'question-2': 1.0,
+  'question-3': 0.8,
+  belief: 0.6,
+  result: 0.6,
+}
 
 function progressFor(screen: Screen): number {
   if (screen.type === 'hook') return 5
@@ -63,14 +74,48 @@ function progressFor(screen: Screen): number {
   return 100
 }
 
+function playDing() {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+    const ctx = new AudioCtx()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(880, ctx.currentTime)
+    osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.25)
+    gain.gain.setValueAtTime(0.35, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6)
+    osc.start()
+    osc.stop(ctx.currentTime + 0.6)
+  } catch (_) {}
+}
+
 export default function QuizPage() {
   const router = useRouter()
   const [screen, setScreen] = useState<Screen>({ type: 'hook' })
   const [animating, setAnimating] = useState(false)
+  const [notifications, setNotifications] = useState<Notif[]>([])
+  const [totalKg, setTotalKg] = useState(0)
+  const notifIdRef = useRef(0)
 
   useEffect(() => { trackStep('Quiz', 1) }, [])
 
-  function next(nextScreen: Screen) {
+  function showNotification(kg: number) {
+    const id = ++notifIdRef.current
+    setNotifications(prev => [...prev, { id, kg }])
+    setTotalKg(prev => Math.round((prev + kg) * 10) / 10)
+    playDing()
+    setTimeout(() => {
+      setNotifications(prev => prev.filter(n => n.id !== id))
+    }, 2800)
+  }
+
+  function next(nextScreen: Screen, dropKey?: string) {
+    if (dropKey && WEIGHT_DROPS[dropKey] !== undefined) {
+      showNotification(WEIGHT_DROPS[dropKey])
+    }
     setAnimating(true)
     setTimeout(() => {
       setScreen(nextScreen)
@@ -80,12 +125,12 @@ export default function QuizPage() {
 
   function handleOption() {
     if (screen.type === 'identification') {
-      next({ type: 'question', index: 0 })
+      next({ type: 'question', index: 0 }, 'identification')
     } else if (screen.type === 'question') {
       if (screen.index < QUESTIONS.length - 1) {
-        next({ type: 'question', index: screen.index + 1 })
+        next({ type: 'question', index: screen.index + 1 }, `question-${screen.index}`)
       } else {
-        next({ type: 'belief' })
+        next({ type: 'belief' }, `question-${screen.index}`)
       }
     }
   }
@@ -94,11 +139,37 @@ export default function QuizPage() {
 
   return (
     <div className="mobile-frame bg-white flex flex-col" style={{ minHeight: '100dvh' }}>
+
+      {/* Keyframe animations */}
+      <style>{`
+        @keyframes notif-pop {
+          0%   { opacity: 0; transform: translateY(-24px) scale(0.85); }
+          18%  { opacity: 1; transform: translateY(4px) scale(1.05); }
+          28%  { transform: translateY(0) scale(1); }
+          72%  { opacity: 1; transform: translateY(0); }
+          100% { opacity: 0; transform: translateY(-12px); }
+        }
+        .notif-anim { animation: notif-pop 2.8s ease forwards; }
+      `}</style>
+
+      {/* Floating notifications */}
+      <div className="fixed top-14 left-0 right-0 flex flex-col items-center gap-2 z-50 pointer-events-none px-6">
+        {notifications.map(n => (
+          <div
+            key={n.id}
+            className="notif-anim bg-[#22C55E] text-white font-black px-5 py-3 rounded-2xl shadow-xl shadow-green-500/40 flex items-center gap-2 text-sm"
+          >
+            <span>🔥</span>
+            <span>-{n.kg}kg queimado!</span>
+          </div>
+        ))}
+      </div>
+
       <div className="bg-white flex-shrink-0">
         <StatusBar dark={false} />
       </div>
 
-      {/* Barra de progresso — oculta no hook */}
+      {/* Barra de progresso */}
       {screen.type !== 'hook' && (
         <div className="px-5 pt-3 pb-1 flex-shrink-0">
           <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -107,6 +178,11 @@ export default function QuizPage() {
               style={{ width: `${progress}%` }}
             />
           </div>
+          {totalKg > 0 && (
+            <p className="text-[#22C55E] text-xs font-black text-right mt-1">
+              🔥 -{totalKg}kg queimados
+            </p>
+          )}
         </div>
       )}
 
@@ -116,20 +192,16 @@ export default function QuizPage() {
         {/* ── TELA 1: HOOK ── */}
         {screen.type === 'hook' && (
           <div className="flex-1 flex flex-col relative">
-            {/* Imagem ocupando metade superior da tela */}
             <div className="relative w-full flex-shrink-0" style={{ height: '55vh' }}>
               <img
                 src="/tela%20inicial.jpg"
                 alt="Start Empoderada"
                 className="w-full h-full object-cover object-center"
               />
-              {/* Gradiente inferior suave para branco */}
               <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent" />
             </div>
 
-            {/* Card de conteúdo colado na imagem */}
             <div className="flex flex-col px-6 gap-5 pb-8 pt-1">
-              {/* Texto */}
               <div className="flex flex-col gap-3 text-center">
                 <h1 className="text-gray-900 font-black text-[1.6rem] leading-tight">
                   Posso ser direta<br />com você?
@@ -146,7 +218,6 @@ export default function QuizPage() {
                 </div>
               </div>
 
-              {/* Prova social compacta */}
               <div className="flex items-center justify-center gap-2 bg-gray-50 rounded-2xl px-4 py-3">
                 <div className="flex -space-x-1.5">
                   {['VA', 'JO', 'CA'].map((init, i) => (
@@ -158,7 +229,6 @@ export default function QuizPage() {
                 <p className="text-gray-500 text-xs"><strong className="text-gray-800">+2.847 mulheres</strong> já descobriram</p>
               </div>
 
-              {/* CTA */}
               <button
                 onClick={() => next({ type: 'identification' })}
                 className="w-full bg-[#22C55E] text-white font-black text-lg py-5 rounded-2xl shadow-xl shadow-green-500/20 active:scale-95 transition-all"
@@ -249,7 +319,7 @@ export default function QuizPage() {
               </div>
             </div>
             <button
-              onClick={() => next({ type: 'result' })}
+              onClick={() => next({ type: 'result' }, 'belief')}
               className="w-full bg-[#22C55E] text-white font-black text-lg py-5 rounded-2xl shadow-lg shadow-green-500/20 active:scale-95 transition-all"
             >
               Entender meu resultado →
@@ -269,7 +339,6 @@ export default function QuizPage() {
             </div>
 
             <div className="flex flex-col gap-3">
-              {/* Identidade */}
               <div className="bg-[#22C55E]/8 border border-[#22C55E]/20 rounded-2xl px-4 py-4">
                 <p className="text-[#22C55E] text-xs font-black uppercase tracking-wider mb-2">🔥 Quem você é</p>
                 <p className="text-gray-800 text-sm leading-relaxed">
@@ -277,7 +346,6 @@ export default function QuizPage() {
                 </p>
               </div>
 
-              {/* Explicação emocional */}
               <div className="bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4">
                 <p className="text-gray-500 text-xs font-black uppercase tracking-wider mb-2">😔 Por que você trava</p>
                 <p className="text-gray-800 text-sm leading-relaxed">
@@ -285,7 +353,6 @@ export default function QuizPage() {
                 </p>
               </div>
 
-              {/* Futuro medo */}
               <div className="bg-red-50 border border-red-100 rounded-2xl px-4 py-4">
                 <p className="text-red-400 text-xs font-black uppercase tracking-wider mb-2">⚠️ Se continuar assim…</p>
                 <p className="text-gray-800 text-sm leading-relaxed">
@@ -293,7 +360,6 @@ export default function QuizPage() {
                 </p>
               </div>
 
-              {/* Futuro esperança */}
               <div className="bg-[#22C55E]/10 border border-[#22C55E]/30 rounded-2xl px-4 py-4">
                 <p className="text-[#22C55E] text-xs font-black uppercase tracking-wider mb-2">✨ Mas quando você ajusta isso…</p>
                 <p className="text-gray-800 text-sm leading-relaxed">
@@ -303,7 +369,7 @@ export default function QuizPage() {
             </div>
 
             <button
-              onClick={() => next({ type: 'transition' })}
+              onClick={() => next({ type: 'transition' }, 'result')}
               className="w-full bg-[#22C55E] text-white font-black text-lg py-5 rounded-2xl shadow-lg shadow-green-500/20 active:scale-95 transition-all mt-2"
             >
               Ver o meu caminho →
@@ -314,8 +380,16 @@ export default function QuizPage() {
         {/* ── TELA 9: MICRO TRANSIÇÃO ── */}
         {screen.type === 'transition' && (
           <div className="flex-1 flex flex-col items-center justify-center px-6 gap-8 text-center py-10">
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 w-full">
               <span className="text-5xl">🎯</span>
+
+              {/* Celebração dos 5kg */}
+              <div className="bg-[#22C55E] rounded-2xl px-5 py-4 flex flex-col gap-1 shadow-lg shadow-green-500/30">
+                <p className="text-white/80 text-xs font-bold uppercase tracking-widest">Simulação completa</p>
+                <p className="text-white font-black text-3xl">-5kg queimados! 🔥</p>
+                <p className="text-white/70 text-sm">Agora imagina isso no seu corpo de verdade…</p>
+              </div>
+
               <div className="flex flex-col gap-4">
                 <h2 className="text-gray-900 font-black text-2xl leading-snug">
                   Existe um caminho específico para o seu perfil…
