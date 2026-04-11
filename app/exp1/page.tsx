@@ -78,17 +78,22 @@ function playDing() {
   try {
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
     const ctx = new AudioCtx()
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    osc.connect(gain)
-    gain.connect(ctx.destination)
-    osc.type = 'sine'
-    osc.frequency.setValueAtTime(880, ctx.currentTime)
-    osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.25)
-    gain.gain.setValueAtTime(0.35, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6)
-    osc.start()
-    osc.stop(ctx.currentTime + 0.6)
+    // Arpejo ascendente: C5 → E5 → G5 (level up)
+    const notes = [523, 659, 784]
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.type = 'sine'
+      const start = ctx.currentTime + i * 0.13
+      osc.frequency.setValueAtTime(freq, start)
+      gain.gain.setValueAtTime(0, start)
+      gain.gain.linearRampToValueAtTime(0.35, start + 0.04)
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.28)
+      osc.start(start)
+      osc.stop(start + 0.3)
+    })
   } catch (_) {}
 }
 
