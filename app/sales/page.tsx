@@ -348,9 +348,9 @@ function Roleta({ onClaim }: { onClaim: () => void }) {
               <p className="text-white/70 font-semibold text-sm">1º mês do Start Empoderada por apenas</p>
               <div className="flex items-end justify-center gap-1 my-1">
                 <span className="text-white/50 text-xl font-bold self-start mt-3">R$</span>
-                <span className="font-black leading-none" style={{ fontSize: 72, color: '#4ADE80', lineHeight: 1 }}>37</span>
+                <span className="font-black leading-none" style={{ fontSize: 72, color: '#4ADE80', lineHeight: 1 }}>37<span style={{ fontSize: 36 }}>,00</span></span>
               </div>
-              <p className="text-white/40 text-xs">depois R$ 67/mês · cancele quando quiser</p>
+              <p className="text-white/40 text-xs">depois R$ 67,00/mês · cancele quando quiser</p>
             </div>
           </div>
 
@@ -885,7 +885,7 @@ export default function SalesPage() {
                 <p className="text-white/50 text-xs mt-2">1º mês por apenas</p>
                 <div className="flex items-end justify-center gap-1">
                   <span className="text-white/60 text-xl font-bold self-start mt-2">R$</span>
-                  <span className="text-[#22C55E] font-black text-6xl leading-none">37</span>
+                  <span className="text-[#22C55E] font-black text-6xl leading-none">37<span className="text-3xl">,00</span></span>
                 </div>
               </div>
 
@@ -894,7 +894,7 @@ export default function SalesPage() {
                 <p className="text-white/50 text-xs">A partir do 2º mês</p>
                 <div className="flex items-end justify-center gap-1">
                   <span className="text-white/40 text-base font-bold self-start mt-1">R$</span>
-                  <span className="text-white font-black text-3xl leading-none">67</span>
+                  <span className="text-white font-black text-3xl leading-none">67<span className="text-xl">,00</span></span>
                   <span className="text-white/40 text-sm mb-1">/mês</span>
                 </div>
                 <p className="text-white/30 text-xs">menos que um jantar fora 🍽️</p>
