@@ -27,7 +27,7 @@ export default function LandingPage() {
             O MÉTODO DE 30 DIAS QUE ESTÁ{' '}
             <span className="text-[#22C55E]">TRANSFORMANDO CORPOS</span>,{' '}
             DEVOLVENDO ENERGIA E{' '}
-            <span className="bg-yellow-300 px-1">EMPODERADO MULHERES</span>
+            <span className="bg-yellow-300 px-1">EMPONDERANDO MULHERES</span>
           </h1>
           <p className="text-gray-500 text-sm leading-relaxed">
             Descubra por que você não emagrece, não tem energia e não mantém resultado — mesmo tentando de tudo.
