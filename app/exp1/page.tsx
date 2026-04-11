@@ -13,7 +13,7 @@ type Screen =
   | { type: 'result' }
   | { type: 'transition' }
 
-type Notif = { id: number; kg: number }
+type Notif = { id: number; kg: number; xp: number }
 
 const QUESTIONS = [
   {
@@ -54,16 +54,27 @@ const QUESTIONS = [
   },
 ]
 
-// kg queimado por etapa — soma exata 5.0kg
-const WEIGHT_DROPS: Record<string, number> = {
-  identification: 0.5,
-  'question-0': 0.8,
-  'question-1': 0.7,
-  'question-2': 1.0,
-  'question-3': 0.8,
-  belief: 0.6,
-  result: 0.6,
+const DROPS: Record<string, { kg: number; xp: number }> = {
+  identification: { kg: 0.5, xp: 50 },
+  'question-0':   { kg: 0.8, xp: 80 },
+  'question-1':   { kg: 0.7, xp: 70 },
+  'question-2':   { kg: 1.0, xp: 100 },
+  'question-3':   { kg: 0.8, xp: 80 },
+  belief:         { kg: 0.6, xp: 60 },
+  result:         { kg: 0.6, xp: 60 },
 }
+
+const CONFETTI_COLORS = ['#22C55E', '#FFD700', '#FF6B6B', '#4ECDC4', '#A78BFA', '#FB923C', '#34D399']
+
+const confettiPieces = Array.from({ length: 60 }, (_, i) => ({
+  id: i,
+  color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+  left: Math.random() * 100,
+  delay: Math.random() * 2,
+  duration: 2.5 + Math.random() * 2,
+  size: 7 + Math.random() * 8,
+  isCircle: Math.random() > 0.5,
+}))
 
 function progressFor(screen: Screen): number {
   if (screen.type === 'hook') return 5
@@ -74,11 +85,10 @@ function progressFor(screen: Screen): number {
   return 100
 }
 
-function playDing() {
+function playLevelUp() {
   try {
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
     const ctx = new AudioCtx()
-    // Arpejo ascendente: C5 → E5 → G5 (level up)
     const notes = [523, 659, 784]
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator()
@@ -97,29 +107,72 @@ function playDing() {
   } catch (_) {}
 }
 
+function playFanfare() {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+    const ctx = new AudioCtx()
+    // Fanfarra celebratória: arpejo rápido + nota longa final
+    const sequence = [
+      { freq: 523, start: 0,    dur: 0.15 },
+      { freq: 659, start: 0.13, dur: 0.15 },
+      { freq: 784, start: 0.26, dur: 0.15 },
+      { freq: 1047,start: 0.39, dur: 0.5  },
+    ]
+    sequence.forEach(({ freq, start, dur }) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.type = 'sine'
+      const t = ctx.currentTime + start
+      osc.frequency.setValueAtTime(freq, t)
+      gain.gain.setValueAtTime(0, t)
+      gain.gain.linearRampToValueAtTime(0.4, t + 0.04)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + dur)
+      osc.start(t)
+      osc.stop(t + dur + 0.05)
+    })
+  } catch (_) {}
+}
+
 export default function QuizPage() {
   const router = useRouter()
   const [screen, setScreen] = useState<Screen>({ type: 'hook' })
   const [animating, setAnimating] = useState(false)
   const [notifications, setNotifications] = useState<Notif[]>([])
   const [totalKg, setTotalKg] = useState(0)
+  const [totalXp, setTotalXp] = useState(0)
+  const [showConfetti, setShowConfetti] = useState(false)
+  const [badgeVisible, setBadgeVisible] = useState(false)
   const notifIdRef = useRef(0)
 
   useEffect(() => { trackStep('Quiz', 1) }, [])
 
-  function showNotification(kg: number) {
+  useEffect(() => {
+    if (screen.type === 'transition') {
+      setTimeout(() => {
+        setShowConfetti(true)
+        setBadgeVisible(true)
+        playFanfare()
+      }, 300)
+    }
+  }, [screen.type])
+
+  function showNotification(kg: number, xp: number) {
     const id = ++notifIdRef.current
-    setNotifications(prev => [...prev, { id, kg }])
+    setNotifications(prev => [...prev, { id, kg, xp }])
     setTotalKg(prev => Math.round((prev + kg) * 10) / 10)
-    playDing()
+    setTotalXp(prev => prev + xp)
+    playLevelUp()
     setTimeout(() => {
       setNotifications(prev => prev.filter(n => n.id !== id))
     }, 2800)
   }
 
   function next(nextScreen: Screen, dropKey?: string) {
-    if (dropKey && WEIGHT_DROPS[dropKey] !== undefined) {
-      showNotification(WEIGHT_DROPS[dropKey])
+    if (dropKey && DROPS[dropKey]) {
+      const { kg, xp } = DROPS[dropKey]
+      showNotification(kg, xp)
     }
     setAnimating(true)
     setTimeout(() => {
@@ -145,7 +198,6 @@ export default function QuizPage() {
   return (
     <div className="mobile-frame bg-white flex flex-col" style={{ minHeight: '100dvh' }}>
 
-      {/* Keyframe animations */}
       <style>{`
         @keyframes notif-pop {
           0%   { opacity: 0; transform: translateY(-24px) scale(0.85); }
@@ -154,18 +206,51 @@ export default function QuizPage() {
           72%  { opacity: 1; transform: translateY(0); }
           100% { opacity: 0; transform: translateY(-12px); }
         }
-        .notif-anim { animation: notif-pop 2.8s ease forwards; }
+        @keyframes confetti-fall {
+          0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+        @keyframes badge-pop {
+          0%   { transform: scale(0) rotate(-180deg); opacity: 0; }
+          55%  { transform: scale(1.25) rotate(12deg); opacity: 1; }
+          75%  { transform: scale(0.93) rotate(-5deg); }
+          100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .notif-anim   { animation: notif-pop 2.8s ease forwards; }
+        .badge-anim   { animation: badge-pop 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards; }
       `}</style>
 
+      {/* Confetti */}
+      {showConfetti && (
+        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+          {confettiPieces.map(p => (
+            <div
+              key={p.id}
+              style={{
+                position: 'absolute',
+                top: '-20px',
+                left: `${p.left}%`,
+                width: `${p.size}px`,
+                height: `${p.size}px`,
+                backgroundColor: p.color,
+                borderRadius: p.isCircle ? '50%' : '2px',
+                animation: `confetti-fall ${p.duration}s ${p.delay}s ease-in forwards`,
+              }}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Floating notifications */}
-      <div className="fixed top-14 left-0 right-0 flex flex-col items-center gap-2 z-50 pointer-events-none px-6">
+      <div className="fixed top-14 left-0 right-0 flex flex-col items-center gap-2 z-40 pointer-events-none px-6">
         {notifications.map(n => (
           <div
             key={n.id}
-            className="notif-anim bg-[#22C55E] text-white font-black px-5 py-3 rounded-2xl shadow-xl shadow-green-500/40 flex items-center gap-2 text-sm"
+            className="notif-anim bg-[#22C55E] text-white font-black px-5 py-3 rounded-2xl shadow-xl shadow-green-500/40 flex items-center gap-3 text-sm"
           >
             <span>🔥</span>
             <span>-{n.kg}kg queimado!</span>
+            <span className="bg-white/20 rounded-full px-2 py-0.5 text-xs">+{n.xp} XP</span>
           </div>
         ))}
       </div>
@@ -177,17 +262,20 @@ export default function QuizPage() {
       {/* Barra de progresso */}
       {screen.type !== 'hook' && (
         <div className="px-5 pt-3 pb-1 flex-shrink-0">
+          <div className="flex items-center justify-between mb-1">
+            {totalKg > 0 && (
+              <p className="text-[#22C55E] text-xs font-black">🔥 -{totalKg}kg</p>
+            )}
+            {totalXp > 0 && (
+              <p className="text-purple-500 text-xs font-black">⚡ {totalXp} XP</p>
+            )}
+          </div>
           <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#22C55E] rounded-full transition-all duration-700"
+              className="h-full bg-gradient-to-r from-[#22C55E] to-[#16A34A] rounded-full transition-all duration-700"
               style={{ width: `${progress}%` }}
             />
           </div>
-          {totalKg > 0 && (
-            <p className="text-[#22C55E] text-xs font-black text-right mt-1">
-              🔥 -{totalKg}kg queimados
-            </p>
-          )}
         </div>
       )}
 
@@ -205,7 +293,6 @@ export default function QuizPage() {
               />
               <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent" />
             </div>
-
             <div className="flex flex-col px-6 gap-5 pb-8 pt-1">
               <div className="flex flex-col gap-3 text-center">
                 <h1 className="text-gray-900 font-black text-[1.6rem] leading-tight">
@@ -216,13 +303,10 @@ export default function QuizPage() {
                 </p>
                 <div className="flex items-center justify-center gap-2 py-2">
                   <div className="h-px flex-1 bg-gray-100" />
-                  <p className="text-[#22C55E] font-black text-base px-2">
-                    E não é culpa sua.
-                  </p>
+                  <p className="text-[#22C55E] font-black text-base px-2">E não é culpa sua.</p>
                   <div className="h-px flex-1 bg-gray-100" />
                 </div>
               </div>
-
               <div className="flex items-center justify-center gap-2 bg-gray-50 rounded-2xl px-4 py-3">
                 <div className="flex -space-x-1.5">
                   {['VA', 'JO', 'CA'].map((init, i) => (
@@ -233,7 +317,6 @@ export default function QuizPage() {
                 </div>
                 <p className="text-gray-500 text-xs"><strong className="text-gray-800">+2.847 mulheres</strong> já descobriram</p>
               </div>
-
               <button
                 onClick={() => next({ type: 'identification' })}
                 className="w-full bg-[#22C55E] text-white font-black text-lg py-5 rounded-2xl shadow-xl shadow-green-500/20 active:scale-95 transition-all"
@@ -342,7 +425,6 @@ export default function QuizPage() {
                 <span className="text-[#22C55E]">"Potencial Travado"</span>
               </h2>
             </div>
-
             <div className="flex flex-col gap-3">
               <div className="bg-[#22C55E]/8 border border-[#22C55E]/20 rounded-2xl px-4 py-4">
                 <p className="text-[#22C55E] text-xs font-black uppercase tracking-wider mb-2">🔥 Quem você é</p>
@@ -350,21 +432,18 @@ export default function QuizPage() {
                   Você sabe mais do que a média. Já pesquisou, já tentou, já começou várias vezes. O problema não é conhecimento — é execução com método.
                 </p>
               </div>
-
               <div className="bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4">
                 <p className="text-gray-500 text-xs font-black uppercase tracking-wider mb-2">😔 Por que você trava</p>
                 <p className="text-gray-800 text-sm leading-relaxed">
                   Você entra motivada, mas sem estrutura. Quando bate o cansaço ou a vida aperta — sem suporte — é natural parar. E isso te frustra mais do que deveria.
                 </p>
               </div>
-
               <div className="bg-red-50 border border-red-100 rounded-2xl px-4 py-4">
                 <p className="text-red-400 text-xs font-black uppercase tracking-wider mb-2">⚠️ Se continuar assim…</p>
                 <p className="text-gray-800 text-sm leading-relaxed">
                   Você vai continuar no ciclo de começar, parar e se culpar. E cada vez que isso acontece, a crença de "isso não é pra mim" fica mais forte.
                 </p>
               </div>
-
               <div className="bg-[#22C55E]/10 border border-[#22C55E]/30 rounded-2xl px-4 py-4">
                 <p className="text-[#22C55E] text-xs font-black uppercase tracking-wider mb-2">✨ Mas quando você ajusta isso…</p>
                 <p className="text-gray-800 text-sm leading-relaxed">
@@ -372,7 +451,6 @@ export default function QuizPage() {
                 </p>
               </div>
             </div>
-
             <button
               onClick={() => next({ type: 'transition' }, 'result')}
               className="w-full bg-[#22C55E] text-white font-black text-lg py-5 rounded-2xl shadow-lg shadow-green-500/20 active:scale-95 transition-all mt-2"
@@ -382,33 +460,47 @@ export default function QuizPage() {
           </div>
         )}
 
-        {/* ── TELA 9: MICRO TRANSIÇÃO ── */}
+        {/* ── TELA 9: TRANSIÇÃO CELEBRAÇÃO ── */}
         {screen.type === 'transition' && (
-          <div className="flex-1 flex flex-col items-center justify-center px-6 gap-8 text-center py-10">
-            <div className="flex flex-col gap-5 w-full">
-              <span className="text-5xl">🎯</span>
+          <div className="flex-1 flex flex-col items-center justify-center px-6 gap-6 text-center py-10 relative z-10">
 
-              {/* Celebração dos 5kg */}
-              <div className="bg-[#22C55E] rounded-2xl px-5 py-4 flex flex-col gap-1 shadow-lg shadow-green-500/30">
-                <p className="text-white/80 text-xs font-bold uppercase tracking-widest">Simulação completa</p>
-                <p className="text-white font-black text-3xl">-5kg queimados! 🔥</p>
-                <p className="text-white/70 text-sm">Agora imagina isso no seu corpo de verdade…</p>
-              </div>
-
-              <div className="flex flex-col gap-4">
-                <h2 className="text-gray-900 font-black text-2xl leading-snug">
-                  Existe um caminho específico para o seu perfil…
-                </h2>
-                <p className="text-gray-500 text-base leading-relaxed">
-                  E é exatamente o que eu vou te mostrar agora.
-                </p>
-                <div className="bg-[#22C55E]/8 border border-[#22C55E]/20 rounded-2xl px-5 py-4">
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    Mulheres com o seu perfil que seguiram esse método transformaram o corpo em <strong className="text-[#22C55E]">30 dias</strong> — sem academia cara, sem dieta impossível.
-                  </p>
+            {/* Badge conquista */}
+            {badgeVisible && (
+              <div className="badge-anim flex flex-col items-center gap-2">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-2xl shadow-orange-400/40 border-4 border-white">
+                  <span className="text-4xl">🏆</span>
+                </div>
+                <div className="bg-yellow-50 border border-yellow-200 rounded-2xl px-4 py-2">
+                  <p className="text-yellow-700 text-xs font-black uppercase tracking-wider">🎖️ Conquista desbloqueada!</p>
+                  <p className="text-yellow-900 font-black text-sm">Guerreira do Diagnóstico</p>
                 </div>
               </div>
+            )}
+
+            {/* Celebração dos 5kg + XP */}
+            <div className="bg-[#22C55E] rounded-2xl px-5 py-4 w-full flex flex-col gap-1 shadow-lg shadow-green-500/30">
+              <p className="text-white/80 text-xs font-bold uppercase tracking-widest">Simulação completa</p>
+              <p className="text-white font-black text-3xl">-5kg queimados! 🔥</p>
+              <div className="flex items-center justify-center gap-3 mt-1">
+                <span className="bg-white/20 rounded-full px-3 py-1 text-white text-xs font-black">⚡ {totalXp} XP ganhos</span>
+              </div>
+              <p className="text-white/70 text-sm mt-1">Agora imagina isso no seu corpo de verdade…</p>
             </div>
+
+            <div className="flex flex-col gap-4 w-full">
+              <h2 className="text-gray-900 font-black text-2xl leading-snug">
+                Existe um caminho específico para o seu perfil…
+              </h2>
+              <p className="text-gray-500 text-base leading-relaxed">
+                E é exatamente o que eu vou te mostrar agora.
+              </p>
+              <div className="bg-[#22C55E]/8 border border-[#22C55E]/20 rounded-2xl px-5 py-4">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  Mulheres com o seu perfil que seguiram esse método transformaram o corpo em <strong className="text-[#22C55E]">30 dias</strong> — sem academia cara, sem dieta impossível.
+                </p>
+              </div>
+            </div>
+
             <button
               onClick={() => router.push('/exp3')}
               className="w-full bg-[#22C55E] text-white font-black text-lg py-5 rounded-2xl shadow-lg shadow-green-500/20 active:scale-95 transition-all"
