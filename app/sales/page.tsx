@@ -30,21 +30,6 @@ function textPos(i: number) {
   return { x: cx + r * Math.sin(toRad(mid)), y: cy - r * Math.cos(toRad(mid)), rotation: mid }
 }
 
-function playTick() {
-  try {
-    const Ctx = window.AudioContext || (window as any).webkitAudioContext
-    const ctx = new Ctx()
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    osc.connect(gain); gain.connect(ctx.destination)
-    osc.type = 'triangle'
-    osc.frequency.setValueAtTime(900, ctx.currentTime)
-    gain.gain.setValueAtTime(0.12, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05)
-    osc.start(); osc.stop(ctx.currentTime + 0.06)
-  } catch (_) {}
-}
-
 function playCashRegister() {
   try {
     const Ctx = window.AudioContext || (window as any).webkitAudioContext
@@ -108,16 +93,81 @@ function Roleta({ onClaim }: { onClaim: () => void }) {
   const [showConfetti, setShowConfetti] = useState(false)
   const wheelRef = useRef<HTMLDivElement>(null)
   const tickRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const audioCtxRef = useRef<AudioContext | null>(null)
+
+  function getAudioCtx(): AudioContext | null {
+    try {
+      const Ctx = window.AudioContext || (window as any).webkitAudioContext
+      if (!audioCtxRef.current) audioCtxRef.current = new Ctx()
+      if (audioCtxRef.current.state === 'suspended') audioCtxRef.current.resume()
+      return audioCtxRef.current
+    } catch (_) { return null }
+  }
+
+  function playTickCtx(ctx: AudioContext) {
+    try {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain); gain.connect(ctx.destination)
+      osc.type = 'triangle'
+      osc.frequency.setValueAtTime(900, ctx.currentTime)
+      gain.gain.setValueAtTime(0.12, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05)
+      osc.start(); osc.stop(ctx.currentTime + 0.06)
+    } catch (_) {}
+  }
+
+  function playCashCtx(ctx: AudioContext) {
+    try {
+      const bell = ctx.createOscillator()
+      const bellGain = ctx.createGain()
+      bell.connect(bellGain); bellGain.connect(ctx.destination)
+      bell.type = 'sine'
+      bell.frequency.setValueAtTime(1400, ctx.currentTime)
+      bell.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.3)
+      bellGain.gain.setValueAtTime(0.5, ctx.currentTime)
+      bellGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8)
+      bell.start(); bell.stop(ctx.currentTime + 0.8)
+
+      const kaching = ctx.createOscillator()
+      const kGain = ctx.createGain()
+      kaching.connect(kGain); kGain.connect(ctx.destination)
+      kaching.type = 'square'
+      kaching.frequency.setValueAtTime(180, ctx.currentTime + 0.05)
+      kaching.frequency.setValueAtTime(220, ctx.currentTime + 0.09)
+      kaching.frequency.setValueAtTime(160, ctx.currentTime + 0.13)
+      kGain.gain.setValueAtTime(0.2, ctx.currentTime + 0.05)
+      kGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3)
+      kaching.start(ctx.currentTime + 0.05)
+      kaching.stop(ctx.currentTime + 0.35)
+
+      ;[523, 659, 784, 1047].forEach((freq, i) => {
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.connect(gain); gain.connect(ctx.destination)
+        osc.type = 'sine'
+        const t = ctx.currentTime + 0.4 + i * 0.14
+        osc.frequency.setValueAtTime(freq, t)
+        gain.gain.setValueAtTime(0, t)
+        gain.gain.linearRampToValueAtTime(0.38, t + 0.05)
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4)
+        osc.start(t); osc.stop(t + 0.45)
+      })
+    } catch (_) {}
+  }
 
   function handleSpin() {
     if (spinning || spun) return
+
+    // Cria AudioContext no momento do clique (exigido pelo browser/iOS)
+    const ctx = getAudioCtx()
     setSpinning(true)
 
     let count = 0
     const maxTicks = 38
     function tick() {
       if (count >= maxTicks) return
-      playTick()
+      if (ctx) playTickCtx(ctx)
       count++
       const delay = 70 + (count / maxTicks) * 380
       tickRef.current = setTimeout(tick, delay)
@@ -130,7 +180,7 @@ function Roleta({ onClaim }: { onClaim: () => void }) {
     }
     setTimeout(() => {
       setSpinning(false); setSpun(true)
-      playCashRegister()
+      if (ctx) playCashCtx(ctx)
       setShowConfetti(true)
       setTimeout(() => setWon(true), 600)
     }, 4500)
