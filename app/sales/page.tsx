@@ -201,14 +201,9 @@ export default function SalesPage() {
 
   useEffect(() => { trackStep('Vendas', 6) }, [])
 
-  // Abre roleta automaticamente após 1.5s (só uma vez por sessão)
+  // Abre roleta automaticamente após 1.5s sempre que chega na página
   useEffect(() => {
-    const key = '_roleta_shown'
-    if (localStorage.getItem(key)) return
-    const t = setTimeout(() => {
-      localStorage.setItem(key, '1')
-      setShowRoleta(true)
-    }, 1500)
+    const t = setTimeout(() => setShowRoleta(true), 1500)
     return () => clearTimeout(t)
   }, [])
 
