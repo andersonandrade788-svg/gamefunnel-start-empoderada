@@ -135,10 +135,24 @@ function playFanfare() {
   } catch (_) {}
 }
 
+const CAROUSEL_IMAGES = [
+  '/tela%20inicial.jpg',
+  '/tela%20inicia%2002.jpg',
+  '/tela%20inicial%2003.jpg',
+]
+
 export default function QuizPage() {
   const router = useRouter()
   const [screen, setScreen] = useState<Screen>({ type: 'hook' })
   const [animating, setAnimating] = useState(false)
+  const [carouselIndex, setCarouselIndex] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCarouselIndex(prev => (prev + 1) % CAROUSEL_IMAGES.length)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
   const [notifications, setNotifications] = useState<Notif[]>([])
   const [totalKg, setTotalKg] = useState(0)
   const [totalXp, setTotalXp] = useState(0)
@@ -285,13 +299,31 @@ export default function QuizPage() {
         {/* ── TELA 1: HOOK ── */}
         {screen.type === 'hook' && (
           <div className="flex-1 flex flex-col relative">
-            <div className="relative w-full flex-shrink-0" style={{ height: '55vh' }}>
-              <img
-                src="/tela%20inicial.jpg"
-                alt="Start Empoderada"
-                className="w-full h-full object-cover object-center"
-              />
-              <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent" />
+            <div className="relative w-full flex-shrink-0 overflow-hidden" style={{ height: '55vh' }}>
+              {CAROUSEL_IMAGES.map((src, i) => (
+                <img
+                  key={i}
+                  src={src}
+                  alt="Start Empoderada"
+                  className="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700"
+                  style={{ opacity: carouselIndex === i ? 1 : 0 }}
+                />
+              ))}
+              {/* Dots */}
+              <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-1.5 z-10">
+                {CAROUSEL_IMAGES.map((_, i) => (
+                  <div
+                    key={i}
+                    className="rounded-full transition-all duration-300"
+                    style={{
+                      width: carouselIndex === i ? 18 : 6,
+                      height: 6,
+                      backgroundColor: carouselIndex === i ? '#22C55E' : '#ffffff80',
+                    }}
+                  />
+                ))}
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent z-10" />
             </div>
             <div className="flex flex-col px-6 gap-5 pb-8 pt-1">
               <div className="flex flex-col gap-3 text-center">
