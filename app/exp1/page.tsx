@@ -115,43 +115,57 @@ export default function QuizPage() {
 
         {/* ── TELA 1: HOOK ── */}
         {screen.type === 'hook' && (
-          <div className="flex-1 flex flex-col">
-            {/* Imagem hero com overlay */}
-            <div className="relative w-full" style={{ height: '52vw', maxHeight: '260px', minHeight: '180px' }}>
+          <div className="flex-1 flex flex-col relative">
+            {/* Imagem ocupando metade superior da tela */}
+            <div className="relative w-full flex-shrink-0" style={{ height: '55vh' }}>
               <img
                 src="/tela%20inicial.jpg"
                 alt="Start Empoderada"
-                className="w-full h-full object-cover object-top"
+                className="w-full h-full object-cover object-center"
               />
-              {/* Gradiente sobre a imagem */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-white" />
+              {/* Gradiente inferior suave para branco */}
+              <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent" />
             </div>
 
-            {/* Conteúdo abaixo da imagem */}
-            <div className="flex flex-col items-center px-6 gap-6 text-center pb-10 pt-2 flex-1 justify-between">
-              <div className="flex flex-col gap-4">
-                <h1 className="text-gray-900 font-black text-2xl leading-snug">
-                  Posso ser direta com você?
+            {/* Card de conteúdo colado na imagem */}
+            <div className="flex flex-col px-6 gap-5 pb-8 pt-1">
+              {/* Texto */}
+              <div className="flex flex-col gap-3 text-center">
+                <h1 className="text-gray-900 font-black text-[1.6rem] leading-tight">
+                  Posso ser direta<br />com você?
                 </h1>
-                <div className="flex flex-col gap-3 text-gray-500 text-base leading-relaxed">
-                  <p>
-                    Em <strong className="text-gray-900">2 minutos</strong> eu consigo te mostrar por que você ainda não conseguiu o corpo que quer…
+                <p className="text-gray-500 text-sm leading-relaxed">
+                  Em <strong className="text-gray-800">2 minutos</strong> eu consigo te mostrar por que você ainda não conseguiu o corpo que quer…
+                </p>
+                <div className="flex items-center justify-center gap-2 py-2">
+                  <div className="h-px flex-1 bg-gray-100" />
+                  <p className="text-[#22C55E] font-black text-base px-2">
+                    E não é culpa sua.
                   </p>
-                  <p className="text-[#22C55E] font-bold text-lg">
-                    E provavelmente não é culpa sua.
-                  </p>
+                  <div className="h-px flex-1 bg-gray-100" />
                 </div>
               </div>
 
-              <div className="w-full flex flex-col gap-3">
-                <button
-                  onClick={() => next({ type: 'identification' })}
-                  className="w-full bg-[#22C55E] text-white font-black text-lg py-5 rounded-2xl shadow-xl shadow-green-500/25 active:scale-95 transition-all"
-                >
-                  👉 Quero descobrir
-                </button>
-                <p className="text-gray-300 text-xs">Teste gratuito · 2 minutos · sem compromisso</p>
+              {/* Prova social compacta */}
+              <div className="flex items-center justify-center gap-2 bg-gray-50 rounded-2xl px-4 py-3">
+                <div className="flex -space-x-1.5">
+                  {['VA', 'JO', 'CA'].map((init, i) => (
+                    <div key={i} className="w-7 h-7 rounded-full bg-[#22C55E] border-2 border-white flex items-center justify-center text-white text-[8px] font-black">
+                      {init}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-gray-500 text-xs"><strong className="text-gray-800">+2.847 mulheres</strong> já descobriram</p>
               </div>
+
+              {/* CTA */}
+              <button
+                onClick={() => next({ type: 'identification' })}
+                className="w-full bg-[#22C55E] text-white font-black text-lg py-5 rounded-2xl shadow-xl shadow-green-500/20 active:scale-95 transition-all"
+              >
+                👉 Quero descobrir
+              </button>
+              <p className="text-gray-300 text-xs text-center">Teste gratuito · 2 minutos · sem compromisso</p>
             </div>
           </div>
         )}
