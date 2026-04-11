@@ -33,7 +33,7 @@ interface VideoData {
 const VIDEOS: VideoData[] = [
   {
     id: 1,
-    videoSrc: '/Video%20TK%2001.Mp4',
+    videoSrc: 'https://drive.google.com/uc?export=download&id=1baw3pBziHJ04qlF6cAEOxPrUlr8AYjBz',
     description: 'você não falhou… você foi colocada no sistema errado 😮 #emagrecimento #mulher',
     song: 'áudio original - Giovanna Bueno',
     likes: '14.2K',
@@ -51,7 +51,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 2,
-    videoSrc: '/Video%20TK%2002.Mp4',
+    videoSrc: 'https://drive.google.com/uc?export=download&id=17qbNZ-ksAw4w0yk_arzJHnq_mjYihfGE',
     description: 'disciplina não é o problema. nunca foi 👀 #verdade #sistemaerrado',
     song: 'áudio original - Giovanna Bueno',
     likes: '22.7K',
@@ -69,7 +69,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 3,
-    videoSrc: '/Video%20Tk%2003.Mp4',
+    videoSrc: 'https://drive.google.com/uc?export=download&id=16YTmrDdVdu_vGeXmZefOTOnjfkkAjlOC',
     description: 'o que ninguém te ensinou sobre manter o resultado 🔥 #método #transformação',
     song: 'áudio original - Giovanna Bueno',
     likes: '31.5K',
@@ -87,7 +87,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 4,
-    videoSrc: '/Video%20Tk%2004.Mp4',
+    videoSrc: 'https://drive.google.com/uc?export=download&id=1UNy309o8SzqABQGIEwnNICtSwXZPErEw',
     description: 'antes eu desistia em menos de 1 semana. hoje é diferente 💪 #resultado #prova',
     song: 'áudio original - Giovanna Bueno',
     likes: '18.9K',
@@ -105,7 +105,7 @@ const VIDEOS: VideoData[] = [
   },
   {
     id: 5,
-    videoSrc: '/Video%20Tk%2005.Mp4',
+    videoSrc: 'https://drive.google.com/uc?export=download&id=1PISX-loqp0YAxsAtg5vRTsi2gExnNsUK',
     description: 'se você tá cansada de recomeçar… entra aqui 👇 o link tá na bio #startempoderada',
     song: 'áudio original - Giovanna Bueno',
     likes: '41.3K',
