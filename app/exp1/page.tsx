@@ -11,6 +11,7 @@ type Screen =
   | { type: 'question'; index: number }
   | { type: 'belief' }
   | { type: 'result' }
+  | { type: 'silhouette' }
   | { type: 'transition' }
 
 type Notif = { id: number; kg: number; xp: number }
@@ -484,10 +485,156 @@ export default function QuizPage() {
               </div>
             </div>
             <button
-              onClick={() => next({ type: 'transition' }, 'result')}
+              onClick={() => next({ type: 'silhouette' }, 'result')}
               className="w-full bg-[#22C55E] text-white font-black text-lg py-5 rounded-2xl shadow-lg shadow-green-500/20 active:scale-95 transition-all mt-2"
             >
               Ver o meu caminho →
+            </button>
+          </div>
+        )}
+
+        {/* ── TELA SILHUETA: TRANSFORMAÇÃO ── */}
+        {screen.type === 'silhouette' && (
+          <div className="flex-1 flex flex-col items-center px-6 py-8 gap-6">
+            <style>{`
+              @keyframes morph-before {
+                0%   { d: path("M 100 280 C 60 260 45 220 48 180 C 50 140 55 110 80 90 C 95 78 110 72 120 70 C 130 68 145 70 155 78 C 170 88 178 105 180 130 C 183 155 175 175 168 195 C 158 220 150 240 152 280 Z"); }
+                100% { d: path("M 100 280 C 72 265 62 235 64 200 C 66 165 72 135 90 112 C 103 96 115 88 125 86 C 135 84 148 86 158 96 C 170 108 174 128 172 152 C 170 175 162 195 158 215 C 152 240 148 258 148 280 Z"); }
+              }
+              @keyframes morph-after {
+                0%   { opacity: 0; transform: scale(0.95); }
+                40%  { opacity: 0; }
+                100% { opacity: 1; transform: scale(1); }
+              }
+              @keyframes glow-pulse {
+                0%, 100% { filter: drop-shadow(0 0 8px #22C55E60); }
+                50%       { filter: drop-shadow(0 0 18px #22C55E90); }
+              }
+              @keyframes arrow-move {
+                0%, 100% { transform: translateX(0); opacity: 0.6; }
+                50%       { transform: translateX(6px); opacity: 1; }
+              }
+              .silhouette-after { animation: morph-after 1.8s ease forwards, glow-pulse 2.5s 1.8s ease-in-out infinite; }
+              .arrow-anim       { animation: arrow-move 1s ease-in-out infinite; }
+            `}</style>
+
+            <div className="text-center flex flex-col gap-1">
+              <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Projeção personalizada</p>
+              <h2 className="text-gray-900 font-black text-xl leading-tight">
+                Imagina você assim<br />em <span className="text-[#22C55E]">30 dias</span>…
+              </h2>
+            </div>
+
+            {/* Silhuetas lado a lado */}
+            <div className="flex items-end justify-center gap-6 w-full">
+
+              {/* ANTES */}
+              <div className="flex flex-col items-center gap-2">
+                <div className="bg-red-50 border border-red-100 rounded-2xl px-3 py-1">
+                  <span className="text-red-400 text-xs font-black uppercase">Hoje</span>
+                </div>
+                <svg width="110" height="220" viewBox="0 0 250 300">
+                  {/* Cabeça */}
+                  <ellipse cx="125" cy="55" rx="32" ry="36" fill="#e5d3c8" stroke="#c4a882" strokeWidth="2" />
+                  {/* Cabelo */}
+                  <ellipse cx="125" cy="36" rx="34" ry="22" fill="#5c3317" />
+                  <ellipse cx="95" cy="60" rx="12" ry="28" fill="#5c3317" />
+                  <ellipse cx="155" cy="60" rx="12" ry="28" fill="#5c3317" />
+                  {/* Pescoço */}
+                  <rect x="115" y="86" width="20" height="18" fill="#e5d3c8" />
+                  {/* Corpo ANTES — mais largo */}
+                  <path d="M 78 104 C 60 110 50 135 48 165 C 46 190 52 215 58 235 C 65 255 75 265 95 270 C 108 274 125 275 145 270 C 162 265 172 255 178 235 C 185 215 192 190 190 165 C 188 135 178 110 162 104 C 150 98 140 96 125 96 C 110 96 92 98 78 104 Z"
+                    fill="#E8B4B8" stroke="#d4949a" strokeWidth="1.5" />
+                  {/* Cintura menos definida */}
+                  <path d="M 72 175 C 65 178 62 185 64 192 C 66 198 72 202 80 204 C 95 207 110 208 125 208 C 140 208 155 207 170 204 C 178 202 184 198 186 192 C 188 185 185 178 178 175"
+                    fill="#d4949a" opacity="0.4" />
+                  {/* Braços */}
+                  <path d="M 78 110 C 62 118 52 140 50 165 C 49 178 54 188 62 190" fill="#e5d3c8" stroke="#c4a882" strokeWidth="1.5" />
+                  <path d="M 172 110 C 188 118 198 140 200 165 C 201 178 196 188 188 190" fill="#e5d3c8" stroke="#c4a882" strokeWidth="1.5" />
+                  {/* Pernas */}
+                  <path d="M 95 270 C 88 285 84 295 82 310" stroke="#e5d3c8" strokeWidth="22" strokeLinecap="round" fill="none" />
+                  <path d="M 155 270 C 162 285 166 295 168 310" stroke="#e5d3c8" strokeWidth="22" strokeLinecap="round" fill="none" />
+                  {/* Roupas */}
+                  <path d="M 80 185 C 80 240 90 268 95 270 L 155 270 C 160 268 170 240 170 185 Z" fill="#9B59B6" opacity="0.7" />
+                  <path d="M 78 104 C 60 112 52 128 50 145 L 200 145 C 198 128 190 112 172 104 C 150 96 100 96 78 104 Z" fill="#3498DB" opacity="0.8" />
+                </svg>
+              </div>
+
+              {/* Seta animada */}
+              <div className="flex flex-col items-center gap-1 mb-16">
+                <div className="arrow-anim text-[#22C55E] text-3xl font-black">→</div>
+                <p className="text-[#22C55E] text-[9px] font-black uppercase tracking-wider text-center">30<br/>dias</p>
+              </div>
+
+              {/* DEPOIS */}
+              <div className="flex flex-col items-center gap-2">
+                <div className="bg-green-50 border border-green-100 rounded-2xl px-3 py-1">
+                  <span className="text-[#22C55E] text-xs font-black uppercase">Depois</span>
+                </div>
+                <div className="silhouette-after">
+                  <svg width="110" height="220" viewBox="0 0 250 300">
+                    {/* Cabeça */}
+                    <ellipse cx="125" cy="55" rx="30" ry="34" fill="#e5d3c8" stroke="#c4a882" strokeWidth="2" />
+                    {/* Cabelo */}
+                    <ellipse cx="125" cy="36" rx="32" ry="20" fill="#5c3317" />
+                    <ellipse cx="97" cy="58" rx="10" ry="25" fill="#5c3317" />
+                    <ellipse cx="153" cy="58" rx="10" ry="25" fill="#5c3317" />
+                    {/* Pescoço */}
+                    <rect x="117" y="84" width="18" height="16" fill="#e5d3c8" />
+                    {/* Corpo DEPOIS — mais fino e definido */}
+                    <path d="M 90 100 C 76 106 68 122 66 145 C 64 162 68 175 78 188 C 72 198 68 212 70 228 C 72 248 82 262 98 270 C 110 276 125 277 142 270 C 158 262 168 248 170 228 C 172 212 168 198 162 188 C 172 175 176 162 174 145 C 172 122 164 106 150 100 C 140 94 130 92 125 92 C 120 92 104 94 90 100 Z"
+                      fill="#E8B4B8" stroke="#d4949a" strokeWidth="1.5" />
+                    {/* Cintura definida */}
+                    <path d="M 76 178 C 70 182 68 188 70 194 C 72 200 80 204 92 206 C 105 208 118 209 125 209 C 132 209 145 208 158 206 C 170 204 178 200 180 194 C 182 188 180 182 174 178"
+                      fill="#d4949a" opacity="0.5" />
+                    {/* Braços mais finos */}
+                    <path d="M 90 106 C 76 114 68 132 66 152 C 65 163 68 172 74 175" fill="#e5d3c8" stroke="#c4a882" strokeWidth="1.5" />
+                    <path d="M 160 106 C 174 114 182 132 184 152 C 185 163 182 172 176 175" fill="#e5d3c8" stroke="#c4a882" strokeWidth="1.5" />
+                    {/* Pernas mais finas */}
+                    <path d="M 98 270 C 92 286 88 296 86 310" stroke="#e5d3c8" strokeWidth="18" strokeLinecap="round" fill="none" />
+                    <path d="M 152 270 C 158 286 162 296 164 310" stroke="#e5d3c8" strokeWidth="18" strokeLinecap="round" fill="none" />
+                    {/* Roupas */}
+                    <path d="M 82 188 C 82 238 92 266 98 270 L 152 270 C 158 266 168 238 168 188 Z" fill="#9B59B6" opacity="0.75" />
+                    <path d="M 90 100 C 74 108 66 122 65 140 L 185 140 C 184 122 176 108 160 100 C 145 93 105 93 90 100 Z" fill="#3498DB" opacity="0.85" />
+                    {/* Brilho/definição muscular */}
+                    <path d="M 108 130 C 112 125 118 123 125 123 C 132 123 138 125 142 130" fill="none" stroke="#ffffff" strokeWidth="1.5" opacity="0.4" />
+                    <path d="M 100 200 C 105 195 112 193 118 194" fill="none" stroke="#ffffff" strokeWidth="1" opacity="0.3" />
+                    {/* Estrelinhas de brilho */}
+                    <text x="178" y="120" fontSize="18" opacity="0.9">✨</text>
+                    <text x="55" y="150" fontSize="14" opacity="0.7">⭐</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Métricas */}
+            <div className="w-full flex flex-col gap-2">
+              {[
+                { label: 'Peso', antes: '-5 a 8kg', depois: 'eliminados', icon: '⚖️' },
+                { label: 'Energia', antes: 'baixa', depois: '+80% mais disposição', icon: '⚡' },
+                { label: 'Confiança', antes: 'abalada', depois: 'renovada e forte', icon: '💪' },
+              ].map(({ label, antes, depois, icon }) => (
+                <div key={label} className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-2.5">
+                  <span className="text-lg">{icon}</span>
+                  <p className="text-gray-500 text-xs font-bold w-16 flex-shrink-0">{label}</p>
+                  <div className="flex items-center gap-1.5 flex-1 text-xs">
+                    <span className="text-red-400 line-through">{antes}</span>
+                    <span className="text-gray-300">→</span>
+                    <span className="text-[#22C55E] font-black">{depois}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <p className="text-gray-300 text-[10px] text-center">
+              Projeção baseada em resultados reais de alunas com perfil similar ao seu
+            </p>
+
+            <button
+              onClick={() => next({ type: 'transition' })}
+              className="w-full bg-[#22C55E] text-white font-black text-lg py-5 rounded-2xl shadow-lg shadow-green-500/20 active:scale-95 transition-all"
+            >
+              Quero esse resultado →
             </button>
           </div>
         )}
