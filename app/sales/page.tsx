@@ -7,16 +7,16 @@ import { trackStep } from '@/lib/analytics'
 
 // ── Roleta ─────────────────────────────────────────────────────────────────────
 const SEGMENTS = [
-  { lines: ['Acesso', 'VIP'],      color: '#7c3aed' },
-  { lines: ['R$ 20', 'de off'],    color: '#0369a1' },
-  { lines: ['Bônus', 'Surpresa'],  color: '#b45309' },
-  { lines: ['1º mês', 'R$ 37'],   color: '#16a34a', prize: true },
-  { lines: ['Consul-', 'toria'],   color: '#dc2626' },
-  { lines: ['Material', 'VIP'],    color: '#6d28d9' },
-  { lines: ['R$ 10', 'de off'],    color: '#0e7490' },
-  { lines: ['Bônus', 'Extra'],     color: '#c2410c' },
+  { lines: ['Acesso', 'VIP'],     color: '#6D28D9', colorLight: '#A78BFA' },
+  { lines: ['R$ 20', 'off'],      color: '#0369A1', colorLight: '#38BDF8' },
+  { lines: ['Bônus', 'Surpresa'], color: '#B45309', colorLight: '#FCD34D' },
+  { lines: ['1º mês', 'R$ 37'],  color: '#15803D', colorLight: '#4ADE80', prize: true },
+  { lines: ['Consul-', 'toria'],  color: '#DC2626', colorLight: '#F87171' },
+  { lines: ['Material', 'VIP'],   color: '#5B21B6', colorLight: '#C4B5FD' },
+  { lines: ['R$ 10', 'off'],      color: '#0E7490', colorLight: '#67E8F9' },
+  { lines: ['Bônus', 'Extra'],    color: '#C2410C', colorLight: '#FB923C' },
 ]
-const FINAL_ROTATION = 2002.5 // sempre cai no segmento 3 (1º mês R$ 37)
+const FINAL_ROTATION = 2002.5
 function toRad(deg: number) { return deg * Math.PI / 180 }
 function segPath(i: number) {
   const cx = 150, cy = 150, r = 130
@@ -26,8 +26,42 @@ function segPath(i: number) {
   return `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2} Z`
 }
 function textPos(i: number) {
-  const cx = 150, cy = 150, r = 80, mid = (i + 0.5) * 45
+  const cx = 150, cy = 150, r = 82, mid = (i + 0.5) * 45
   return { x: cx + r * Math.sin(toRad(mid)), y: cy - r * Math.cos(toRad(mid)), rotation: mid }
+}
+
+function playTick() {
+  try {
+    const Ctx = window.AudioContext || (window as any).webkitAudioContext
+    const ctx = new Ctx()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain); gain.connect(ctx.destination)
+    osc.type = 'triangle'
+    osc.frequency.setValueAtTime(900, ctx.currentTime)
+    gain.gain.setValueAtTime(0.12, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05)
+    osc.start(); osc.stop(ctx.currentTime + 0.06)
+  } catch (_) {}
+}
+
+function playWinSound() {
+  try {
+    const Ctx = window.AudioContext || (window as any).webkitAudioContext
+    const ctx = new Ctx()
+    ;[523, 659, 784, 1047].forEach((freq, i) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain); gain.connect(ctx.destination)
+      osc.type = 'sine'
+      const t = ctx.currentTime + i * 0.15
+      osc.frequency.setValueAtTime(freq, t)
+      gain.gain.setValueAtTime(0, t)
+      gain.gain.linearRampToValueAtTime(0.4, t + 0.05)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45)
+      osc.start(t); osc.stop(t + 0.5)
+    })
+  } catch (_) {}
 }
 
 function Roleta({ onClaim }: { onClaim: () => void }) {
@@ -35,72 +69,192 @@ function Roleta({ onClaim }: { onClaim: () => void }) {
   const [spinning, setSpinning] = useState(false)
   const [won, setWon] = useState(false)
   const wheelRef = useRef<HTMLDivElement>(null)
+  const tickRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function handleSpin() {
     if (spinning || spun) return
     setSpinning(true)
+
+    // Ticks acelerando no início e desacelerando no fim
+    let count = 0
+    const maxTicks = 38
+    function tick() {
+      if (count >= maxTicks) return
+      playTick()
+      count++
+      const delay = 70 + (count / maxTicks) * 380
+      tickRef.current = setTimeout(tick, delay)
+    }
+    tick()
+
     if (wheelRef.current) {
       wheelRef.current.style.transition = 'transform 4.5s cubic-bezier(0.17, 0.67, 0.08, 0.99)'
       wheelRef.current.style.transform = `rotate(${FINAL_ROTATION}deg)`
     }
-    setTimeout(() => { setSpinning(false); setSpun(true); setTimeout(() => setWon(true), 400) }, 4500)
+    setTimeout(() => {
+      setSpinning(false); setSpun(true)
+      playWinSound()
+      setTimeout(() => setWon(true), 500)
+    }, 4500)
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
+    <div className="flex flex-col items-center gap-5 w-full">
+      <style>{`
+        @keyframes wheel-idle {
+          0%, 100% { box-shadow: 0 0 24px #facc1550, 0 0 48px #facc1520; }
+          50%       { box-shadow: 0 0 36px #facc1570, 0 0 64px #facc1530; }
+        }
+        @keyframes prize-reveal {
+          0%   { opacity: 0; transform: scale(0.85) translateY(8px); }
+          60%  { transform: scale(1.03) translateY(-2px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes shimmer {
+          0%   { transform: translateX(-100%) rotate(25deg); }
+          100% { transform: translateX(300%) rotate(25deg); }
+        }
+        .wheel-idle   { animation: wheel-idle 2.5s ease-in-out infinite; }
+        .prize-reveal { animation: prize-reveal 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+        .shimmer-bar  { animation: shimmer 2.5s ease-in-out infinite; }
+      `}</style>
+
       {!won ? (
         <>
-          <div className="relative flex items-center justify-center w-full">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20" style={{ marginTop: '-2px' }}>
-              <div className="w-0 h-0" style={{ borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '24px solid #facc15' }} />
+          {/* Roda */}
+          <div className={`relative flex items-center justify-center ${!spinning ? 'wheel-idle' : ''}`}
+            style={{ padding: 20, borderRadius: '50%' }}>
+
+            {/* Ponteiro */}
+            <div className="absolute z-30" style={{ top: 6, left: '50%', transform: 'translateX(-50%)' }}>
+              <svg width="26" height="38" viewBox="0 0 26 38">
+                <defs>
+                  <linearGradient id="ptr" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#FDE68A" />
+                    <stop offset="50%" stopColor="#FACC15" />
+                    <stop offset="100%" stopColor="#B45309" />
+                  </linearGradient>
+                </defs>
+                <path d="M 13 36 L 1 5 Q 13 0 25 5 Z" fill="url(#ptr)" />
+                <path d="M 13 36 L 1 5 Q 13 0 25 5 Z" fill="none" stroke="#78350F" strokeWidth="1.2" />
+                <circle cx="13" cy="6" r="3" fill="#FACC15" stroke="#78350F" strokeWidth="1" />
+              </svg>
             </div>
-            <div className="w-[260px] h-[260px] rounded-full border-4 border-yellow-400/50 shadow-2xl relative overflow-hidden">
-              <div ref={wheelRef} className="w-full h-full" style={{ willChange: 'transform' }}>
-                <svg viewBox="0 0 300 300" width="260" height="260">
-                  {SEGMENTS.map((seg, i) => {
-                    const tp = textPos(i)
-                    return (
-                      <g key={i}>
-                        <path d={segPath(i)} fill={seg.color} stroke="#0D0D0D" strokeWidth="2" />
-                        <text x={tp.x} y={tp.y} fill="#fff" fontSize={seg.prize ? "10" : "9"} fontWeight="800"
-                          textAnchor="middle" dominantBaseline="middle"
-                          transform={`rotate(${tp.rotation}, ${tp.x}, ${tp.y})`}>
-                          {seg.lines.map((line, li) => (
-                            <tspan key={li} x={tp.x} dy={li === 0 ? '-6' : '13'}>{line}</tspan>
-                          ))}
-                        </text>
-                      </g>
-                    )
-                  })}
-                  <circle cx="150" cy="150" r="18" fill="#0D0D0D" stroke="#facc15" strokeWidth="3" />
-                  <text x="150" y="150" textAnchor="middle" dominantBaseline="middle" fontSize="12" fill="#facc15">★</text>
-                </svg>
+
+            {/* Anel externo dourado */}
+            <div className="rounded-full p-[3px]" style={{
+              background: 'conic-gradient(from 0deg, #FACC15, #B45309, #FDE68A, #F59E0B, #FACC15)',
+              boxShadow: '0 0 0 2px #78350F'
+            }}>
+              <div className="w-[272px] h-[272px] rounded-full overflow-hidden" style={{
+                boxShadow: 'inset 0 0 20px #00000060'
+              }}>
+                <div ref={wheelRef} className="w-full h-full" style={{ willChange: 'transform' }}>
+                  <svg viewBox="0 0 300 300" width="272" height="272">
+                    <defs>
+                      {SEGMENTS.map((seg, i) => (
+                        <linearGradient key={i} id={`sg${i}`} x1="0.2" y1="0.2" x2="1" y2="1">
+                          <stop offset="0%" stopColor={seg.colorLight} />
+                          <stop offset="100%" stopColor={seg.color} />
+                        </linearGradient>
+                      ))}
+                      <radialGradient id="shine" cx="38%" cy="30%" r="70%">
+                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.18" />
+                        <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+                      </radialGradient>
+                    </defs>
+
+                    {SEGMENTS.map((seg, i) => {
+                      const tp = textPos(i)
+                      return (
+                        <g key={i}>
+                          <path d={segPath(i)} fill={`url(#sg${i})`} stroke="#00000025" strokeWidth="1.5" />
+                          {seg.prize && <path d={segPath(i)} fill="#ffffff" opacity="0.1" />}
+                          <text x={tp.x} y={tp.y} fill="#fff" fontSize={seg.prize ? "11" : "9.5"} fontWeight="900"
+                            textAnchor="middle" dominantBaseline="middle"
+                            transform={`rotate(${tp.rotation}, ${tp.x}, ${tp.y})`}>
+                            {seg.lines.map((line, li) => (
+                              <tspan key={li} x={tp.x} dy={li === 0 ? '-7' : '14'}>{line}</tspan>
+                            ))}
+                          </text>
+                        </g>
+                      )
+                    })}
+
+                    {/* Shine overlay */}
+                    <circle cx="150" cy="150" r="130" fill="url(#shine)" />
+
+                    {/* Linhas separadoras */}
+                    {SEGMENTS.map((_, i) => {
+                      const a = i * 45
+                      return <line key={i} x1="150" y1="150"
+                        x2={150 + 130 * Math.sin(toRad(a))} y2={150 - 130 * Math.cos(toRad(a))}
+                        stroke="#00000030" strokeWidth="1.5" />
+                    })}
+
+                    {/* Hub central */}
+                    <circle cx="150" cy="150" r="24" fill="#111" stroke="#FACC15" strokeWidth="3" />
+                    <circle cx="150" cy="150" r="17" fill="#1a1a1a" />
+                    <circle cx="150" cy="150" r="11" fill="#FACC15" opacity="0.95" />
+                    <text x="150" y="151" textAnchor="middle" dominantBaseline="middle" fontSize="11" fill="#111" fontWeight="900">★</text>
+                  </svg>
+                </div>
               </div>
             </div>
           </div>
+
           <button
             onClick={handleSpin}
             disabled={spinning || spun}
-            className={`w-full py-4 rounded-2xl font-black text-base transition-all active:scale-95 ${spinning || spun ? 'bg-white/10 text-white/30' : 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-black shadow-lg shadow-yellow-500/30'}`}
+            className="w-full py-4 rounded-2xl font-black text-base transition-all active:scale-95 relative overflow-hidden"
+            style={(!spinning && !spun) ? {
+              background: 'linear-gradient(135deg, #FDE68A 0%, #FACC15 45%, #D97706 100%)',
+              boxShadow: '0 4px 24px #FACC1550, inset 0 1px 0 #ffffff50',
+              color: '#1a1a1a',
+            } : { background: '#ffffff10', color: '#ffffff30' }}
           >
-            {spinning ? '⟳ Girando...' : spun ? 'Aguarde...' : '🎰 Girar a Roleta'}
+            {(!spinning && !spun) && (
+              <div className="shimmer-bar absolute inset-0 w-1/3" style={{
+                background: 'linear-gradient(90deg, transparent, #ffffff30, transparent)',
+              }} />
+            )}
+            <span className="relative z-10">
+              {spinning ? '⟳ Girando...' : spun ? 'Aguarde...' : '🎰 GIRAR A ROLETA'}
+            </span>
           </button>
+
+          <p className="text-white/30 text-xs text-center">Gire e descubra sua recompensa exclusiva</p>
         </>
       ) : (
-        <div className="w-full flex flex-col gap-3 animate-fadeIn">
-          <div className="bg-[#16a34a]/20 border-2 border-[#22C55E]/60 rounded-2xl p-5 text-center">
-            <div className="text-4xl mb-2">🎉</div>
-            <p className="text-[#22C55E] font-bold text-xs uppercase tracking-widest mb-1">Você ganhou!</p>
-            <p className="text-white font-black text-xl leading-tight">1º mês por apenas</p>
-            <div className="flex items-end justify-center gap-1 mt-1">
-              <span className="text-white/60 text-lg font-bold self-start mt-1">R$</span>
-              <span className="text-[#22C55E] font-black text-5xl leading-none">37</span>
+        <div className="w-full flex flex-col gap-4 prize-reveal">
+          <div className="relative overflow-hidden rounded-2xl" style={{
+            background: 'linear-gradient(135deg, #052e16 0%, #14532d 60%, #052e16 100%)',
+            border: '2px solid #22C55E60',
+            boxShadow: '0 0 32px #22C55E25, inset 0 1px 0 #22C55E30',
+          }}>
+            <div className="absolute top-0 left-0 right-0 h-px" style={{
+              background: 'linear-gradient(90deg, transparent, #22C55E, transparent)'
+            }} />
+            <div className="p-6 text-center flex flex-col gap-2">
+              <div className="text-5xl">🎉</div>
+              <p className="text-[#4ADE80] font-black text-xs uppercase tracking-widest">Parabéns! Você ganhou!</p>
+              <p className="text-white/70 font-semibold text-sm">1º mês do Start Empoderada por apenas</p>
+              <div className="flex items-end justify-center gap-1 my-1">
+                <span className="text-white/50 text-xl font-bold self-start mt-3">R$</span>
+                <span className="font-black leading-none" style={{ fontSize: 72, color: '#4ADE80', lineHeight: 1 }}>37</span>
+              </div>
+              <p className="text-white/40 text-xs">depois R$ 67/mês · cancele quando quiser</p>
             </div>
-            <p className="text-white/40 text-xs mt-1">depois R$ 67/mês · cancele quando quiser</p>
           </div>
+
           <button
             onClick={onClaim}
-            className="w-full bg-[#22C55E] text-black font-black text-lg py-4 rounded-2xl shadow-lg active:scale-95 transition-all"
+            className="w-full font-black text-lg py-5 rounded-2xl transition-all active:scale-95 relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)',
+              boxShadow: '0 4px 28px #22C55E50, inset 0 1px 0 #ffffff25',
+              color: 'white',
+            }}
           >
             GARANTIR MEU DESCONTO →
           </button>
