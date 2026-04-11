@@ -469,6 +469,106 @@ export default function SalesPage() {
         </div>
       </section>
 
+      {/* ── GRÁFICO TRANSFORMAÇÃO ────────────────────────────────── */}
+      <section className="px-4 sm:px-6 pb-8">
+        <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-5 flex flex-col gap-4">
+          <div className="text-center">
+            <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-1">Sua transformação prevista</p>
+            <h3 className="text-white font-black text-lg leading-snug">Você em <span className="text-[#22C55E]">14 dias</span> seguindo o método</h3>
+          </div>
+
+          {/* Gráfico SVG */}
+          <div className="relative w-full" style={{ height: 180 }}>
+            <svg viewBox="0 0 320 160" width="100%" height="160" className="overflow-visible">
+              {/* Grade */}
+              {[0, 40, 80, 120].map(y => (
+                <line key={y} x1="36" y1={y + 8} x2="312" y2={y + 8} stroke="#ffffff10" strokeWidth="1" />
+              ))}
+
+              {/* Labels Y */}
+              {['100%', '75%', '50%', '25%'].map((label, i) => (
+                <text key={i} x="30" y={i * 40 + 13} textAnchor="end" fill="#ffffff40" fontSize="9" fontWeight="600">{label}</text>
+              ))}
+
+              {/* Labels X */}
+              {['Hoje', 'Dia 3', 'Dia 7', 'Dia 10', 'Dia 14'].map((label, i) => {
+                const xs = [44, 113, 182, 247, 308]
+                return <text key={i} x={xs[i]} y="155" textAnchor="middle" fill="#ffffff40" fontSize="9" fontWeight="600">{label}</text>
+              })}
+
+              {/* Área ANTES (cinza/vermelho — sem método) */}
+              <defs>
+                <linearGradient id="grad-before" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#ef444430" />
+                  <stop offset="100%" stopColor="#ef444400" />
+                </linearGradient>
+                <linearGradient id="grad-after" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#22C55E50" />
+                  <stop offset="100%" stopColor="#22C55E00" />
+                </linearGradient>
+              </defs>
+
+              {/* Linha ANTES (plana, caindo levemente) */}
+              <path
+                d="M 44 88 L 113 98 L 182 105 L 247 110 L 308 118 L 308 148 L 44 148 Z"
+                fill="url(#grad-before)"
+              />
+              <path
+                d="M 44 88 L 113 98 L 182 105 L 247 110 L 308 118"
+                fill="none" stroke="#ef4444" strokeWidth="2" strokeDasharray="5 3"
+              />
+
+              {/* Linha DEPOIS (subindo) */}
+              <path
+                d="M 44 108 L 113 80 L 182 52 L 247 30 L 308 12 L 308 148 L 44 148 Z"
+                fill="url(#grad-after)"
+              />
+              <path
+                d="M 44 108 L 113 80 L 182 52 L 247 30 L 308 12"
+                fill="none" stroke="#22C55E" strokeWidth="2.5"
+              />
+
+              {/* Ponto inicial compartilhado */}
+              <circle cx="44" cy="108" r="4" fill="#ffffff" stroke="#0a0a0a" strokeWidth="2" />
+
+              {/* Ponto final ANTES */}
+              <circle cx="308" cy="118" r="4" fill="#ef4444" stroke="#0a0a0a" strokeWidth="2" />
+              <text x="308" y="112" textAnchor="middle" fill="#ef4444" fontSize="8" fontWeight="800">sem método</text>
+
+              {/* Ponto final DEPOIS */}
+              <circle cx="308" cy="12" r="5" fill="#22C55E" stroke="#0a0a0a" strokeWidth="2" />
+              <text x="308" y="7" textAnchor="middle" fill="#22C55E" fontSize="8" fontWeight="800">com método</text>
+            </svg>
+          </div>
+
+          {/* Métricas comparativas */}
+          <div className="flex flex-col gap-2">
+            {[
+              { label: 'Energia', antes: 25, depois: 88, icon: '⚡' },
+              { label: 'Disposição', antes: 20, depois: 85, icon: '💪' },
+              { label: 'Confiança', antes: 30, depois: 90, icon: '✨' },
+            ].map(({ label, antes, depois, icon }) => (
+              <div key={label} className="flex items-center gap-3">
+                <span className="text-base w-5 flex-shrink-0">{icon}</span>
+                <p className="text-white/60 text-xs font-bold w-20 flex-shrink-0">{label}</p>
+                <div className="flex-1 flex flex-col gap-1">
+                  <div className="flex items-center gap-1.5">
+                    <div className="h-2 bg-red-500/30 rounded-full" style={{ width: `${antes}%` }} />
+                    <span className="text-red-400 text-[10px] font-bold">{antes}%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="h-2 bg-[#22C55E] rounded-full transition-all duration-1000" style={{ width: `${depois}%` }} />
+                    <span className="text-[#22C55E] text-[10px] font-bold">{depois}%</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-white/30 text-[10px] text-center">Baseado em resultados reais de alunas com perfil similar ao seu</p>
+        </div>
+      </section>
+
       {/* ── OFFER ─────────────────────────────────────────────────── */}
       <section id="oferta" className="px-4 sm:px-6 pb-10">
         <div className="relative bg-gradient-to-br from-[#0a160a] to-[#0a0a0a] border-2 border-[#22C55E]/50 rounded-2xl overflow-hidden">
