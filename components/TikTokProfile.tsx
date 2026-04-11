@@ -221,7 +221,7 @@ export default function TikTokProfile() {
           muted={globalMuted}
           showMuteHint={showMuteHint && idx === 0}
           onToggleMute={handleToggleMute}
-          onCTA={() => router.push('/imc')}
+          onCTA={() => { window.location.href = '/imc' }}
         />
       ))}
     </div>
@@ -418,7 +418,15 @@ function VideoSlide({
       {video.isCTA && (
         <div className="absolute bottom-48 left-0 right-0 z-20 flex justify-center px-10">
           <button
-            onClick={(e) => { e.stopPropagation(); onCTA() }}
+            onClick={(e) => {
+              e.stopPropagation()
+              // Para o vídeo imediatamente para liberar recursos
+              if (videoRef.current) {
+                videoRef.current.pause()
+                videoRef.current.src = ''
+              }
+              onCTA()
+            }}
             className="bg-[#22C55E] text-black font-bold text-base py-4 px-8 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 animate-greenPulse"
           >
             ACESSAR AGORA →
