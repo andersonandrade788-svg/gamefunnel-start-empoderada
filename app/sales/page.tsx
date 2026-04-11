@@ -104,6 +104,7 @@ function Roleta({ onClaim }: { onClaim: () => void }) {
           >
             GARANTIR MEU DESCONTO →
           </button>
+          <p className="text-white/30 text-[10px] text-center">🔓 Cancele quando quiser · sem multa</p>
         </div>
       )}
     </div>
@@ -519,16 +520,34 @@ export default function SalesPage() {
             </div>
 
             {/* Preço com ancoragem */}
-            <div className="text-center">
+            <div className="text-center flex flex-col gap-3">
               <p className="text-white/40 text-sm">Tudo isso por apenas</p>
-              <div className="flex items-end justify-center gap-1 mt-1">
-                <span className="text-white/60 text-xl font-bold self-start mt-2">R$</span>
-                <span className="text-white font-black text-6xl leading-none">397</span>
+
+              {/* 1º mês com desconto da roleta */}
+              <div className="bg-[#22C55E]/10 border-2 border-[#22C55E]/50 rounded-2xl px-4 py-4">
+                <span className="bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">🎰 Desconto da roleta</span>
+                <p className="text-white/50 text-xs mt-2">1º mês por apenas</p>
+                <div className="flex items-end justify-center gap-1">
+                  <span className="text-white/60 text-xl font-bold self-start mt-2">R$</span>
+                  <span className="text-[#22C55E] font-black text-6xl leading-none">37</span>
+                </div>
               </div>
-              {/* Parcelamento em destaque */}
-              <div className="mt-3 bg-[#22C55E]/10 border border-[#22C55E]/30 rounded-2xl px-4 py-3">
-                <p className="text-[#22C55E] font-black text-xl">12x de R$ 41,01</p>
-                <p className="text-white/40 text-xs mt-1">menos que um jantar fora 🍽️</p>
+
+              {/* Recorrência */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 flex flex-col gap-1">
+                <p className="text-white/50 text-xs">A partir do 2º mês</p>
+                <div className="flex items-end justify-center gap-1">
+                  <span className="text-white/40 text-base font-bold self-start mt-1">R$</span>
+                  <span className="text-white font-black text-3xl leading-none">67</span>
+                  <span className="text-white/40 text-sm mb-1">/mês</span>
+                </div>
+                <p className="text-white/30 text-xs">menos que um jantar fora 🍽️</p>
+              </div>
+
+              {/* Cancelamento */}
+              <div className="flex items-center justify-center gap-2 bg-white/3 border border-white/8 rounded-xl px-4 py-2.5">
+                <span className="text-white/40 text-sm">🔓</span>
+                <p className="text-white/50 text-xs font-medium">Cancele quando quiser, sem multa e sem burocracia</p>
               </div>
             </div>
 
@@ -635,7 +654,12 @@ export default function SalesPage() {
                 </h2>
                 <p className="text-white/40 text-xs mt-1">Você tem direito a 1 giro gratuito</p>
               </div>
-              <Roleta onClaim={() => setShowRoleta(false)} />
+              <Roleta onClaim={() => {
+                setShowRoleta(false)
+                setTimeout(() => {
+                  document.getElementById('oferta')?.scrollIntoView({ behavior: 'smooth' })
+                }, 300)
+              }} />
               <button
                 onClick={() => setShowRoleta(false)}
                 className="text-white/20 text-xs text-center hover:text-white/40 transition-colors"
