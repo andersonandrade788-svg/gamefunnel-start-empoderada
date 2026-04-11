@@ -208,7 +208,7 @@ export default function WhatsAppChat() {
   }
 
   return (
-    <div className="mobile-frame bg-white flex flex-col" style={{ height: '100dvh' }}>
+    <div className="mobile-frame bg-white flex flex-col" style={{ height: '100dvh', maxHeight: '-webkit-fill-available' }}>
       {/* Status Bar */}
       <div className="bg-[#128C7E] flex-shrink-0">
         <StatusBar dark={true} />
@@ -308,7 +308,7 @@ export default function WhatsAppChat() {
 
       {/* Reply area — shown when flow pauses for user interaction */}
       {pendingReply ? (
-        <div className="flex-shrink-0 bg-[#F0F0F0] border-t border-gray-200">
+        <div className="flex-shrink-0 bg-[#F0F0F0] border-t border-gray-200" style={{ paddingBottom: 'env(safe-area-inset-bottom, 16px)' }}>
           {/* Hint label */}
           <div className="flex justify-center pt-2 pb-1">
             <span className="text-gray-400 text-[11px] font-medium tracking-wide uppercase">
@@ -336,7 +336,7 @@ export default function WhatsAppChat() {
         </div>
       ) : (
         /* Decorative input bar when no pending reply */
-        <div className="bg-[#F0F0F0] px-4 py-3 flex items-center gap-2 flex-shrink-0 border-t border-gray-200">
+        <div className="bg-[#F0F0F0] px-4 pt-3 flex items-center gap-2 flex-shrink-0 border-t border-gray-200" style={{ paddingBottom: 'env(safe-area-inset-bottom, 12px)' }}>
           <div className="flex-1 bg-white rounded-full px-4 py-2 text-gray-400 text-sm shadow-sm">
             Mensagem
           </div>
