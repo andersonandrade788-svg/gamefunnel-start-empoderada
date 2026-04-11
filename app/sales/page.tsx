@@ -45,29 +45,67 @@ function playTick() {
   } catch (_) {}
 }
 
-function playWinSound() {
+function playCashRegister() {
   try {
     const Ctx = window.AudioContext || (window as any).webkitAudioContext
     const ctx = new Ctx()
+
+    // "Ding" metálico da caixa registradora
+    const bell = ctx.createOscillator()
+    const bellGain = ctx.createGain()
+    bell.connect(bellGain); bellGain.connect(ctx.destination)
+    bell.type = 'sine'
+    bell.frequency.setValueAtTime(1400, ctx.currentTime)
+    bell.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.3)
+    bellGain.gain.setValueAtTime(0.5, ctx.currentTime)
+    bellGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8)
+    bell.start(); bell.stop(ctx.currentTime + 0.8)
+
+    // "Ka-ching" — nota grave mecânica
+    const kaching = ctx.createOscillator()
+    const kGain = ctx.createGain()
+    kaching.connect(kGain); kGain.connect(ctx.destination)
+    kaching.type = 'square'
+    kaching.frequency.setValueAtTime(180, ctx.currentTime + 0.05)
+    kaching.frequency.setValueAtTime(220, ctx.currentTime + 0.09)
+    kaching.frequency.setValueAtTime(160, ctx.currentTime + 0.13)
+    kGain.gain.setValueAtTime(0.2, ctx.currentTime + 0.05)
+    kGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3)
+    kaching.start(ctx.currentTime + 0.05)
+    kaching.stop(ctx.currentTime + 0.35)
+
+    // Fanfarra celebratória em seguida
     ;[523, 659, 784, 1047].forEach((freq, i) => {
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
       osc.connect(gain); gain.connect(ctx.destination)
       osc.type = 'sine'
-      const t = ctx.currentTime + i * 0.15
+      const t = ctx.currentTime + 0.4 + i * 0.14
       osc.frequency.setValueAtTime(freq, t)
       gain.gain.setValueAtTime(0, t)
-      gain.gain.linearRampToValueAtTime(0.4, t + 0.05)
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45)
-      osc.start(t); osc.stop(t + 0.5)
+      gain.gain.linearRampToValueAtTime(0.38, t + 0.05)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4)
+      osc.start(t); osc.stop(t + 0.45)
     })
   } catch (_) {}
 }
+
+const CONFETTI_COLORS_R = ['#22C55E','#FACC15','#F87171','#60A5FA','#A78BFA','#FB923C','#34D399','#FDE68A']
+const roletaConfetti = Array.from({ length: 70 }, (_, i) => ({
+  id: i,
+  color: CONFETTI_COLORS_R[i % CONFETTI_COLORS_R.length],
+  left: Math.random() * 100,
+  delay: Math.random() * 1.5,
+  duration: 2 + Math.random() * 2,
+  size: 7 + Math.random() * 9,
+  isCircle: Math.random() > 0.5,
+}))
 
 function Roleta({ onClaim }: { onClaim: () => void }) {
   const [spun, setSpun] = useState(false)
   const [spinning, setSpinning] = useState(false)
   const [won, setWon] = useState(false)
+  const [showConfetti, setShowConfetti] = useState(false)
   const wheelRef = useRef<HTMLDivElement>(null)
   const tickRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -75,7 +113,6 @@ function Roleta({ onClaim }: { onClaim: () => void }) {
     if (spinning || spun) return
     setSpinning(true)
 
-    // Ticks acelerando no início e desacelerando no fim
     let count = 0
     const maxTicks = 38
     function tick() {
@@ -93,8 +130,9 @@ function Roleta({ onClaim }: { onClaim: () => void }) {
     }
     setTimeout(() => {
       setSpinning(false); setSpun(true)
-      playWinSound()
-      setTimeout(() => setWon(true), 500)
+      playCashRegister()
+      setShowConfetti(true)
+      setTimeout(() => setWon(true), 600)
     }, 4500)
   }
 
@@ -117,7 +155,26 @@ function Roleta({ onClaim }: { onClaim: () => void }) {
         .wheel-idle   { animation: wheel-idle 2.5s ease-in-out infinite; }
         .prize-reveal { animation: prize-reveal 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; }
         .shimmer-bar  { animation: shimmer 2.5s ease-in-out infinite; }
+        @keyframes confetti-r {
+          0%   { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
       `}</style>
+
+      {/* Confete da roleta */}
+      {showConfetti && (
+        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+          {roletaConfetti.map(p => (
+            <div key={p.id} style={{
+              position: 'absolute', top: '-10px', left: `${p.left}%`,
+              width: `${p.size}px`, height: `${p.size}px`,
+              backgroundColor: p.color,
+              borderRadius: p.isCircle ? '50%' : '2px',
+              animation: `confetti-r ${p.duration}s ${p.delay}s ease-in forwards`,
+            }} />
+          ))}
+        </div>
+      )}
 
       {!won ? (
         <>
