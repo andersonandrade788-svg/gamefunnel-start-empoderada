@@ -1090,59 +1090,43 @@ export default function SalesPage() {
             <div className="h-1 w-full bg-gradient-to-r from-[#22C55E] via-[#4ade80] to-[#22C55E]" />
 
             <div className="p-6 flex flex-col gap-4">
-              {!exitSent ? (
-                <>
-                  <div className="flex flex-col items-center text-center gap-2">
-                    <span className="text-4xl">📲</span>
-                    <h2 className="text-white font-black text-xl leading-tight">
-                      Espera! Antes de sair…
-                    </h2>
-                    <p className="text-white/50 text-sm leading-relaxed">
-                      Quer que eu te envie seu resultado personalizado e uma <strong className="text-[#22C55E]">oferta exclusiva</strong> direto no WhatsApp?
-                    </p>
-                  </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <span className="text-4xl">🚨</span>
+                <h2 className="text-white font-black text-xl leading-tight">
+                  Espera! Antes de ir…
+                </h2>
+                <p className="text-white/50 text-sm leading-relaxed">
+                  Você está saindo sem garantir sua vaga. As vagas estão acabando rápido.
+                </p>
+              </div>
 
-                  <div className="flex flex-col gap-2">
-                    <input
-                      type="tel"
-                      placeholder="Seu WhatsApp (ex: 11999999999)"
-                      value={exitPhone}
-                      onChange={e => setExitPhone(e.target.value.replace(/\D/g, ''))}
-                      maxLength={11}
-                      className="w-full bg-white/5 border border-white/15 rounded-2xl px-4 py-4 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#22C55E] transition-all"
-                    />
-                    <button
-                      onClick={handleLeadSubmit}
-                      disabled={exitSending || exitPhone.length < 10}
-                      className="w-full bg-[#22C55E] text-black font-black text-base py-4 rounded-2xl shadow-lg active:scale-95 transition-all disabled:opacity-40"
-                    >
-                      {exitSending ? 'Enviando...' : '📲 Quero receber no WhatsApp'}
-                    </button>
-                    <button
-                      onClick={() => setShowExitPopup(false)}
-                      className="w-full text-white/25 text-xs py-2 hover:text-white/40 transition-colors"
-                    >
-                      Não, prefiro sair sem receber
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <div className="flex flex-col items-center text-center gap-4 py-2">
-                  <span className="text-5xl">✅</span>
-                  <div className="flex flex-col gap-1">
-                    <h2 className="text-white font-black text-xl">Perfeito!</h2>
-                    <p className="text-white/50 text-sm leading-relaxed">
-                      Você vai receber seu resultado e a oferta especial no WhatsApp em breve. Fique de olho! 👀
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setShowExitPopup(false)}
-                    className="w-full bg-white/5 border border-white/10 text-white/50 text-sm py-3 rounded-2xl hover:text-white/70 transition-colors"
-                  >
-                    Fechar
-                  </button>
+              <div className="bg-black/40 border border-white/10 rounded-2xl p-4 flex flex-col items-center gap-1">
+                <p className="text-white/30 text-xs line-through">De R$ 67,00/mês</p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-white/60 text-lg font-bold">R$</span>
+                  <span className="text-white font-black text-5xl">37</span>
+                  <span className="text-white/60 text-lg font-bold">,00</span>
                 </div>
-              )}
+                <p className="text-[#22C55E] text-xs font-bold">no primeiro mês</p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <a
+                  href="https://pay.cakto.com.br/36sdo2o_810308"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setShowExitPopup(false)}
+                  className="w-full bg-[#22C55E] text-black font-black text-base py-4 rounded-2xl shadow-lg active:scale-95 transition-all text-center"
+                >
+                  QUERO GARANTIR MINHA VAGA
+                </a>
+                <button
+                  onClick={() => setShowExitPopup(false)}
+                  className="w-full text-white/25 text-xs py-2 hover:text-white/40 transition-colors"
+                >
+                  Não, prefiro perder essa oportunidade
+                </button>
+              </div>
             </div>
           </div>
         </div>
