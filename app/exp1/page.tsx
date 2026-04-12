@@ -409,7 +409,7 @@ export default function QuizPage() {
               <div className="flex items-center justify-center gap-2 bg-gray-50 rounded-2xl px-4 py-3">
                 <div className="flex -space-x-1.5">
                   {['VA', 'JO', 'CA'].map((init, i) => (
-                    <div key={i} className="w-7 h-7 rounded-full bg-[#22C55E] border-2 border-white flex items-center justify-center text-white text-[8px] font-black">
+                    <div key={i} className="w-7 h-7 rounded-full bg-[#22C55E] border-2 border-white flex items-center justify-center text-white text-[10px] font-black">
                       {init}
                     </div>
                   ))}
@@ -611,7 +611,7 @@ export default function QuizPage() {
               {/* Seta animada */}
               <div className="flex flex-col items-center gap-1 mb-10 flex-shrink-0">
                 <div className="arrow-anim text-[#22C55E] text-3xl font-black">→</div>
-                <p className="text-[#22C55E] text-[9px] font-black uppercase tracking-wider text-center">30<br/>dias</p>
+                <p className="text-[#22C55E] text-xs font-black uppercase tracking-wider text-center">30<br/>dias</p>
               </div>
 
               {/* DEPOIS */}

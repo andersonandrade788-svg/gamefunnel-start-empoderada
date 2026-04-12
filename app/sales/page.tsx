@@ -575,7 +575,7 @@ export default function SalesPage() {
     <div className="mobile-frame bg-[#0A0A0A] overflow-y-auto" style={{ minHeight: '100dvh' }}>
 
       {/* Status bar */}
-      <div className="sticky top-0 z-50 bg-[#0A0A0A]">
+      <div className="sticky top-0 z-50 bg-[#0A0A0A]" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <StatusBar dark={true} />
       </div>
 
@@ -626,7 +626,7 @@ export default function SalesPage() {
           <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 mt-2">
             <div className="flex -space-x-2">
               {['VA', 'JO', 'AS', 'CA'].map((init, i) => (
-                <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-[#22C55E] to-[#16A34A] border-2 border-[#0A0A0A] flex items-center justify-center text-white text-[9px] font-bold">
+                <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-[#22C55E] to-[#16A34A] border-2 border-[#0A0A0A] flex items-center justify-center text-white text-[10px] font-bold">
                   {init}
                 </div>
               ))}
@@ -637,7 +637,7 @@ export default function SalesPage() {
             </div>
           </div>
 
-          <a href="https://pay.cakto.com.br/36sdo2o_810308" target="_blank" rel="noopener noreferrer" onClick={handleCheckout} className="w-full bg-[#22C55E] hover:bg-[#16A34A] text-black font-black text-base py-4 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 mt-2 text-center block">
+          <a href="https://pay.cakto.com.br/36sdo2o_810308" target="_blank" rel="noopener noreferrer" onClick={handleCheckout} className="w-full bg-[#22C55E] hover:bg-[#16A34A] text-black font-black text-base py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 mt-2 text-center block">
             QUERO COMEÇAR AGORA
           </a>
         </div>
@@ -903,7 +903,7 @@ export default function SalesPage() {
                   <div key={i} className="flex items-center justify-between px-4 py-2.5 gap-3">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <div className="w-4 h-4 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/50 flex items-center justify-center flex-shrink-0">
-                        <span className="text-[#22C55E] text-[8px] font-bold">✓</span>
+                        <span className="text-[#22C55E] text-[10px] font-bold">✓</span>
                       </div>
                       <span className="text-white/80 text-xs leading-tight">{row.item}</span>
                     </div>
