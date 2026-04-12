@@ -513,8 +513,28 @@ export default function SalesPage() {
     return () => clearInterval(interval)
   }, [])
 
-  const [showExitPopup, setShowExitPopup] = useState(false)
+  const [showExitPopup, setShowExitPopup] = useState(
+    typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('testpopup') === '1'
+  )
+  const [exitPhone, setExitPhone] = useState('')
+  const [exitSent, setExitSent] = useState(false)
+  const [exitSending, setExitSending] = useState(false)
   const exitShownRef = useRef(false)
+
+  async function handleLeadSubmit() {
+    if (!exitPhone || exitPhone.length < 10) return
+    setExitSending(true)
+    try {
+      await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: exitPhone }),
+      })
+      setExitSent(true)
+    } finally {
+      setExitSending(false)
+    }
+  }
 
   useEffect(() => {
     const SHOWN_KEY = '_exit_popup_shown'
@@ -1067,55 +1087,62 @@ export default function SalesPage() {
       {showExitPopup && (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="relative w-full max-w-sm bg-[#0f1f0f] border border-[#22C55E]/40 rounded-3xl overflow-hidden shadow-2xl shadow-green-900/50">
-
-            {/* Linha de destaque topo */}
             <div className="h-1 w-full bg-gradient-to-r from-[#22C55E] via-[#4ade80] to-[#22C55E]" />
 
             <div className="p-6 flex flex-col gap-4">
-              {/* Ícone + título */}
-              <div className="flex flex-col items-center text-center gap-2">
-                <span className="text-4xl">🚨</span>
-                <h2 className="text-white font-black text-xl leading-tight">
-                  Espera! Antes de ir...
-                </h2>
-                <p className="text-white/50 text-sm leading-relaxed">
-                  Você está saindo sem garantir sua vaga. As vagas estão acabando rápido.
-                </p>
-              </div>
+              {!exitSent ? (
+                <>
+                  <div className="flex flex-col items-center text-center gap-2">
+                    <span className="text-4xl">📲</span>
+                    <h2 className="text-white font-black text-xl leading-tight">
+                      Espera! Antes de sair…
+                    </h2>
+                    <p className="text-white/50 text-sm leading-relaxed">
+                      Quer que eu te envie seu resultado personalizado e uma <strong className="text-[#22C55E]">oferta exclusiva</strong> direto no WhatsApp?
+                    </p>
+                  </div>
 
-              {/* Oferta em destaque */}
-              <div className="bg-black/40 border border-[#22C55E]/20 rounded-2xl px-4 py-4 flex flex-col items-center gap-1 text-center">
-                <p className="text-white/50 text-xs line-through">De R$ 997,00</p>
-                <div className="flex items-end gap-1">
-                  <span className="text-white/60 text-base font-bold self-start mt-1">R$</span>
-                  <span className="text-white font-black text-5xl leading-none">397</span>
+                  <div className="flex flex-col gap-2">
+                    <input
+                      type="tel"
+                      placeholder="Seu WhatsApp (ex: 11999999999)"
+                      value={exitPhone}
+                      onChange={e => setExitPhone(e.target.value.replace(/\D/g, ''))}
+                      maxLength={11}
+                      className="w-full bg-white/5 border border-white/15 rounded-2xl px-4 py-4 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#22C55E] transition-all"
+                    />
+                    <button
+                      onClick={handleLeadSubmit}
+                      disabled={exitSending || exitPhone.length < 10}
+                      className="w-full bg-[#22C55E] text-black font-black text-base py-4 rounded-2xl shadow-lg active:scale-95 transition-all disabled:opacity-40"
+                    >
+                      {exitSending ? 'Enviando...' : '📲 Quero receber no WhatsApp'}
+                    </button>
+                    <button
+                      onClick={() => setShowExitPopup(false)}
+                      className="w-full text-white/25 text-xs py-2 hover:text-white/40 transition-colors"
+                    >
+                      Não, prefiro sair sem receber
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center text-center gap-4 py-2">
+                  <span className="text-5xl">✅</span>
+                  <div className="flex flex-col gap-1">
+                    <h2 className="text-white font-black text-xl">Perfeito!</h2>
+                    <p className="text-white/50 text-sm leading-relaxed">
+                      Você vai receber seu resultado e a oferta especial no WhatsApp em breve. Fique de olho! 👀
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowExitPopup(false)}
+                    className="w-full bg-white/5 border border-white/10 text-white/50 text-sm py-3 rounded-2xl hover:text-white/70 transition-colors"
+                  >
+                    Fechar
+                  </button>
                 </div>
-                <p className="text-white/50 text-xs mt-1">ou 12x de <strong className="text-white">R$41,01</strong></p>
-                <div className="flex items-center gap-2 mt-2 bg-red-950/60 border border-red-500/30 rounded-xl px-3 py-2">
-                  <span className="text-red-400 animate-pulse text-sm">🔥</span>
-                  <p className="text-red-300 font-black text-sm tabular-nums">{formatCountdown(timeLeft)}</p>
-                  <span className="text-white/30 text-xs">restando</span>
-                </div>
-              </div>
-
-              {/* CTAs */}
-              <div className="flex flex-col gap-2.5">
-                <a
-                  href="https://pay.cakto.com.br/36sdo2o_810308"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={handleCheckout}
-                  className="w-full bg-[#22C55E] hover:bg-[#16A34A] text-black font-black text-base py-4 rounded-2xl shadow-lg active:scale-95 transition-all duration-200 text-center block"
-                >
-                  QUERO GARANTIR MINHA VAGA
-                </a>
-                <button
-                  onClick={() => setShowExitPopup(false)}
-                  className="w-full text-white/30 text-xs py-2 hover:text-white/50 transition-colors"
-                >
-                  Não, prefiro perder essa oportunidade
-                </button>
-              </div>
+              )}
             </div>
           </div>
         </div>
