@@ -964,7 +964,7 @@ export default function SalesPage() {
               </div>
             </div>
 
-            <a href="https://pay.cakto.com.br/36sdo2o_810308" target="_blank" rel="noopener noreferrer" className="w-full bg-[#22C55E] hover:bg-[#16A34A] text-black font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 text-center block">
+            <a href="https://pay.cakto.com.br/36sdo2o_810308" target="_blank" rel="noopener noreferrer" onClick={handleCheckout} className="w-full bg-[#22C55E] hover:bg-[#16A34A] text-black font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 text-center block">
               QUERO COMEÇAR AGORA
             </a>
 
@@ -1027,7 +1027,7 @@ export default function SalesPage() {
             Você chegou até aqui por um motivo.<br />
             <strong className="text-white">Não deixa essa oportunidade passar.</strong>
           </p>
-          <a href="https://pay.cakto.com.br/36sdo2o_810308" target="_blank" rel="noopener noreferrer" className="relative z-10 w-full bg-[#22C55E] hover:bg-[#16A34A] text-black font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 text-center block">
+          <a href="https://pay.cakto.com.br/36sdo2o_810308" target="_blank" rel="noopener noreferrer" onClick={handleCheckout} className="relative z-10 w-full bg-[#22C55E] hover:bg-[#16A34A] text-black font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 text-center block">
             QUERO COMEÇAR AGORA
           </a>
           <div className="flex items-center gap-3 relative z-10">
@@ -1115,7 +1115,7 @@ export default function SalesPage() {
                   href="https://pay.cakto.com.br/36sdo2o_810308"
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => setShowExitPopup(false)}
+                  onClick={() => { handleCheckout(); setShowExitPopup(false) }}
                   className="w-full bg-[#22C55E] text-black font-black text-base py-4 rounded-2xl shadow-lg active:scale-95 transition-all text-center"
                 >
                   QUERO GARANTIR MINHA VAGA
