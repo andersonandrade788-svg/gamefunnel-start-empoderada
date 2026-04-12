@@ -12,6 +12,7 @@ const STEPS_META = [
 
 interface Step { name: string; label: string; number: number; count: number }
 interface RecentEvent { step_name: string; session_id: string; created_at: string; source?: string }
+interface Lead { id: string; phone: string; created_at: string }
 interface DashboardData { steps: Step[]; recent: RecentEvent[] }
 
 function timeAgo(dateStr: string) {
@@ -91,9 +92,10 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(false)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
-  const [activeTab, setActiveTab] = useState<'funil' | 'recentes'>('funil')
+  const [activeTab, setActiveTab] = useState<'funil' | 'recentes' | 'leads'>('funil')
   const [sourceFilter, setSourceFilter] = useState<'all' | 'ad' | 'organic'>('all')
   const [period, setPeriod] = useState<'today' | '7d' | 'all'>('today')
+  const [leads, setLeads] = useState<Lead[]>([])
 
   const fetchData = useCallback(async (password: string, source: 'all' | 'ad' | 'organic' = 'all', per: 'today' | '7d' | 'all' = 'today') => {
     setLoading(true)
@@ -102,9 +104,13 @@ export default function DashboardPage() {
       if (source !== 'all') params.set('source', source)
       params.set('period', per)
       const url = `/api/dashboard?${params.toString()}`
-      const res = await fetch(url, { headers: { 'x-dashboard-password': password } })
+      const [res, leadsRes] = await Promise.all([
+        fetch(url, { headers: { 'x-dashboard-password': password } }),
+        fetch('/api/leads', { headers: { 'x-dashboard-password': password } }),
+      ])
       if (!res.ok) return
       setData(await res.json())
+      if (leadsRes.ok) setLeads(await leadsRes.json())
       setLastUpdate(new Date())
     } finally {
       setLoading(false)
@@ -262,15 +268,19 @@ export default function DashboardPage() {
 
         {/* ── Tabs ── */}
         <div className="flex gap-1 bg-white/5 border border-white/8 rounded-xl p-1 w-fit">
-          {(['funil', 'recentes'] as const).map((tab) => (
+          {([
+            { key: 'funil',    label: '🔽 Funil' },
+            { key: 'recentes', label: '⏱️ Recentes' },
+            { key: 'leads',    label: `📱 Leads${leads.length > 0 ? ` (${leads.length})` : ''}` },
+          ] as const).map((tab) => (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
               className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${
-                activeTab === tab ? 'bg-[#22C55E] text-black' : 'text-white/40 hover:text-white'
+                activeTab === tab.key ? 'bg-[#22C55E] text-black' : 'text-white/40 hover:text-white'
               }`}
             >
-              {tab === 'funil' ? '🔽 Funil' : '⏱️ Recentes'}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -403,6 +413,46 @@ export default function DashboardPage() {
                     </div>
                   )
                 })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Leads Tab ── */}
+        {activeTab === 'leads' && (
+          <div className="bg-white/3 border border-white/8 rounded-2xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
+              <div>
+                <h2 className="text-white font-bold text-sm">Leads Capturados</h2>
+                <p className="text-white/30 text-xs mt-0.5">WhatsApp coletados pelo popup de saída</p>
+              </div>
+              <span className="text-white/20 text-xs bg-white/5 px-3 py-1 rounded-full">{leads.length} leads</span>
+            </div>
+
+            {leads.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 gap-3">
+                <span className="text-4xl">📭</span>
+                <p className="text-white/30 text-sm">Nenhum lead capturado ainda</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-white/5">
+                {leads.map((lead, i) => (
+                  <div key={lead.id} className="flex items-center justify-between px-6 py-4 hover:bg-white/3 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base bg-green-500/10 border border-green-500/20">
+                        📱
+                      </div>
+                      <div>
+                        <p className="text-white text-sm font-bold">{lead.phone}</p>
+                        <p className="text-white/25 text-[10px]">Lead #{i + 1}</p>
+                      </div>
+                    </div>
+                    <div className="text-right flex flex-col items-end gap-1">
+                      <p className="text-white/40 text-xs">{timeAgo(lead.created_at)}</p>
+                      <p className="text-white/20 text-[10px]">{new Date(lead.created_at).toLocaleDateString('pt-BR')}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
