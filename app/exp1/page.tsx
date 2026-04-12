@@ -159,6 +159,8 @@ export default function QuizPage() {
   const [totalXp, setTotalXp] = useState(0)
   const [showConfetti, setShowConfetti] = useState(false)
   const [badgeVisible, setBadgeVisible] = useState(false)
+  const [calculating, setCalculating] = useState(false)
+  const [calcProgress, setCalcProgress] = useState(0)
   const notifIdRef = useRef(0)
 
   useEffect(() => { trackStep('Quiz', 1) }, [])
@@ -189,6 +191,30 @@ export default function QuizPage() {
       const { kg, xp } = DROPS[dropKey]
       showNotification(kg, xp)
     }
+
+    // Mostra loading "calculando" antes de telas de resultado
+    const showLoading = nextScreen.type === 'belief' || nextScreen.type === 'result'
+    if (showLoading) {
+      setCalculating(true)
+      setCalcProgress(0)
+      let p = 0
+      const interval = setInterval(() => {
+        p += Math.random() * 18 + 8
+        if (p >= 100) {
+          p = 100
+          clearInterval(interval)
+          setTimeout(() => {
+            setCalculating(false)
+            setCalcProgress(0)
+            setAnimating(true)
+            setTimeout(() => { setScreen(nextScreen); setAnimating(false) }, 350)
+          }, 400)
+        }
+        setCalcProgress(Math.min(p, 100))
+      }, 120)
+      return
+    }
+
     setAnimating(true)
     setTimeout(() => {
       setScreen(nextScreen)
@@ -253,6 +279,46 @@ export default function QuizPage() {
               }}
             />
           ))}
+        </div>
+      )}
+
+      {/* Loading — Calculando perfil */}
+      {calculating && (
+        <div className="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center px-8 gap-6">
+          <div className="flex flex-col items-center gap-4 w-full max-w-xs">
+            <div className="text-5xl animate-bounce">🧠</div>
+            <div className="text-center flex flex-col gap-1">
+              <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Aguarde um momento</p>
+              <h2 className="text-gray-900 font-black text-xl leading-snug">Calculando seu perfil…</h2>
+            </div>
+
+            {/* Barra de progresso */}
+            <div className="w-full flex flex-col gap-2">
+              <div className="h-3 bg-gray-100 rounded-full overflow-hidden w-full">
+                <div
+                  className="h-full bg-[#22C55E] rounded-full transition-all duration-150"
+                  style={{ width: `${calcProgress}%` }}
+                />
+              </div>
+              <p className="text-[#22C55E] font-black text-sm text-right">{Math.round(calcProgress)}%</p>
+            </div>
+
+            {/* Steps animados */}
+            <div className="w-full flex flex-col gap-2 mt-2">
+              {[
+                { label: 'Analisando suas respostas…',     done: calcProgress > 25 },
+                { label: 'Identificando padrões…',         done: calcProgress > 55 },
+                { label: 'Montando seu perfil exclusivo…', done: calcProgress > 80 },
+              ].map((s, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${s.done ? 'bg-[#22C55E]' : 'bg-gray-100'}`}>
+                    {s.done && <span className="text-white text-[10px]">✓</span>}
+                  </div>
+                  <p className={`text-xs font-semibold transition-all duration-300 ${s.done ? 'text-gray-800' : 'text-gray-300'}`}>{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 

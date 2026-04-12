@@ -459,8 +459,22 @@ export default function SalesPage() {
   const [timeLeft, setTimeLeft] = useState(0)
   const [vagas, setVagas] = useState(7)
   const [showRoleta, setShowRoleta] = useState(false)
+  const [viewers, setViewers] = useState(347)
 
   useEffect(() => { trackStep('Vendas', 6) }, [])
+
+  // Contador de pessoas online — flutua naturalmente
+  useEffect(() => {
+    const base = Math.floor(Math.random() * 80) + 300 // 300–380
+    setViewers(base)
+    const interval = setInterval(() => {
+      setViewers(prev => {
+        const delta = Math.floor(Math.random() * 7) - 3 // -3 a +3
+        return Math.max(280, Math.min(420, prev + delta))
+      })
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [])
 
   // Abre roleta automaticamente após 1.5s sempre que chega na página
   useEffect(() => {
@@ -562,6 +576,14 @@ export default function SalesPage() {
             <p className="text-yellow-300 font-black text-base leading-tight">{vagas} vagas</p>
           </div>
         </div>
+      </div>
+
+      {/* ── CONTADOR ONLINE ──────────────────────────────────────── */}
+      <div className="flex items-center justify-center gap-2 py-2 px-4 bg-[#111]">
+        <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
+        <p className="text-white/60 text-xs font-semibold">
+          <span className="text-green-400 font-black">{viewers}</span> pessoas estão vendo essa página agora
+        </p>
       </div>
 
       {/* ── HERO ──────────────────────────────────────────────────── */}
