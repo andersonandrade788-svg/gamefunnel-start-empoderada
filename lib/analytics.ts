@@ -1,3 +1,5 @@
+import { viewContent } from '@/lib/pixel'
+
 declare global {
   interface Window {
     gtag: (...args: any[]) => void
@@ -39,6 +41,9 @@ export function trackStep(stepName: string, stepNumber: number) {
   localStorage.setItem(dedupeKey, '1')
 
   const source = detectSource()
+
+  // Facebook Pixel
+  viewContent(stepName)
 
   // GA4
   if (window.gtag) {

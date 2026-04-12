@@ -17,7 +17,16 @@ export function initiateCheckout() {
   if (typeof window !== 'undefined' && window.fbq) {
     window.fbq('track', 'InitiateCheckout', {
       currency: 'BRL',
-      value: 397.00,
+      value: 37.00,
+    })
+  }
+}
+
+export function viewContent(stepName: string) {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'ViewContent', {
+      content_name: stepName,
+      content_category: 'Funil',
     })
   }
 }
