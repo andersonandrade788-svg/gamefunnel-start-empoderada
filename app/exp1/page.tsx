@@ -199,7 +199,7 @@ export default function QuizPage() {
       setCalcProgress(0)
       let p = 0
       const interval = setInterval(() => {
-        p += Math.random() * 18 + 8
+        p += Math.random() * 8 + 3
         if (p >= 100) {
           p = 100
           clearInterval(interval)
@@ -208,10 +208,10 @@ export default function QuizPage() {
             setCalcProgress(0)
             setAnimating(true)
             setTimeout(() => { setScreen(nextScreen); setAnimating(false) }, 350)
-          }, 400)
+          }, 600)
         }
         setCalcProgress(Math.min(p, 100))
-      }, 120)
+      }, 180)
       return
     }
 
