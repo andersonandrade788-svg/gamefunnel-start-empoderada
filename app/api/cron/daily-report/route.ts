@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 
 export const maxDuration = 30
 
@@ -12,10 +12,10 @@ const STEPS = [
   { name: 'Vendas',      label: 'Viu a Oferta', emoji: '👀' },
 ]
 
-async function getStepCounts(since: string) {
+async function getStepCounts(db: ReturnType<typeof createClient>, since: string) {
   return Promise.all(
     STEPS.map(async (step) => {
-      const { count } = await supabase
+      const { count } = await db
         .from('funnel_events')
         .select('session_id', { count: 'exact', head: true })
         .eq('step_name', step.name)
@@ -31,6 +31,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const db = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
   const now = new Date()
   const todayStart = new Date(now)
   todayStart.setHours(0, 0, 0, 0)
@@ -38,12 +43,12 @@ export async function GET(req: NextRequest) {
   yesterdayStart.setDate(yesterdayStart.getDate() - 1)
 
   const [todaySteps, yesterdaySteps] = await Promise.all([
-    getStepCounts(todayStart.toISOString()),
-    getStepCounts(yesterdayStart.toISOString()),
+    getStepCounts(db, todayStart.toISOString()),
+    getStepCounts(db, yesterdayStart.toISOString()),
   ])
 
   // Leads capturados hoje
-  const { data: leads } = await supabase
+  const { data: leads } = await db
     .from('leads')
     .select('phone, created_at')
     .gte('created_at', todayStart.toISOString())
