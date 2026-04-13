@@ -31,6 +31,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  try {
+
   const db = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -171,4 +173,9 @@ export async function GET(req: NextRequest) {
   })
 
   return NextResponse.json({ ok: true, sent: true })
+
+  } catch (err: any) {
+    console.error('CRON ERROR:', err)
+    return NextResponse.json({ error: err?.message ?? 'unknown error' }, { status: 500 })
+  }
 }
