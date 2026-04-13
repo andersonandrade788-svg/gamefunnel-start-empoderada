@@ -12,7 +12,7 @@ const STEPS = [
   { name: 'Vendas',      label: 'Viu a Oferta', emoji: '👀' },
 ]
 
-async function getStepCounts(db: ReturnType<typeof createClient>, since: string) {
+async function getStepCounts(db: any, since: string) {
   return Promise.all(
     STEPS.map(async (step) => {
       const { count } = await db
