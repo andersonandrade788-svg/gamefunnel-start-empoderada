@@ -1,10 +1,18 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import StatusBar from '@/components/StatusBar'
 
-export default function LandingPage() {
+function LandingPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  function goToQuiz() {
+    const params = searchParams.toString()
+    router.push(params ? `/exp1?${params}` : '/exp1')
+  }
 
   return (
     <div className="mobile-frame bg-white overflow-y-auto" style={{ minHeight: '100dvh' }}>
@@ -99,7 +107,7 @@ export default function LandingPage() {
         {/* CTA */}
         <div className="flex flex-col gap-3 pb-8">
           <button
-            onClick={() => router.push('/exp1')}
+            onClick={goToQuiz}
             className="w-full bg-[#22C55E] text-white font-black text-lg py-5 rounded-2xl shadow-xl shadow-green-500/30 active:scale-95 transition-all duration-200"
           >
             FAZER O TESTE GRATUITO AGORA
@@ -111,5 +119,13 @@ export default function LandingPage() {
 
       </div>
     </div>
+  )
+}
+
+export default function LandingPage() {
+  return (
+    <Suspense>
+      <LandingPageInner />
+    </Suspense>
   )
 }
