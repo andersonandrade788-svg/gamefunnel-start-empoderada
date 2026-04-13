@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { supabase } from '@/lib/supabase'
 
+export const maxDuration = 30
+
 const STEPS = [
   { name: 'Quiz',        label: 'Quiz',         emoji: '🎯' },
   { name: 'TikTok',      label: 'TikTok',       emoji: '🎵' },
