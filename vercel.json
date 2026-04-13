@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/cron/daily-report",
+      "path": "/api/cron/daily-report?secret=start2024",
       "schedule": "59 2 * * *"
     }
   ]
