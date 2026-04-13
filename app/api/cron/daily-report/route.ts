@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { supabase } from '@/lib/supabase'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 const STEPS = [
   { name: 'Quiz',        label: 'Quiz',         emoji: '🎯' },
   { name: 'TikTok',      label: 'TikTok',       emoji: '🎵' },
@@ -157,6 +155,7 @@ export async function GET(req: NextRequest) {
     </html>
   `
 
+  const resend = new Resend(process.env.RESEND_API_KEY)
   await resend.emails.send({
     from: 'Dashboard <relatorio@resend.dev>',
     to: 'andersonandrade788@gmail.com',
