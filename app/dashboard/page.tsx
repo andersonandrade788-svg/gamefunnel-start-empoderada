@@ -8,6 +8,7 @@ const STEPS_META = [
   { name: 'IMC',         emoji: '📊', label: 'IMC',          color: '#60a5fa' },
   { name: 'Diagnostico', emoji: '🔍', label: 'Diagnóstico',  color: '#fbbf24' },
   { name: 'Vendas',      emoji: '👀', label: 'Viu a Oferta', color: '#22c55e' },
+  { name: 'Compra',      emoji: '💰', label: 'Comprou',      color: '#f59e0b' },
 ]
 
 interface Step { name: string; label: string; number: number; count: number }
