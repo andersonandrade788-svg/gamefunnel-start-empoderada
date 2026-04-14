@@ -8,7 +8,10 @@ const STEPS_META = [
   { name: 'IMC',         emoji: '📊', label: 'IMC',          color: '#60a5fa' },
   { name: 'Diagnostico', emoji: '🔍', label: 'Diagnóstico',  color: '#fbbf24' },
   { name: 'Vendas',      emoji: '👀', label: 'Viu a Oferta', color: '#22c55e' },
-  { name: 'Compra',      emoji: '💰', label: 'Comprou',      color: '#f59e0b' },
+  { name: 'Pix Gerado',      emoji: '💸', label: 'Pix Gerado',      color: '#34d399' },
+  { name: 'Cartão Recusado', emoji: '❌', label: 'Cartão Recusado', color: '#f87171' },
+  { name: 'Abandono',        emoji: '🚪', label: 'Abandono',        color: '#94a3b8' },
+  { name: 'Compra',          emoji: '💰', label: 'Comprou',         color: '#f59e0b' },
 ]
 
 interface Step { name: string; label: string; number: number; count: number }
