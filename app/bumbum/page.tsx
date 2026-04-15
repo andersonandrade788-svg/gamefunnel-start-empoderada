@@ -26,7 +26,7 @@ function BumbumLandingInner() {
   }
 
   return (
-    <div className="min-h-screen overflow-y-auto" style={{ background: '#0D0005', minHeight: '100dvh' }}>
+    <div className="w-full overflow-x-hidden" style={{ background: '#0D0005', minHeight: '100dvh' }}>
 
       {/* Barra topo */}
       <div style={{ background: 'linear-gradient(90deg, #E91E8C, #C2185B)' }} className="px-4 py-2.5 flex items-center justify-center gap-2">
@@ -35,11 +35,11 @@ function BumbumLandingInner() {
         </span>
       </div>
 
-      <div className="max-w-md mx-auto px-5 pb-10">
+      <div className="max-w-md mx-auto px-5" style={{ paddingBottom: 'calc(2.5rem + env(safe-area-inset-bottom, 0px))' }}>
 
         {/* Logo */}
         <div className="flex justify-center pt-6 pb-2">
-          <img src="/bumbum-logo.png" alt="Desafio Bumbum Turbinado" className="w-64 object-contain" onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
+          <img src="/bumbum-logo.png" alt="Desafio Bumbum Turbinado" className="w-full max-w-[220px] object-contain" onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
           <div className="text-center" style={{ display: 'none' }} id="logo-fallback">
             <p className="text-white font-black text-2xl leading-tight">
               <span style={{ color: '#E91E8C' }}>Desafio do</span><br />

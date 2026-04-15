@@ -107,7 +107,7 @@ function BumbumResultadoInner() {
   }
 
   return (
-    <div className="min-h-screen overflow-y-auto" style={{ background: '#0D0005', minHeight: '100dvh' }}>
+    <div className="w-full overflow-x-hidden" style={{ background: '#0D0005', minHeight: '100dvh' }}>
 
       {/* Urgência topo */}
       <div style={{ background: 'linear-gradient(90deg, #E91E8C, #C2185B)' }} className="px-4 py-2.5 flex items-center justify-center gap-2">
@@ -116,7 +116,7 @@ function BumbumResultadoInner() {
         </span>
       </div>
 
-      <div className="max-w-md mx-auto px-5 pb-10">
+      <div className="max-w-md mx-auto px-5" style={{ paddingBottom: 'calc(2.5rem + env(safe-area-inset-bottom, 0px))' }}>
 
         {/* Resultado header */}
         <div className="pt-6 pb-4 flex flex-col gap-4">

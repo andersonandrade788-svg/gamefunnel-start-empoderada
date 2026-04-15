@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useState, useRef } from 'react'
 import { trackStep } from '@/lib/analytics'
 import { initiateCheckout } from '@/lib/pixel'
@@ -38,14 +38,43 @@ function BumbumSalesInner() {
   }, [])
 
   useEffect(() => {
+    // Desktop: mouse sai pelo topo
     function handleMouseLeave(e: MouseEvent) {
       if (e.clientY <= 10 && !exitTriggered.current) {
         exitTriggered.current = true
         setShowExit(true)
       }
     }
+    // Mobile: usuário troca de aba ou minimiza
+    function handleVisibility() {
+      if (document.visibilityState === 'hidden' && !exitTriggered.current) {
+        exitTriggered.current = true
+        setShowExit(true)
+      }
+    }
+    // Mobile: scroll rápido para cima (gesto de saída)
+    let lastY = window.scrollY
+    let lastTime = Date.now()
+    function handleScroll() {
+      const now = Date.now()
+      const dy = window.scrollY - lastY
+      const dt = now - lastTime
+      // velocidade negativa rápida = scrollando para cima com força
+      if (dy < -60 && dt < 200 && window.scrollY < 200 && !exitTriggered.current) {
+        exitTriggered.current = true
+        setShowExit(true)
+      }
+      lastY = window.scrollY
+      lastTime = now
+    }
     document.addEventListener('mouseleave', handleMouseLeave)
-    return () => document.removeEventListener('mouseleave', handleMouseLeave)
+    document.addEventListener('visibilitychange', handleVisibility)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      document.removeEventListener('mouseleave', handleMouseLeave)
+      document.removeEventListener('visibilitychange', handleVisibility)
+      window.removeEventListener('scroll', handleScroll)
+    }
   }, [])
 
   const mins = String(Math.floor(countdown / 60)).padStart(2, '0')
@@ -59,7 +88,7 @@ function BumbumSalesInner() {
   }
 
   return (
-    <div className="min-h-screen overflow-y-auto" style={{ background: '#0D0005', minHeight: '100dvh' }}>
+    <div className="w-full overflow-x-hidden" style={{ background: '#0D0005', minHeight: '100dvh' }}>
 
       {/* Exit popup */}
       {showExit && (
@@ -100,7 +129,7 @@ function BumbumSalesInner() {
         </span>
       </div>
 
-      <div className="max-w-md mx-auto px-5 pb-10">
+      <div className="max-w-md mx-auto px-5" style={{ paddingBottom: 'calc(2.5rem + env(safe-area-inset-bottom, 0px))' }}>
 
         {/* Header */}
         <div className="pt-6 pb-4 text-center flex flex-col gap-3">

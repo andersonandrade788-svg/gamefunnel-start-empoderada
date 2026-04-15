@@ -199,7 +199,7 @@ function BumbumQuizInner() {
   const q = QUESTIONS[current]
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#0D0005', minHeight: '100dvh' }}>
+    <div className="flex flex-col overflow-x-hidden" style={{ background: '#0D0005', minHeight: '100dvh' }}>
 
       {/* Notificações */}
       <div className="fixed top-14 left-0 right-0 flex flex-col items-center gap-2 z-40 pointer-events-none px-6">
@@ -237,7 +237,7 @@ function BumbumQuizInner() {
       </div>
 
       {/* Pergunta */}
-      <div className="flex-1 px-5 py-4 flex flex-col gap-5">
+      <div className="flex-1 px-5 py-4 flex flex-col gap-5" style={{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }}>
         <div className="flex flex-col gap-3">
           <span className="text-4xl">{q.emoji}</span>
           <h2 className="text-white font-black text-xl leading-tight">{q.question}</h2>
