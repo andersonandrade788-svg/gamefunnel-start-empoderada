@@ -88,7 +88,7 @@ function BumbumSalesInner() {
   }
 
   return (
-    <div className="w-full overflow-x-hidden" style={{ background: '#0D0005', minHeight: '100dvh' }}>
+    <div className="bumbum-page" style={{ background: '#0D0005' }}>
 
       {/* Exit popup */}
       {showExit && (

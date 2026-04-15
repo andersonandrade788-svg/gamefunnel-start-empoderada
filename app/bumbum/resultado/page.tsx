@@ -98,7 +98,7 @@ function BumbumResultadoInner() {
 
   if (!showFull) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-8 gap-6" style={{ background: '#0D0005', minHeight: '100dvh' }}>
+      <div className="bumbum-page flex flex-col items-center justify-center px-8 gap-6" style={{ background: '#0D0005' }}>
         <span className="text-6xl animate-bounce">🍑</span>
         <p className="text-white font-black text-lg text-center">Seu diagnóstico está pronto!</p>
         <div className="w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin" />
@@ -107,7 +107,7 @@ function BumbumResultadoInner() {
   }
 
   return (
-    <div className="w-full overflow-x-hidden" style={{ background: '#0D0005', minHeight: '100dvh' }}>
+    <div className="bumbum-page" style={{ background: '#0D0005' }}>
 
       {/* Urgência topo */}
       <div style={{ background: 'linear-gradient(90deg, #E91E8C, #C2185B)' }} className="px-4 py-2.5 flex items-center justify-center gap-2">

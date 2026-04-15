@@ -26,7 +26,7 @@ function BumbumLandingInner() {
   }
 
   return (
-    <div className="w-full overflow-x-hidden" style={{ background: '#0D0005', minHeight: '100dvh' }}>
+    <div className="bumbum-page" style={{ background: '#0D0005' }}>
 
       {/* Barra topo */}
       <div style={{ background: 'linear-gradient(90deg, #E91E8C, #C2185B)' }} className="px-4 py-2.5 flex items-center justify-center gap-2">

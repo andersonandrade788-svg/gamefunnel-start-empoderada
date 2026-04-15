@@ -10,6 +10,10 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   viewportFit: 'cover',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({
@@ -57,7 +61,7 @@ export default function RootLayout({
         </noscript>
       </head>
       <body className="bg-[#0A0A0A] font-inter antialiased" style={{ overscrollBehavior: 'none' }}>
-        <div className="flex min-h-screen items-center justify-center bg-[#0A0A0A]">
+        <div className="flex flex-col items-center justify-center bg-[#0A0A0A]" style={{ minHeight: '100svh' }}>
           {children}
         </div>
       </body>

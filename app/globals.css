@@ -266,3 +266,23 @@ html, body {
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
 }
+
+/* Prevent double-tap zoom and tap delay on all buttons/links */
+button, a {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* XP notification pop animation (bumbum quiz) */
+@keyframes notif-pop {
+  0%   { opacity: 0; transform: translateY(-8px) scale(0.9); }
+  60%  { opacity: 1; transform: translateY(2px) scale(1.05); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Prevent layout shift from viewport height changes on mobile browsers */
+.bumbum-page {
+  width: 100%;
+  min-height: 100svh;
+  overflow-x: hidden;
+}

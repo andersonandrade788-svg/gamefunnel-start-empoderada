@@ -179,7 +179,7 @@ function BumbumQuizInner() {
 
   if (calculating) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-8 gap-6" style={{ background: '#0D0005', minHeight: '100dvh' }}>
+      <div className="bumbum-page flex flex-col items-center justify-center px-8 gap-6" style={{ background: '#0D0005' }}>
         <div className="flex flex-col items-center gap-4 w-full max-w-xs">
           <span className="text-6xl animate-bounce">🍑</span>
           <h2 className="text-white font-black text-xl text-center">Calculando seu perfil...</h2>
@@ -199,7 +199,7 @@ function BumbumQuizInner() {
   const q = QUESTIONS[current]
 
   return (
-    <div className="flex flex-col overflow-x-hidden" style={{ background: '#0D0005', minHeight: '100dvh' }}>
+    <div className="bumbum-page flex flex-col" style={{ background: '#0D0005' }}>
 
       {/* Notificações */}
       <div className="fixed top-14 left-0 right-0 flex flex-col items-center gap-2 z-40 pointer-events-none px-6">
