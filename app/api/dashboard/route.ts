@@ -2,11 +2,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
 const STEPS = [
-  { name: 'Quiz',        number: 1, label: 'Quiz' },
-  { name: 'TikTok',      number: 2, label: 'TikTok' },
-  { name: 'IMC',         number: 3, label: 'IMC' },
-  { name: 'Diagnostico', number: 4, label: 'Diagnóstico' },
-  { name: 'Vendas',      number: 5, label: 'Viu a Oferta' },
+  { name: 'Quiz',              number: 1,  label: 'Quiz' },
+  { name: 'TikTok',            number: 2,  label: 'TikTok' },
+  { name: 'IMC',               number: 3,  label: 'IMC' },
+  { name: 'Diagnostico',       number: 4,  label: 'Diagnóstico' },
+  { name: 'Vendas',            number: 5,  label: 'Viu a Oferta' },
+  { name: 'Pix Gerado',        number: 6,  label: 'Pix Gerado' },
+  { name: 'Cartão Recusado',   number: 7,  label: 'Cartão Recusado' },
+  { name: 'Abandono',          number: 8,  label: 'Abandono' },
+  { name: 'Compra',            number: 9,  label: 'Compra' },
+  // Bumbum funnel
+  { name: 'Bumbum_Landing',    number: 10, label: 'Bumbum Landing' },
+  { name: 'Bumbum_Quiz',       number: 11, label: 'Bumbum Quiz' },
+  { name: 'Bumbum_Resultado',  number: 12, label: 'Bumbum Resultado' },
+  { name: 'Bumbum_Vendas',     number: 13, label: 'Bumbum Oferta' },
 ]
 
 function getDateFilter(period: string): { since: string | null; until?: string } {

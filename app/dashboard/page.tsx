@@ -2,16 +2,24 @@
 
 import { useState, useEffect, useCallback } from 'react'
 
-const STEPS_META = [
-  { name: 'Quiz',        emoji: '🎯', label: 'Quiz',         color: '#a78bfa' },
-  { name: 'TikTok',      emoji: '🎵', label: 'TikTok',       color: '#f472b6' },
-  { name: 'IMC',         emoji: '📊', label: 'IMC',          color: '#60a5fa' },
-  { name: 'Diagnostico', emoji: '🔍', label: 'Diagnóstico',  color: '#fbbf24' },
-  { name: 'Vendas',      emoji: '👀', label: 'Viu a Oferta', color: '#22c55e' },
-  { name: 'Pix Gerado',      emoji: '💸', label: 'Pix Gerado',      color: '#34d399' },
-  { name: 'Cartão Recusado', emoji: '❌', label: 'Cartão Recusado', color: '#f87171' },
-  { name: 'Abandono',        emoji: '🚪', label: 'Abandono',        color: '#94a3b8' },
-  { name: 'Compra',          emoji: '💰', label: 'Comprou',         color: '#f59e0b' },
+const ORIGINAL_STEPS_META = [
+  { name: 'Quiz',              emoji: '🎯', label: 'Quiz',            color: '#a78bfa' },
+  { name: 'TikTok',            emoji: '🎵', label: 'TikTok',          color: '#f472b6' },
+  { name: 'IMC',               emoji: '📊', label: 'IMC',             color: '#60a5fa' },
+  { name: 'Diagnostico',       emoji: '🔍', label: 'Diagnóstico',     color: '#fbbf24' },
+  { name: 'Vendas',            emoji: '👀', label: 'Viu a Oferta',    color: '#22c55e' },
+  { name: 'Pix Gerado',        emoji: '💸', label: 'Pix Gerado',      color: '#34d399' },
+  { name: 'Cartão Recusado',   emoji: '❌', label: 'Cartão Recusado', color: '#f87171' },
+  { name: 'Abandono',          emoji: '🚪', label: 'Abandono',        color: '#94a3b8' },
+  { name: 'Compra',            emoji: '💰', label: 'Comprou',         color: '#f59e0b' },
+]
+
+const BUMBUM_STEPS_META = [
+  { name: 'Bumbum_Landing',   emoji: '🍑', label: 'Landing Page',  color: '#E91E8C' },
+  { name: 'Bumbum_Quiz',      emoji: '📋', label: 'Quiz',          color: '#f472b6' },
+  { name: 'Bumbum_Resultado', emoji: '📊', label: 'Resultado',     color: '#fbbf24' },
+  { name: 'Bumbum_Vendas',    emoji: '👀', label: 'Viu a Oferta',  color: '#22c55e' },
+  { name: 'Compra',           emoji: '💰', label: 'Comprou',       color: '#f59e0b' },
 ]
 
 interface Step { name: string; label: string; number: number; count: number }
@@ -100,6 +108,7 @@ export default function DashboardPage() {
   const [sourceFilter, setSourceFilter] = useState<'all' | 'ad' | 'organic'>('all')
   const [period, setPeriod] = useState<'today' | 'yesterday' | '7d' | 'all'>('today')
   const [leads, setLeads] = useState<Lead[]>([])
+  const [funnelType, setFunnelType] = useState<'original' | 'bumbum'>('original')
 
   const fetchData = useCallback(async (password: string, source: 'all' | 'ad' | 'organic' = 'all', per: 'today' | 'yesterday' | '7d' | 'all' = 'today') => {
     setLoading(true)
@@ -154,26 +163,49 @@ export default function DashboardPage() {
 
   if (!authed) return <LoginScreen onLogin={handleLogin} />
 
+  const STEPS_META = funnelType === 'bumbum' ? BUMBUM_STEPS_META : ORIGINAL_STEPS_META
+
   const steps = data?.steps ?? []
   const recent = data?.recent ?? []
 
-  const top = steps[0]?.count ?? 0
-  const tiktok = steps[1]?.count ?? 0
-  const imc = steps[2]?.count ?? 0
-  const diag = steps[3]?.count ?? 0
-  const vendas = steps[4]?.count ?? 0
+  function countFor(name: string) {
+    return steps.find(s => s.name === name)?.count ?? 0
+  }
 
-  const taxaFunil = top > 0 ? ((vendas / top) * 100).toFixed(1) : '0.0'
-  const taxaInteracao = top > 0 ? ((tiktok / top) * 100).toFixed(1) : '0.0'
-
-  const kpis = [
-    { label: 'Entraram no Quiz',  value: top,              icon: '🎯', color: '#a78bfa', desc: 'total de visitantes' },
-    { label: 'Chegaram ao TikTok',value: tiktok,           icon: '🎵', color: '#f472b6', desc: `${taxaInteracao}% do total` },
-    { label: 'Fizeram o IMC',     value: imc,              icon: '📊', color: '#60a5fa', desc: top > 0 ? `${((imc/top)*100).toFixed(0)}% do total` : '—' },
-    { label: 'Diagnóstico',       value: diag,             icon: '🔍', color: '#fbbf24', desc: top > 0 ? `${((diag/top)*100).toFixed(0)}% do total` : '—' },
-    { label: 'Viram a Oferta',    value: vendas,           icon: '👀', color: '#22c55e', desc: top > 0 ? `${((vendas/top)*100).toFixed(0)}% do total` : '—' },
-    { label: 'Taxa do Funil',     value: `${taxaFunil}%`,  icon: '🏆', color: '#fb923c', desc: 'Quiz → Oferta' },
-  ]
+  const kpis = funnelType === 'bumbum'
+    ? (() => {
+        const landing = countFor('Bumbum_Landing')
+        const quiz    = countFor('Bumbum_Quiz')
+        const result  = countFor('Bumbum_Resultado')
+        const vendas  = countFor('Bumbum_Vendas')
+        const compra  = countFor('Compra')
+        const taxa    = landing > 0 ? ((vendas / landing) * 100).toFixed(1) : '0.0'
+        return [
+          { label: 'Landing Page',   value: landing,        icon: '🍑', color: '#E91E8C', desc: 'entraram na landing' },
+          { label: 'Fizeram o Quiz', value: quiz,           icon: '📋', color: '#f472b6', desc: landing > 0 ? `${((quiz/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Viram Resultado',value: result,         icon: '📊', color: '#fbbf24', desc: landing > 0 ? `${((result/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Viram a Oferta', value: vendas,         icon: '👀', color: '#22c55e', desc: landing > 0 ? `${((vendas/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Compraram',      value: compra,         icon: '💰', color: '#f59e0b', desc: landing > 0 ? `${((compra/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Taxa do Funil',  value: `${taxa}%`,     icon: '🏆', color: '#fb923c', desc: 'Landing → Oferta' },
+        ]
+      })()
+    : (() => {
+        const top    = countFor('Quiz')
+        const tiktok = countFor('TikTok')
+        const imc    = countFor('IMC')
+        const diag   = countFor('Diagnostico')
+        const vendas = countFor('Vendas')
+        const taxaFunil     = top > 0 ? ((vendas / top) * 100).toFixed(1) : '0.0'
+        const taxaInteracao = top > 0 ? ((tiktok / top) * 100).toFixed(1) : '0.0'
+        return [
+          { label: 'Entraram no Quiz',   value: top,             icon: '🎯', color: '#a78bfa', desc: 'total de visitantes' },
+          { label: 'Chegaram ao TikTok', value: tiktok,          icon: '🎵', color: '#f472b6', desc: `${taxaInteracao}% do total` },
+          { label: 'Fizeram o IMC',      value: imc,             icon: '📊', color: '#60a5fa', desc: top > 0 ? `${((imc/top)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Diagnóstico',        value: diag,            icon: '🔍', color: '#fbbf24', desc: top > 0 ? `${((diag/top)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Viram a Oferta',     value: vendas,          icon: '👀', color: '#22c55e', desc: top > 0 ? `${((vendas/top)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Taxa do Funil',      value: `${taxaFunil}%`, icon: '🏆', color: '#fb923c', desc: 'Quiz → Oferta' },
+        ]
+      })()
 
   return (
     <div className="min-h-screen bg-[#0D0D0D]">
@@ -192,6 +224,17 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap justify-end">
+            {/* Seletor de funil */}
+            <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden text-xs font-bold">
+              <button
+                onClick={() => setFunnelType('original')}
+                className={`px-3 py-2 transition-all flex items-center gap-1 ${funnelType === 'original' ? 'bg-[#22C55E] text-black' : 'text-white/40 hover:text-white'}`}
+              >💚 Original</button>
+              <button
+                onClick={() => setFunnelType('bumbum')}
+                className={`px-3 py-2 transition-all flex items-center gap-1 ${funnelType === 'bumbum' ? 'bg-[#E91E8C] text-white' : 'text-white/40 hover:text-white'}`}
+              >🍑 Bumbum</button>
+            </div>
             {/* Filtro período */}
             <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden text-xs font-bold">
               {([
@@ -305,7 +348,8 @@ export default function DashboardPage() {
                 const prev = i > 0 ? (steps.find(s => s.name === STEPS_META[i-1].name)?.count ?? 0) : count
                 // taxa em relação ao PASSO ANTERIOR (não ao diagnóstico)
                 const taxa = i === 0 ? 100 : (prev > 0 ? Math.round((count / prev) * 100) : 0)
-                const barWidth = top > 0 ? Math.max((count / top) * 100, count > 0 ? 2 : 0) : 0
+                const topCount = steps.find(s => s.name === STEPS_META[0].name)?.count ?? 0
+                const barWidth = topCount > 0 ? Math.max((count / topCount) * 100, count > 0 ? 2 : 0) : 0
                 const dropped = i > 0 ? Math.max(prev - count, 0) : 0
 
                 return (
@@ -365,10 +409,20 @@ export default function DashboardPage() {
             </div>
 
             {/* Rodapé com resumo */}
-            <div className="px-6 py-4 border-t border-white/5 flex items-center justify-between">
-              <p className="text-white/30 text-xs">Taxa geral do funil (Quiz → Oferta)</p>
-              <p className="font-black text-lg" style={{ color: '#22c55e' }}>{taxaFunil}%</p>
-            </div>
+            {(() => {
+              const firstStep = STEPS_META[0]
+              const lastMainStep = funnelType === 'bumbum' ? STEPS_META[3] : STEPS_META[4]
+              const firstCount = steps.find(s => s.name === firstStep.name)?.count ?? 0
+              const lastCount  = steps.find(s => s.name === lastMainStep.name)?.count ?? 0
+              const taxa = firstCount > 0 ? ((lastCount / firstCount) * 100).toFixed(1) : '0.0'
+              const label = funnelType === 'bumbum' ? 'Landing → Oferta' : 'Quiz → Oferta'
+              return (
+                <div className="px-6 py-4 border-t border-white/5 flex items-center justify-between">
+                  <p className="text-white/30 text-xs">Taxa geral do funil ({label})</p>
+                  <p className="font-black text-lg" style={{ color: '#22c55e' }}>{taxa}%</p>
+                </div>
+              )
+            })()}
           </div>
         )}
 
