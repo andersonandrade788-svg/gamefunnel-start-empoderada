@@ -98,10 +98,10 @@ export default function DashboardPage() {
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const [activeTab, setActiveTab] = useState<'funil' | 'recentes' | 'leads'>('funil')
   const [sourceFilter, setSourceFilter] = useState<'all' | 'ad' | 'organic'>('all')
-  const [period, setPeriod] = useState<'today' | '7d' | 'all'>('today')
+  const [period, setPeriod] = useState<'today' | 'yesterday' | '7d' | 'all'>('today')
   const [leads, setLeads] = useState<Lead[]>([])
 
-  const fetchData = useCallback(async (password: string, source: 'all' | 'ad' | 'organic' = 'all', per: 'today' | '7d' | 'all' = 'today') => {
+  const fetchData = useCallback(async (password: string, source: 'all' | 'ad' | 'organic' = 'all', per: 'today' | 'yesterday' | '7d' | 'all' = 'today') => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -141,7 +141,7 @@ export default function DashboardPage() {
     fetchData(pwd, source, period)
   }
 
-  function handlePeriodChange(p: 'today' | '7d' | 'all') {
+  function handlePeriodChange(p: 'today' | 'yesterday' | '7d' | 'all') {
     setPeriod(p)
     fetchData(pwd, sourceFilter, p)
   }
@@ -195,9 +195,10 @@ export default function DashboardPage() {
             {/* Filtro período */}
             <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden text-xs font-bold">
               {([
-                { key: 'today', label: 'Hoje' },
-                { key: '7d',    label: '7 dias' },
-                { key: 'all',   label: 'Total' },
+                { key: 'today',     label: 'Hoje' },
+                { key: 'yesterday', label: 'Ontem' },
+                { key: '7d',        label: '7 dias' },
+                { key: 'all',       label: 'Total' },
               ] as const).map((opt) => (
                 <button
                   key={opt.key}

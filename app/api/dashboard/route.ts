@@ -9,22 +9,30 @@ const STEPS = [
   { name: 'Vendas',      number: 5, label: 'Viu a Oferta' },
 ]
 
-function getDateFilter(period: string): string | null {
+function getDateFilter(period: string): { since: string | null; until?: string } {
   const now = new Date()
   if (period === 'today') {
     const start = new Date(now)
     start.setHours(0, 0, 0, 0)
-    return start.toISOString()
+    return { since: start.toISOString() }
+  }
+  if (period === 'yesterday') {
+    const start = new Date(now)
+    start.setDate(start.getDate() - 1)
+    start.setHours(0, 0, 0, 0)
+    const end = new Date(now)
+    end.setHours(0, 0, 0, 0)
+    return { since: start.toISOString(), until: end.toISOString() }
   }
   if (period === '7d') {
     const start = new Date(now)
     start.setDate(start.getDate() - 7)
-    return start.toISOString()
+    return { since: start.toISOString() }
   }
-  return null // total
+  return { since: null }
 }
 
-async function countSteps(source?: 'ad' | 'organic', since?: string | null) {
+async function countSteps(source?: 'ad' | 'organic', since?: string | null, until?: string) {
   return Promise.all(
     STEPS.map(async (step) => {
       let query = supabase
@@ -34,6 +42,7 @@ async function countSteps(source?: 'ad' | 'organic', since?: string | null) {
 
       if (source) query = query.eq('source', source)
       if (since)  query = query.gte('created_at', since)
+      if (until)  query = query.lt('created_at', until)
 
       const { count } = await query
       return { ...step, count: count ?? 0 }
@@ -41,7 +50,7 @@ async function countSteps(source?: 'ad' | 'organic', since?: string | null) {
   )
 }
 
-async function getRecent(source?: 'ad' | 'organic', since?: string | null) {
+async function getRecent(source?: 'ad' | 'organic', since?: string | null, until?: string) {
   let query = supabase
     .from('funnel_events')
     .select('step_name, session_id, created_at, source')
@@ -50,6 +59,7 @@ async function getRecent(source?: 'ad' | 'organic', since?: string | null) {
 
   if (source) query = query.eq('source', source)
   if (since)  query = query.gte('created_at', since)
+  if (until)  query = query.lt('created_at', until)
 
   const { data } = await query
   return data ?? []
@@ -64,11 +74,11 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const sourceFilter = searchParams.get('source') as 'ad' | 'organic' | null
   const period = searchParams.get('period') ?? 'today'
-  const since = getDateFilter(period)
+  const { since, until } = getDateFilter(period)
 
   const [steps, recent] = await Promise.all([
-    countSteps(sourceFilter ?? undefined, since),
-    getRecent(sourceFilter ?? undefined, since),
+    countSteps(sourceFilter ?? undefined, since, until),
+    getRecent(sourceFilter ?? undefined, since, until),
   ])
 
   return NextResponse.json({ steps, recent })
