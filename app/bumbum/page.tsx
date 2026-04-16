@@ -60,23 +60,40 @@ function BumbumLandingInner() {
         </div>
 
         {/* Antes e Depois — imagem principal */}
-        <div className="relative rounded-3xl overflow-hidden mb-4 shadow-2xl" style={{ border: '2px solid #E91E8C50' }}>
+        <div className="relative rounded-3xl overflow-hidden mb-4 shadow-2xl" style={{ border: '2px solid #E91E8C60' }}>
           <img
             src="/Tela%20Inicial%20Funil.%20jpg.jpeg"
             alt="Resultado real — Antes e Depois Geovana"
             className="w-full object-cover"
           />
-          {/* Labels */}
-          <div className="absolute top-3 left-3">
-            <span className="bg-black/80 text-white text-xs font-black px-3 py-1.5 rounded-full">ANTES</span>
+
+          {/* Gradiente topo para os labels ficarem legíveis */}
+          <div className="absolute top-0 left-0 right-0 h-16" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.6), transparent)' }} />
+
+          {/* Label ANTES — lado esquerdo */}
+          <div className="absolute top-3 left-0 w-1/2 flex justify-center">
+            <span className="bg-black/75 text-white font-black px-4 py-1.5 rounded-full text-sm tracking-widest">
+              ANTES
+            </span>
           </div>
-          <div className="absolute top-3 right-3">
-            <span className="text-white text-xs font-black px-3 py-1.5 rounded-full" style={{ background: '#E91E8C' }}>DEPOIS</span>
+
+          {/* Label DEPOIS — lado direito */}
+          <div className="absolute top-3 right-0 w-1/2 flex justify-center">
+            <span className="text-white font-black px-4 py-1.5 rounded-full text-sm tracking-widest" style={{ background: '#E91E8C' }}>
+              DEPOIS
+            </span>
           </div>
+
+          {/* Linha divisória central */}
+          <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-0.5" style={{ background: 'rgba(255,255,255,0.3)' }} />
+
+          {/* Gradiente fundo para badge */}
+          <div className="absolute bottom-0 left-0 right-0 h-16" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75), transparent)' }} />
+
           {/* Badge resultado */}
           <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-3">
-            <span className="text-white text-xs font-black px-4 py-1.5 rounded-full" style={{ background: 'rgba(13,0,5,0.85)', border: '1px solid #E91E8C60' }}>
-              🍑 4 semanas de protocolo
+            <span className="text-white font-black px-5 py-2 rounded-full text-xs" style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}>
+              ✨ Resultado real em 4 semanas
             </span>
           </div>
         </div>
