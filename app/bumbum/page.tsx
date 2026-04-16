@@ -51,15 +51,44 @@ function BumbumLandingInner() {
         </div>
 
         {/* Headline */}
-        <div className="text-center flex flex-col gap-3 py-5">
+        <div className="text-center flex flex-col gap-2 pt-5 pb-3">
           <h1 className="text-white font-black text-2xl leading-tight">
             Descubra o que está{' '}
             <span style={{ color: '#FFD700' }}>travando o crescimento</span>{' '}
             do seu bumbum — mesmo treinando
           </h1>
-          <p className="text-white/60 text-sm leading-relaxed">
-            Responda 8 perguntas e receba seu <strong className="text-white">diagnóstico personalizado</strong> com o protocolo exato para turbinar seu bumbum em 4 semanas.
-          </p>
+        </div>
+
+        {/* Antes e Depois — imagem principal */}
+        <div className="relative rounded-3xl overflow-hidden mb-4 shadow-2xl" style={{ border: '2px solid #E91E8C50' }}>
+          <img
+            src="/tela%20inicial.jpg"
+            alt="Resultado real — Antes e Depois Geovana"
+            className="w-full object-cover"
+          />
+          {/* Labels */}
+          <div className="absolute top-3 left-3">
+            <span className="bg-black/80 text-white text-xs font-black px-3 py-1.5 rounded-full">ANTES</span>
+          </div>
+          <div className="absolute top-3 right-3">
+            <span className="text-white text-xs font-black px-3 py-1.5 rounded-full" style={{ background: '#E91E8C' }}>DEPOIS</span>
+          </div>
+          {/* Badge resultado */}
+          <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-3">
+            <span className="text-white text-xs font-black px-4 py-1.5 rounded-full" style={{ background: 'rgba(13,0,5,0.85)', border: '1px solid #E91E8C60' }}>
+              🍑 4 semanas de protocolo
+            </span>
+          </div>
+        </div>
+
+        <p className="text-white/60 text-sm leading-relaxed text-center mb-4">
+          Responda <strong className="text-white">5 perguntas rápidas</strong> e receba seu diagnóstico personalizado com o protocolo exato para turbinar seu bumbum em 4 semanas.
+        </p>
+
+        {/* Visualizadores */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+          <span className="text-white/40 text-xs">{viewers} mulheres fazendo o diagnóstico agora</span>
         </div>
 
         {/* CTA principal */}
@@ -73,12 +102,6 @@ function BumbumLandingInner() {
         <p className="text-white/30 text-xs text-center mb-6">
           🔒 Gratuito · 2 minutos · Resultado na hora
         </p>
-
-        {/* Visualizadores */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-white/40 text-xs">{viewers} mulheres fazendo o diagnóstico agora</span>
-        </div>
 
         {/* Promessas */}
         <div className="grid grid-cols-2 gap-3 mb-6">
