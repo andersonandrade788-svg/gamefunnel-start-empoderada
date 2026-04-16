@@ -62,7 +62,7 @@ function BumbumLandingInner() {
         {/* Antes e Depois — imagem principal */}
         <div className="relative rounded-3xl overflow-hidden mb-4 shadow-2xl" style={{ border: '2px solid #E91E8C60' }}>
           <img
-            src="/Tela%20Inicial%20Funil.%20jpg.jpeg"
+            src="/bumbum-antes-depois.jpg"
             alt="Resultado real — Antes e Depois Geovana"
             className="w-full object-cover"
           />
