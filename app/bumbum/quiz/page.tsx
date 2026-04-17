@@ -227,13 +227,23 @@ function BumbumQuizInner() {
         </div>
 
         {/* Progresso */}
-        <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-white/50 text-xs font-bold">
+            Pergunta <span className="text-white font-black">{current + 1}</span> de {QUESTIONS.length}
+          </span>
+          <span
+            className="text-xs font-black px-2.5 py-0.5 rounded-full"
+            style={{ background: '#E91E8C20', color: '#E91E8C' }}
+          >
+            {Math.round(((current) / QUESTIONS.length) * 100)}% concluído
+          </span>
+        </div>
+        <div className="w-full bg-white/10 rounded-full h-2.5 overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #E91E8C, #FFD700)' }}
           />
         </div>
-        <p className="text-white/30 text-xs mt-1">{current + 1} de {QUESTIONS.length}</p>
       </div>
 
       {/* Pergunta */}

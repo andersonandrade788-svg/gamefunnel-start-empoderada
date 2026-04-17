@@ -136,6 +136,15 @@ function BumbumLandingInner() {
           ))}
         </div>
 
+        {/* 2º CTA — após promessas */}
+        <button
+          onClick={goToQuiz}
+          style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}
+          className="w-full text-white font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 mb-6"
+        >
+          🍑 QUERO MEU DIAGNÓSTICO GRÁTIS
+        </button>
+
         {/* Depoimentos */}
         <div className="flex flex-col gap-3 mb-6">
           <p style={{ color: '#FFD700' }} className="font-black text-sm text-center">O QUE NOSSAS ALUNAS DIZEM:</p>

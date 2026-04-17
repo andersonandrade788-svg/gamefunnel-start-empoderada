@@ -466,7 +466,7 @@ function BumbumSalesInner() {
         </span>
       </div>
 
-      <div className="max-w-md mx-auto px-5" style={{ paddingBottom: 'calc(2.5rem + env(safe-area-inset-bottom, 0px))' }}>
+      <div className="max-w-md mx-auto px-5" style={{ paddingBottom: spinPhase === 'done' ? 'calc(5.5rem + env(safe-area-inset-bottom, 0px))' : 'calc(2.5rem + env(safe-area-inset-bottom, 0px))' }}>
 
         {/* Header */}
         <div className="pt-6 pb-4 text-center flex flex-col gap-3">
@@ -694,10 +694,23 @@ function BumbumSalesInner() {
                 msOverflowStyle: 'none',
               }}
             >
-              {['/dep-a.jpg', '/dep-b.jpg'].map((src, i) => (
+              {[
+                {
+                  src: '/dep-a.jpg',
+                  nome: 'Fernanda C.',
+                  resultado: 'Bumbum firme em 3 semanas',
+                  texto: '"Treinava há meses sem resultado. O diagnóstico mostrou exatamente o que estava errado. Segui o protocolo e em 21 dias meu bumbum cresceu e ficou muito mais firme!"',
+                },
+                {
+                  src: '/dep-b.jpg',
+                  nome: 'Thais L.',
+                  resultado: 'Cresceu 5cm em 28 dias',
+                  texto: '"Nunca tinha treinado antes e achei que ia demorar muito. Com o protocolo da Geo, em 10 dias já senti diferença e em 4 semanas meu bumbum estava irreconhecível!"',
+                },
+              ].map((dep, i) => (
                 <div
                   key={i}
-                  className="flex-shrink-0 rounded-2xl overflow-hidden"
+                  className="flex-shrink-0 rounded-2xl overflow-hidden flex flex-col"
                   style={{
                     width: 'calc(85vw - 20px)',
                     maxWidth: '340px',
@@ -707,11 +720,23 @@ function BumbumSalesInner() {
                   }}
                 >
                   <img
-                    src={src}
-                    alt={`Resultado aluna ${i + 1}`}
+                    src={dep.src}
+                    alt={`Resultado ${dep.nome}`}
                     style={{ width: '100%', height: 'auto', display: 'block' }}
                     loading="lazy"
                   />
+                  <div className="p-3 flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-white font-black text-sm">{dep.nome}</p>
+                        <p className="text-xs font-bold" style={{ color: '#E91E8C' }}>{dep.resultado}</p>
+                      </div>
+                      <div className="flex gap-0.5 flex-shrink-0">
+                        {[...Array(5)].map((_, j) => <span key={j} className="text-yellow-400 text-xs">★</span>)}
+                      </div>
+                    </div>
+                    <p className="text-white/50 text-xs leading-relaxed italic">{dep.texto}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -795,6 +820,30 @@ function BumbumSalesInner() {
         </div>
 
       </div>
+
+      {/* ── Sticky bottom CTA ──────────────────────────────────────────────── */}
+      {spinPhase === 'done' && (
+        <div
+          className="fixed bottom-0 left-0 right-0 z-40 flex justify-center"
+          style={{
+            background: 'linear-gradient(to top, #0D0005 60%, transparent)',
+            paddingBottom: 'env(safe-area-inset-bottom, 12px)',
+            paddingTop: 16,
+            paddingLeft: 20,
+            paddingRight: 20,
+          }}
+        >
+          <button
+            onClick={handleCheckout}
+            style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)', maxWidth: 430 }}
+            className="w-full text-white font-black text-base py-4 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-2"
+          >
+            <span>🍑 GARANTIR MINHA VAGA — R$57</span>
+            <span className="text-xs font-bold opacity-70">›</span>
+          </button>
+        </div>
+      )}
+
     </div>
   )
 }
