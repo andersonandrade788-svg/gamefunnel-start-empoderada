@@ -235,7 +235,7 @@ function BumbumSalesInner() {
           <p style={{ color: '#FFD700' }} className="font-black text-sm text-center">RESULTADOS REAIS DAS NOSSAS ALUNAS:</p>
 
           {/* Container do carrossel — sangra nas bordas para aproveitar a tela toda */}
-          <div className="-mx-5">
+          <div className="-mx-5 relative">
             <div
               className="flex gap-3 overflow-x-auto px-5 pb-2"
               style={{
@@ -265,6 +265,14 @@ function BumbumSalesInner() {
                   />
                 </div>
               ))}
+            </div>
+
+            {/* Mãozinha flutuante */}
+            <div
+              className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ animation: 'swipe-hint 1.2s ease-in-out infinite' }}
+            >
+              <div className="text-3xl" style={{ filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.5))' }}>👉</div>
             </div>
           </div>
 
