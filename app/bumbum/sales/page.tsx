@@ -494,68 +494,129 @@ function BumbumSalesInner() {
         </div>
 
         {/* Mentor authority block */}
-        <div
-          style={{ background: 'linear-gradient(135deg, #1A0010, #2D0020)', border: '1px solid #E91E8C40' }}
-          className="rounded-3xl p-5 mb-5 flex flex-col gap-4"
-        >
-          {/* Instagram-style header */}
-          <div className="flex items-center gap-3">
+        <div className="mb-5 flex flex-col gap-4">
+
+          <p style={{ color: '#FFD700' }} className="font-black text-sm uppercase tracking-wider text-center">
+            👩‍💼 Quem vai te guiar nessa jornada?
+          </p>
+
+          {/* Phone mockup with Instagram post */}
+          <div className="flex justify-center">
+            {/* Phone outer frame */}
             <div
-              className="flex-shrink-0 rounded-full overflow-hidden"
-              style={{ width: 68, height: 68, border: '3px solid #E91E8C', padding: 2, background: '#0D0005' }}
+              style={{
+                width: 220,
+                background: '#111',
+                borderRadius: 32,
+                padding: '10px 8px',
+                boxShadow: '0 0 0 2px #333, 0 0 0 4px #1a1a1a, 0 20px 60px rgba(233,30,140,0.25)',
+              }}
             >
-              <img
-                src="/mentora.jpg"
-                alt="Geovana Bueno"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%', display: 'block' }}
-              />
-            </div>
-            <div className="flex flex-col gap-0.5">
-              <div className="flex items-center gap-1.5">
-                <p className="text-white font-black text-base leading-tight">Geovana Bueno</p>
-                {/* Verified badge */}
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <circle cx="8" cy="8" r="8" fill="#E91E8C"/>
-                  <path d="M4.5 8l2.5 2.5 4.5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+              {/* Notch */}
+              <div className="flex justify-center mb-1.5">
+                <div style={{ width: 56, height: 6, background: '#222', borderRadius: 4 }} />
               </div>
-              <p style={{ color: '#E91E8C' }} className="text-xs font-bold">Personal Trainer · 15+ anos</p>
-              <p className="text-white/40 text-xs">Especialista em emagrecimento feminino</p>
+
+              {/* Instagram post screen */}
+              <div style={{ background: '#fff', borderRadius: 20, overflow: 'hidden' }}>
+
+                {/* IG top bar */}
+                <div className="flex items-center gap-2 px-2.5 py-2">
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1.5px solid #E91E8C', flexShrink: 0 }}>
+                    <img src="/mentora.jpg" alt="Geovana" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div className="flex items-center gap-1">
+                      <span style={{ fontSize: 9, fontWeight: 800, color: '#000', lineHeight: 1 }}>geovanabueno</span>
+                      {/* IG verified */}
+                      <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="8" fill="#3897F0"/>
+                        <path d="M4.5 8l2.5 2.5 4.5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                    <span style={{ fontSize: 8, color: '#888', lineHeight: 1 }}>Personal Trainer</span>
+                  </div>
+                  <span style={{ fontSize: 14, color: '#000', fontWeight: 900, lineHeight: 1 }}>···</span>
+                </div>
+
+                {/* Photo */}
+                <div style={{ width: '100%', aspectRatio: '4/5', overflow: 'hidden', background: '#f0f0f0' }}>
+                  <img
+                    src="/mentora.jpg"
+                    alt="Geovana Bueno"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                </div>
+
+                {/* IG action bar */}
+                <div className="px-2.5 pt-2 pb-1 flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    {/* Heart */}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                    {/* Comment */}
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    {/* Share */}
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2">
+                      <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                  </div>
+                  <span style={{ fontSize: 8, fontWeight: 700, color: '#000' }}>2.341 curtidas</span>
+                  <div>
+                    <span style={{ fontSize: 8, fontWeight: 800, color: '#000' }}>geovanabueno </span>
+                    <span style={{ fontSize: 8, color: '#333' }}>Personal Trainer 🍑 Emagrecimento feminino</span>
+                  </div>
+                </div>
+
+                {/* Home bar */}
+                <div className="flex justify-center py-1.5">
+                  <div style={{ width: 40, height: 3, background: '#000', borderRadius: 2, opacity: 0.15 }} />
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Stats row */}
-          <div className="flex items-center justify-around">
-            {[
-              { value: '15+', label: 'Anos de exp.' },
-              { value: '3.200+', label: 'Alunas' },
-              { value: '4 sem.', label: 'Resultado' },
-            ].map((s, i) => (
-              <div key={i} className="flex flex-col items-center gap-0.5">
-                <span style={{ color: '#FFD700' }} className="font-black text-lg leading-none">{s.value}</span>
-                <span className="text-white/40 text-[10px] text-center">{s.label}</span>
-              </div>
-            ))}
-          </div>
+          {/* Bio card beside/below phone */}
+          <div
+            style={{ background: 'linear-gradient(135deg, #1A0010, #2D0020)', border: '1px solid #E91E8C40' }}
+            className="rounded-2xl p-4 flex flex-col gap-3"
+          >
+            {/* Stats */}
+            <div className="flex items-center justify-around">
+              {[
+                { value: '15+', label: 'Anos de exp.' },
+                { value: '3.200+', label: 'Alunas' },
+                { value: '4 sem.', label: 'Resultado' },
+              ].map((s, i) => (
+                <div key={i} className="flex flex-col items-center gap-0.5">
+                  <span style={{ color: '#FFD700' }} className="font-black text-lg leading-none">{s.value}</span>
+                  <span className="text-white/40 text-[10px] text-center">{s.label}</span>
+                </div>
+              ))}
+            </div>
 
-          {/* Bio */}
-          <div style={{ borderTop: '1px solid #E91E8C20' }} className="pt-3 flex flex-col gap-2">
-            <p style={{ color: '#FFD700' }} className="font-black text-xs uppercase tracking-wider">Quem é Geovana Bueno?</p>
-            <p className="text-white/70 text-sm leading-relaxed">
-              Personal Trainer especializada em emagrecimento feminino, com{' '}
-              <span className="text-white font-bold">mais de 15 anos de experiência</span>{' '}
-              transformando o corpo e a autoestima de mulheres — especialmente acima dos 30 anos.
-            </p>
-            <p className="text-white/70 text-sm leading-relaxed">
-              Criadora de um método estratégico e prático, já ajudou{' '}
-              <span className="text-white font-bold">milhares de alunas</span>{' '}
-              a conquistarem resultados reais com treinos simples, eficientes e adaptáveis à rotina.
-            </p>
-            <p className="text-white/70 text-sm leading-relaxed">
-              No Desafio Bumbum Turbinado, ela entrega um{' '}
-              <span style={{ color: '#E91E8C' }} className="font-bold">passo a passo direto</span>{' '}
-              para glúteos mais firmes, definidos e volumosos — mesmo começando do zero.
-            </p>
+            <div style={{ height: 1, background: '#E91E8C20' }} />
+
+            <div className="flex flex-col gap-2">
+              <p className="text-white/70 text-sm leading-relaxed">
+                Personal Trainer especializada em emagrecimento feminino, com{' '}
+                <span className="text-white font-bold">mais de 15 anos de experiência</span>{' '}
+                transformando o corpo e a autoestima de mulheres — especialmente acima dos 30 anos.
+              </p>
+              <p className="text-white/70 text-sm leading-relaxed">
+                Criadora de um método estratégico e prático, já ajudou{' '}
+                <span className="text-white font-bold">milhares de alunas</span>{' '}
+                a conquistarem resultados reais com treinos simples e adaptáveis à rotina.
+              </p>
+              <p className="text-white/70 text-sm leading-relaxed">
+                No Desafio Bumbum Turbinado, ela entrega um{' '}
+                <span style={{ color: '#E91E8C' }} className="font-bold">passo a passo direto</span>{' '}
+                para glúteos mais firmes e volumosos — mesmo começando do zero.
+              </p>
+            </div>
           </div>
         </div>
 
