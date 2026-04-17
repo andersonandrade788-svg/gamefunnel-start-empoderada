@@ -232,32 +232,49 @@ function BumbumSalesInner() {
 
         {/* Carrossel de depoimentos */}
         <div className="flex flex-col gap-3 mb-6">
-          <p style={{ color: '#FFD700' }} className="font-black text-sm text-center">O QUE NOSSAS ALUNAS DIZEM:</p>
-          <div
-            className="flex gap-3 overflow-x-auto pb-3"
-            style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
-          >
-            {['/dep1.jpg', '/dep2.jpg', '/dep3.jpg'].map((src, i) => (
-              <div
-                key={i}
-                className="flex-shrink-0 rounded-2xl overflow-hidden"
-                style={{
-                  width: '78vw',
-                  maxWidth: '320px',
-                  scrollSnapAlign: 'start',
-                  border: '1px solid #E91E8C30',
-                }}
-              >
-                <img
-                  src={src}
-                  alt={`Depoimento aluna ${i + 1}`}
-                  className="w-full h-auto object-cover"
-                  loading="lazy"
-                />
-              </div>
+          <p style={{ color: '#FFD700' }} className="font-black text-sm text-center">RESULTADOS REAIS DAS NOSSAS ALUNAS:</p>
+
+          {/* Container do carrossel — sangra nas bordas para aproveitar a tela toda */}
+          <div className="-mx-5">
+            <div
+              className="flex gap-3 overflow-x-auto px-5 pb-2"
+              style={{
+                scrollSnapType: 'x mandatory',
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+              }}
+            >
+              {['/dep1.jpg', '/dep2.jpg', '/dep3.jpg'].map((src, i) => (
+                <div
+                  key={i}
+                  className="flex-shrink-0 rounded-2xl overflow-hidden"
+                  style={{
+                    width: 'calc(85vw - 20px)',
+                    maxWidth: '340px',
+                    scrollSnapAlign: 'center',
+                    border: '1px solid #E91E8C40',
+                    background: '#1A0010',
+                    height: '420px',
+                  }}
+                >
+                  <img
+                    src={src}
+                    alt={`Resultado aluna ${i + 1}`}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+                    loading="lazy"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Indicadores de ponto */}
+          <div className="flex justify-center gap-1.5">
+            {[0, 1, 2].map(i => (
+              <div key={i} className="w-1.5 h-1.5 rounded-full" style={{ background: i === 0 ? '#E91E8C' : '#E91E8C30' }} />
             ))}
           </div>
-          <p className="text-white/30 text-xs text-center">← arraste para ver mais →</p>
         </div>
 
         {/* Prova social */}
