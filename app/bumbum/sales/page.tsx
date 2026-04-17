@@ -245,7 +245,7 @@ function BumbumSalesInner() {
                 msOverflowStyle: 'none',
               }}
             >
-              {['/dep1.jpg', '/dep2.jpg', '/dep3.jpg'].map((src, i) => (
+              {['/dep-a.jpg', '/dep-b.jpg'].map((src, i) => (
                 <div
                   key={i}
                   className="flex-shrink-0 rounded-2xl overflow-hidden"
@@ -255,13 +255,12 @@ function BumbumSalesInner() {
                     scrollSnapAlign: 'center',
                     border: '1px solid #E91E8C40',
                     background: '#1A0010',
-                    height: '420px',
                   }}
                 >
                   <img
                     src={src}
                     alt={`Resultado aluna ${i + 1}`}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
                     loading="lazy"
                   />
                 </div>
@@ -271,7 +270,7 @@ function BumbumSalesInner() {
 
           {/* Indicadores de ponto */}
           <div className="flex justify-center gap-1.5">
-            {[0, 1, 2].map(i => (
+            {[0, 1].map(i => (
               <div key={i} className="w-1.5 h-1.5 rounded-full" style={{ background: i === 0 ? '#E91E8C' : '#E91E8C30' }} />
             ))}
           </div>
