@@ -37,29 +37,31 @@ function BumbumLandingInner() {
 
       <div className="max-w-md mx-auto px-5" style={{ paddingBottom: 'calc(2.5rem + env(safe-area-inset-bottom, 0px))' }}>
 
-        {/* Logo */}
-        <div className="flex justify-center pt-6 pb-2">
-          <img src="/bumbum-logo.png" alt="Desafio Bumbum Turbinado" className="w-full max-w-[220px] object-contain" onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
-          <div className="text-center" style={{ display: 'none' }} id="logo-fallback">
-            <p className="text-white font-black text-2xl leading-tight">
-              <span style={{ color: '#E91E8C' }}>Desafio do</span><br />
-              <span style={{ color: '#FFD700' }} className="text-4xl">Bumbum</span><br />
-              <span style={{ color: '#FF4444' }}>Turbinado</span><br />
-              <span className="text-white text-xl">em 4 Semanas</span>
-            </p>
+        {/* Social proof strip — acima de tudo */}
+        <div className="flex items-center justify-center gap-4 pt-4 pb-2">
+          <div className="flex items-center gap-1">
+            {[...Array(5)].map((_, i) => <span key={i} className="text-yellow-400 text-sm">★</span>)}
+            <span className="text-white/50 text-xs font-bold ml-1">3.200+ alunas</span>
           </div>
+          <div className="w-px h-4 bg-white/20" />
+          <span className="text-white/50 text-xs font-bold">✅ Diagnóstico grátis</span>
         </div>
 
-        {/* Headline */}
-        <div className="text-center flex flex-col gap-2 pt-5 pb-3">
-          <h1 className="text-white font-black text-2xl leading-tight">
-            Descubra o que está{' '}
-            <span style={{ color: '#FFD700' }}>travando o crescimento</span>{' '}
-            do seu bumbum — mesmo treinando
+        {/* ── HEADLINE principal ────────────────────────────────────────────── */}
+        <div className="text-center flex flex-col gap-3 pt-3 pb-4">
+          <h1 className="text-white font-black text-3xl leading-tight">
+            Por que seu bumbum{' '}
+            <span style={{ color: '#FFD700' }}>não cresce</span>{' '}
+            mesmo você treinando?
           </h1>
+          <p className="text-white/70 text-base leading-snug">
+            Faça o teste de <strong className="text-white">2 minutos</strong> e descubra o{' '}
+            <span style={{ color: '#E91E8C' }} className="font-bold">erro exato</span>{' '}
+            que está travando o seu resultado
+          </p>
         </div>
 
-        {/* Antes e Depois — imagem principal */}
+        {/* Antes e Depois */}
         <div className="relative rounded-3xl overflow-hidden mb-4 shadow-2xl" style={{ border: '2px solid #E91E8C60' }}>
           <img
             src="/bumbum-antes-depois.jpg"
@@ -67,44 +69,40 @@ function BumbumLandingInner() {
             className="w-full object-cover"
           />
 
-          {/* Gradiente topo para os labels ficarem legíveis */}
           <div className="absolute top-0 left-0 right-0 h-16" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.6), transparent)' }} />
 
-          {/* Label ANTES — lado esquerdo */}
           <div className="absolute top-3 left-0 w-1/2 flex justify-center">
-            <span className="bg-black/75 text-white font-black px-4 py-1.5 rounded-full text-sm tracking-wide">
-              ANTES
-            </span>
+            <span className="bg-black/75 text-white font-black px-4 py-1.5 rounded-full text-sm tracking-wide">ANTES</span>
           </div>
-
-          {/* Label DEPOIS — lado direito */}
           <div className="absolute top-3 right-0 w-1/2 flex justify-center">
-            <span className="text-white font-black px-4 py-1.5 rounded-full text-sm tracking-wide" style={{ background: '#E91E8C' }}>
-              DEPOIS
-            </span>
+            <span className="text-white font-black px-4 py-1.5 rounded-full text-sm tracking-wide" style={{ background: '#E91E8C' }}>DEPOIS</span>
           </div>
-
-          {/* Linha divisória central */}
           <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-0.5" style={{ background: 'rgba(255,255,255,0.3)' }} />
-
-          {/* Gradiente fundo para badge */}
           <div className="absolute bottom-0 left-0 right-0 h-16" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75), transparent)' }} />
-
-          {/* Badge resultado */}
           <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-3">
             <span className="text-white font-black px-5 py-2 rounded-full text-xs" style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}>
-              ✨ Resultado real em 4 semanas
+              ✨ Resultado real em 28 dias — método Geo
             </span>
           </div>
         </div>
 
-        <p className="text-white/60 text-sm leading-relaxed text-center mb-4">
-          Responda <strong className="text-white">8 perguntas rápidas</strong> e receba seu diagnóstico personalizado com o protocolo exato para turbinar seu bumbum em 4 semanas.
-        </p>
+        {/* Bullets rápidos — substituem o parágrafo */}
+        <div className="flex flex-col gap-2 mb-4">
+          {[
+            { icon: '🎯', text: 'Diagnóstico 100% personalizado para o SEU corpo' },
+            { icon: '⚡', text: 'Protocolo específico pronto em 2 minutos' },
+            { icon: '🔓', text: 'Completamente gratuito, sem cadastro' },
+          ].map((b, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <span className="text-lg flex-shrink-0">{b.icon}</span>
+              <p className="text-white/80 text-sm leading-snug">{b.text}</p>
+            </div>
+          ))}
+        </div>
 
         {/* Visualizadores */}
         <div className="flex items-center justify-center gap-2 mb-4">
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
           <span className="text-white/40 text-xs">{viewers} mulheres fazendo o diagnóstico agora</span>
         </div>
 
@@ -112,12 +110,12 @@ function BumbumLandingInner() {
         <button
           onClick={goToQuiz}
           style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}
-          className="w-full text-white font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 mb-3"
+          className="w-full text-white font-black text-xl py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 mb-2"
         >
-          👉 FAZER O DIAGNÓSTICO GRÁTIS
+          👉 DESCOBRIR O MEU ERRO AGORA
         </button>
-        <p className="text-white/30 text-xs text-center mb-6">
-          🔒 Gratuito · 2 minutos · Resultado na hora
+        <p className="text-white/30 text-xs text-center mb-8">
+          🔒 Grátis · Sem cadastro · Resultado imediato
         </p>
 
         {/* Promessas */}
@@ -136,11 +134,11 @@ function BumbumLandingInner() {
           ))}
         </div>
 
-        {/* 2º CTA — após promessas */}
+        {/* 2º CTA */}
         <button
           onClick={goToQuiz}
           style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}
-          className="w-full text-white font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 mb-6"
+          className="w-full text-white font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 mb-8"
         >
           🍑 QUERO MEU DIAGNÓSTICO GRÁTIS
         </button>
@@ -159,7 +157,7 @@ function BumbumLandingInner() {
                   <p className="text-xs font-semibold" style={{ color: '#E91E8C' }}>{d.resultado}</p>
                 </div>
                 <div className="flex gap-0.5">
-                  {[...Array(5)].map((_, i) => <span key={i} className="text-yellow-400 text-sm">★</span>)}
+                  {[...Array(5)].map((_, j) => <span key={j} className="text-yellow-400 text-sm">★</span>)}
                 </div>
               </div>
               <p className="text-white/50 text-xs leading-relaxed italic">{d.texto}</p>
