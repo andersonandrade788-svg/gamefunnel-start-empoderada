@@ -500,81 +500,79 @@ function BumbumSalesInner() {
             👩‍💼 Quem vai te guiar nessa jornada?
           </p>
 
-          {/* Phone mockup with Instagram post */}
+          {/* Phone mockup — foto ocupa a tela toda */}
           <div className="flex justify-center">
-            {/* Phone outer frame */}
             <div
               style={{
                 width: 220,
                 background: '#111',
-                borderRadius: 32,
-                padding: '10px 8px',
-                boxShadow: '0 0 0 2px #333, 0 0 0 4px #1a1a1a, 0 20px 60px rgba(233,30,140,0.25)',
+                borderRadius: 36,
+                padding: '10px 8px 14px',
+                boxShadow: '0 0 0 2px #333, 0 0 0 5px #1a1a1a, 0 24px 60px rgba(233,30,140,0.3)',
+                position: 'relative',
               }}
             >
-              {/* Notch */}
-              <div className="flex justify-center mb-1.5">
-                <div style={{ width: 56, height: 6, background: '#222', borderRadius: 4 }} />
+              {/* Dynamic island */}
+              <div className="flex justify-center mb-2">
+                <div style={{ width: 80, height: 20, background: '#000', borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#1a1a1a', border: '1px solid #333' }} />
+                  <div style={{ width: 32, height: 10, borderRadius: 8, background: '#1a1a1a' }} />
+                </div>
               </div>
 
-              {/* Instagram post screen */}
-              <div style={{ background: '#fff', borderRadius: 20, overflow: 'hidden' }}>
+              {/* Screen — foto preenche tudo */}
+              <div style={{ borderRadius: 24, overflow: 'hidden', position: 'relative' }}>
+                <img
+                  src="/mentora.jpg"
+                  alt="Geovana Bueno"
+                  style={{ width: '100%', display: 'block', objectFit: 'cover' }}
+                />
 
-                {/* IG top bar */}
-                <div className="flex items-center gap-2 px-2.5 py-2">
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '1.5px solid #E91E8C', flexShrink: 0 }}>
-                    <img src="/mentora.jpg" alt="Geovana" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                {/* Gradient overlay bottom com info */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: 0, left: 0, right: 0,
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)',
+                    padding: '20px 10px 10px',
+                  }}
+                >
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span style={{ fontSize: 10, fontWeight: 800, color: '#fff', lineHeight: 1 }}>geovanabueno</span>
+                    <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
+                      <circle cx="8" cy="8" r="8" fill="#3897F0"/>
+                      <path d="M4.5 8l2.5 2.5 4.5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div className="flex items-center gap-1">
-                      <span style={{ fontSize: 9, fontWeight: 800, color: '#000', lineHeight: 1 }}>geovanabueno</span>
-                      {/* IG verified */}
-                      <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
-                        <circle cx="8" cy="8" r="8" fill="#3897F0"/>
-                        <path d="M4.5 8l2.5 2.5 4.5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </div>
-                    <span style={{ fontSize: 8, color: '#888', lineHeight: 1 }}>Personal Trainer</span>
-                  </div>
-                  <span style={{ fontSize: 14, color: '#000', fontWeight: 900, lineHeight: 1 }}>···</span>
+                  <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', lineHeight: 1 }}>Personal Trainer 🍑</span>
                 </div>
 
-                {/* Photo */}
-                <div style={{ width: '100%', aspectRatio: '4/5', overflow: 'hidden', background: '#f0f0f0' }}>
-                  <img
-                    src="/mentora.jpg"
-                    alt="Geovana Bueno"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                  />
-                </div>
-
-                {/* IG action bar */}
-                <div className="px-2.5 pt-2 pb-1 flex flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    {/* Heart */}
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2">
+                {/* IG action icons — lado direito */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    right: 8, bottom: 32,
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
+                  }}
+                >
+                  <div className="flex flex-col items-center gap-0.5">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="0">
                       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                     </svg>
-                    {/* Comment */}
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                    </svg>
-                    {/* Share */}
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2">
-                      <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                    </svg>
+                    <span style={{ fontSize: 7, color: 'white', fontWeight: 700 }}>2.3k</span>
                   </div>
-                  <span style={{ fontSize: 8, fontWeight: 700, color: '#000' }}>2.341 curtidas</span>
-                  <div>
-                    <span style={{ fontSize: 8, fontWeight: 800, color: '#000' }}>geovanabueno </span>
-                    <span style={{ fontSize: 8, color: '#333' }}>Personal Trainer 🍑 Emagrecimento feminino</span>
-                  </div>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  </svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="white" stroke="none"/>
+                  </svg>
                 </div>
+              </div>
 
-                {/* Home bar */}
-                <div className="flex justify-center py-1.5">
-                  <div style={{ width: 40, height: 3, background: '#000', borderRadius: 2, opacity: 0.15 }} />
-                </div>
+              {/* Home bar */}
+              <div className="flex justify-center mt-2">
+                <div style={{ width: 50, height: 4, background: '#444', borderRadius: 4 }} />
               </div>
             </div>
           </div>
