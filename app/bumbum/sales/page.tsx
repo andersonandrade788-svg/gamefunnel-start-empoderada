@@ -7,11 +7,123 @@ import { initiateCheckout } from '@/lib/pixel'
 
 const CHECKOUT_URL = 'https://pay.cakto.com.br/orhu3er_850513'
 
-const PROFILE_LABELS: Record<string, string> = {
-  iniciante: 'Iniciante Determinada',
-  intermediario: 'Guerreira Estagnada',
-  avancado: 'Atleta de Alta Performance',
+// ─── Spin Wheel ───────────────────────────────────────────────────────────────
+
+const SEGMENTS = [
+  { label: 'R$97',  color: '#7D0B4E', textColor: '#FFD700' }, // 0: 0°-45°
+  { label: 'R$57!', color: '#C2185B', textColor: '#FFFFFF' }, // 1: 45°-90°
+  { label: 'R$127', color: '#5A0035', textColor: '#FFD700' }, // 2: 90°-135°
+  { label: 'R$197', color: '#9C0D63', textColor: '#FF8C00' }, // 3: 135°-180°
+  { label: 'R$57!', color: '#C2185B', textColor: '#FFFFFF' }, // 4: 180°-225°
+  { label: 'R$97',  color: '#7D0B4E', textColor: '#FFD700' }, // 5: 225°-270°
+  { label: 'R$57!', color: '#FFD700', textColor: '#000000' }, // 6: 270°-315° ← WINNER
+  { label: 'R$127', color: '#5A0035', textColor: '#FFD700' }, // 7: 315°-360°
+]
+
+// Segment 6 center is at 270° + 22.5° = 292.5° from top (clockwise).
+// To bring it to the pointer (top=0°): rotate (360 - 292.5) = 67.5° + 5 full turns.
+const FINAL_ROTATION = 5 * 360 + 67.5
+
+// Boundary points at each 45° on circle r=140, cx=cy=150
+// (x, y) = (150 + 140*sin(k*45°), 150 - 140*cos(k*45°))
+const BOUNDARY_PTS: [number, number][] = [
+  [150,      10],       // 0°
+  [248.99,   51.01],    // 45°
+  [290,      150],      // 90°
+  [248.99,   248.99],   // 135°
+  [150,      290],      // 180°
+  [51.01,    248.99],   // 225°
+  [10,       150],      // 270°
+  [51.01,    51.01],    // 315°
+]
+
+function segPath(i: number) {
+  const [x1, y1] = BOUNDARY_PTS[i]
+  const [x2, y2] = BOUNDARY_PTS[(i + 1) % 8]
+  return `M150,150 L${x1},${y1} A140,140,0,0,1,${x2},${y2} Z`
 }
+
+function segTextPos(i: number) {
+  const deg = i * 45 + 22.5
+  const rad = (deg * Math.PI) / 180
+  return { x: 150 + 88 * Math.sin(rad), y: 150 - 88 * Math.cos(rad), deg }
+}
+
+function playSpinSounds() {
+  try {
+    // @ts-ignore
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const n = 30
+    for (let i = 0; i < n; i++) {
+      // Exponential clustering: many ticks at start (fast), few at end (slow)
+      const t = 4.0 * Math.pow(i / n, 1.8)
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.type = 'square'
+      osc.frequency.value = 600 + ((i * 137) % 400)
+      gain.gain.setValueAtTime(0.12, ctx.currentTime + t)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.04)
+      osc.start(ctx.currentTime + t)
+      osc.stop(ctx.currentTime + t + 0.04)
+    }
+  } catch (_) {}
+}
+
+function playVictorySound() {
+  try {
+    // @ts-ignore
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    // Ascending victory melody
+    const melody = [523, 659, 784, 1047, 1319]
+    melody.forEach((freq, i) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.type = 'sine'
+      osc.frequency.value = freq
+      const t = ctx.currentTime + i * 0.13
+      gain.gain.setValueAtTime(0, t)
+      gain.gain.linearRampToValueAtTime(0.25, t + 0.05)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5)
+      osc.start(t)
+      osc.stop(t + 0.5)
+    })
+    // Coin rain sounds
+    for (let i = 0; i < 10; i++) {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.type = 'triangle'
+      osc.frequency.value = 900 + ((i * 173) % 700)
+      const t = ctx.currentTime + 0.7 + i * 0.07
+      gain.gain.setValueAtTime(0.15, t)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08)
+      osc.start(t)
+      osc.stop(t + 0.08)
+    }
+  } catch (_) {}
+}
+
+// Pre-generated confetti (deterministic, no Math.random at render)
+const CONFETTI_COLORS = ['#E91E8C', '#FFD700', '#FFFFFF', '#FF69B4', '#FFA500']
+const CONFETTI = Array.from({ length: 40 }, (_, i) => {
+  const seed = i * 13.7
+  return {
+    id: i,
+    x: (seed * 7.3) % 100,
+    color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+    delay: (i * 0.047) % 0.9,
+    size: 6 + (i * 0.43) % 8,
+    isCircle: i % 3 !== 0,
+    duration: 1.4 + (i * 0.03) % 0.8,
+  }
+})
+
+// ─── FAQ ─────────────────────────────────────────────────────────────────────
 
 const FAQ = [
   {
@@ -32,6 +144,14 @@ const FAQ = [
   },
 ]
 
+const PROFILE_LABELS: Record<string, string> = {
+  iniciante: 'Iniciante Determinada',
+  intermediario: 'Guerreira Estagnada',
+  avancado: 'Atleta de Alta Performance',
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 function BumbumSalesInner() {
   const searchParams = useSearchParams()
   const [countdown, setCountdown] = useState(900)
@@ -40,6 +160,11 @@ function BumbumSalesInner() {
   const [buyers, setBuyers] = useState(0)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const exitTriggered = useRef(false)
+  const priceRef = useRef<HTMLDivElement>(null)
+
+  // Spin wheel
+  const [spinPhase, setSpinPhase] = useState<'idle' | 'spinning' | 'won' | 'done'>('idle')
+  const [wheelRotation, setWheelRotation] = useState(0)
 
   const perfil = searchParams.get('perfil') ?? 'intermediario'
   const profileLabel = PROFILE_LABELS[perfil] ?? PROFILE_LABELS.intermediario
@@ -61,6 +186,7 @@ function BumbumSalesInner() {
   }, [])
 
   useEffect(() => {
+    if (spinPhase !== 'done') return
     function handleMouseLeave(e: MouseEvent) {
       if (e.clientY <= 10 && !exitTriggered.current) {
         exitTriggered.current = true
@@ -94,7 +220,25 @@ function BumbumSalesInner() {
       document.removeEventListener('visibilitychange', handleVisibility)
       window.removeEventListener('scroll', handleScroll)
     }
-  }, [])
+  }, [spinPhase])
+
+  function spinWheel() {
+    if (spinPhase !== 'idle') return
+    setSpinPhase('spinning')
+    setWheelRotation(FINAL_ROTATION)
+    playSpinSounds()
+    setTimeout(() => {
+      setSpinPhase('won')
+      playVictorySound()
+    }, 4300)
+  }
+
+  function claimPrize() {
+    setSpinPhase('done')
+    setTimeout(() => {
+      priceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 150)
+  }
 
   const mins = String(Math.floor(countdown / 60)).padStart(2, '0')
   const secs = String(countdown % 60).padStart(2, '0')
@@ -109,7 +253,182 @@ function BumbumSalesInner() {
   return (
     <div className="bumbum-page" style={{ background: '#0D0005' }}>
 
-      {/* Exit popup */}
+      {/* ── Spin Wheel Overlay ─────────────────────────────────────────────── */}
+      {spinPhase !== 'done' && (
+        <div
+          className="fixed inset-0 z-[60] flex flex-col items-center justify-center px-5"
+          style={{ background: 'rgba(5, 0, 18, 0.97)', overflowY: 'auto' }}
+        >
+          {/* Confetti particles */}
+          {spinPhase === 'won' && CONFETTI.map(p => (
+            <div
+              key={p.id}
+              className="pointer-events-none fixed"
+              style={{
+                left: `${p.x}%`,
+                top: '-12px',
+                width: `${p.size}px`,
+                height: `${p.size}px`,
+                background: p.color,
+                borderRadius: p.isCircle ? '50%' : '2px',
+                animation: `confetti-fall ${p.duration}s ease-in ${p.delay}s forwards`,
+                zIndex: 65,
+              }}
+            />
+          ))}
+
+          <div className="w-full max-w-xs flex flex-col items-center gap-5 py-8">
+
+            {/* Title */}
+            <div className="text-center">
+              <h2 className="text-white font-black text-xl leading-tight">
+                🎰 GIRE E GANHE{' '}
+                <span style={{ color: '#FFD700' }}>SEU DESCONTO!</span>
+              </h2>
+              <p className="text-white/50 text-xs mt-1.5 leading-relaxed">
+                Exclusivo para quem completou o diagnóstico 🍑
+              </p>
+            </div>
+
+            {/* Wheel container */}
+            <div className="relative flex items-center justify-center" style={{ width: 284, height: 284 }}>
+
+              {/* Pointer triangle (fixed, pointing down at top of wheel) */}
+              <div
+                className="absolute left-1/2 -translate-x-1/2 z-10"
+                style={{ top: -8 }}
+              >
+                <div style={{
+                  width: 0, height: 0,
+                  borderLeft: '13px solid transparent',
+                  borderRight: '13px solid transparent',
+                  borderTop: '26px solid #FFD700',
+                  filter: 'drop-shadow(0 2px 6px rgba(255,215,0,0.7))',
+                }} />
+              </div>
+
+              {/* Spinning SVG wheel */}
+              <div
+                style={{
+                  width: 280,
+                  height: 280,
+                  transform: `rotate(${wheelRotation}deg)`,
+                  transition: spinPhase === 'spinning'
+                    ? 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)'
+                    : 'none',
+                  transformOrigin: 'center center',
+                  borderRadius: '50%',
+                  boxShadow: '0 0 0 4px #FFD700, 0 0 40px rgba(233,30,140,0.5)',
+                  willChange: 'transform',
+                }}
+              >
+                <svg viewBox="0 0 300 300" width={280} height={280}>
+                  {/* Pie segments */}
+                  {SEGMENTS.map((seg, i) => (
+                    <path
+                      key={i}
+                      d={segPath(i)}
+                      fill={seg.color}
+                      stroke="#0D0005"
+                      strokeWidth="2"
+                    />
+                  ))}
+
+                  {/* Segment labels */}
+                  {SEGMENTS.map((seg, i) => {
+                    const { x, y, deg } = segTextPos(i)
+                    return (
+                      <text
+                        key={i}
+                        x={x}
+                        y={y}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        fill={seg.textColor}
+                        fontSize={i === 6 ? '12' : '11'}
+                        fontWeight="bold"
+                        fontFamily="Inter, sans-serif"
+                        transform={`rotate(${deg}, ${x}, ${y})`}
+                      >
+                        {seg.label}
+                      </text>
+                    )
+                  })}
+
+                  {/* Center hub */}
+                  <circle cx="150" cy="150" r="24" fill="#0D0005" stroke="#FFD700" strokeWidth="3" />
+                  <text
+                    x="150" y="154"
+                    textAnchor="middle"
+                    fill="#FFD700"
+                    fontSize="9"
+                    fontWeight="bold"
+                    fontFamily="Inter, sans-serif"
+                    letterSpacing="0.5"
+                  >
+                    GEO
+                  </text>
+                </svg>
+              </div>
+            </div>
+
+            {/* Action area */}
+            {spinPhase === 'idle' && (
+              <div className="w-full flex flex-col items-center gap-2">
+                <button
+                  onClick={spinWheel}
+                  style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}
+                  className="w-full text-white font-black text-xl py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 animate-pulse"
+                >
+                  🎯 GIRAR AGORA
+                </button>
+                <p className="text-white/25 text-xs text-center">Gire a roleta e desbloqueie seu preço</p>
+              </div>
+            )}
+
+            {spinPhase === 'spinning' && (
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin" />
+                <p className="text-white/60 text-sm font-bold animate-pulse">Girando... boa sorte! 🍀</p>
+              </div>
+            )}
+
+            {spinPhase === 'won' && (
+              <div className="flex flex-col items-center gap-3 w-full animate-scaleIn">
+                {/* Win card */}
+                <div
+                  style={{ background: 'linear-gradient(135deg, #1A0010, #2D0020)', border: '2px solid #FFD700' }}
+                  className="rounded-2xl p-4 text-center w-full"
+                >
+                  <p className="text-4xl mb-1">🎉</p>
+                  <p style={{ color: '#FFD700' }} className="font-black text-xl leading-tight">VOCÊ GANHOU!</p>
+                  <p className="text-white/60 text-xs mt-1 mb-3">Desconto exclusivo desbloqueado:</p>
+                  <div className="flex items-end justify-center gap-1.5">
+                    <span className="text-white/40 text-sm line-through self-center">R$197</span>
+                    <span style={{ color: '#FFD700' }} className="font-black text-5xl leading-none">R$57</span>
+                    <span style={{ color: '#FFD700' }} className="font-black text-2xl leading-none mb-0.5">,00</span>
+                  </div>
+                </div>
+
+                {/* Claim button */}
+                <button
+                  onClick={claimPrize}
+                  style={{ background: 'linear-gradient(135deg, #FFD700, #FFA500)' }}
+                  className="w-full text-black font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200"
+                >
+                  🏆 RESGATAR MEU DESCONTO
+                </button>
+                <p className="text-white/30 text-xs text-center">
+                  🔒 Oferta válida somente agora
+                </p>
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
+
+      {/* ── Exit popup ─────────────────────────────────────────────────────── */}
       {showExit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-5" style={{ background: 'rgba(0,0,0,0.88)' }}>
           <div style={{ background: '#1A0010', border: '2px solid #E91E8C' }} className="rounded-3xl p-6 w-full max-w-sm flex flex-col gap-4">
@@ -140,7 +459,7 @@ function BumbumSalesInner() {
         </div>
       )}
 
-      {/* Barra topo urgência */}
+      {/* ── Urgency bar ────────────────────────────────────────────────────── */}
       <div style={{ background: 'linear-gradient(90deg, #E91E8C, #C2185B)' }} className="px-4 py-2.5 flex items-center justify-center">
         <span className="text-white text-xs font-black text-center animate-pulse">
           ⏰ Oferta especial expira em {mins}:{secs} — Vagas limitadas
@@ -151,7 +470,6 @@ function BumbumSalesInner() {
 
         {/* Header */}
         <div className="pt-6 pb-4 text-center flex flex-col gap-3">
-          {/* Prova social ao vivo */}
           <div className="flex items-center justify-center gap-4">
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
@@ -175,8 +493,9 @@ function BumbumSalesInner() {
           </p>
         </div>
 
-        {/* Bloco de preço */}
+        {/* Price block (scroll target) */}
         <div
+          ref={priceRef}
           style={{ background: 'linear-gradient(135deg, #1A0010, #2D0020)', border: '2px solid #E91E8C' }}
           className="rounded-3xl p-5 mb-5 text-center flex flex-col gap-3"
         >
@@ -192,7 +511,6 @@ function BumbumSalesInner() {
             <p className="text-white/40 text-xs">no primeiro mês · cancele quando quiser</p>
           </div>
 
-          {/* Botão CTA */}
           <button
             onClick={handleCheckout}
             style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}
@@ -201,15 +519,14 @@ function BumbumSalesInner() {
             🍑 QUERO COMEÇAR AGORA
           </button>
 
-          {/* Selos de pagamento */}
           <div className="flex items-center justify-center gap-3 flex-wrap">
             {['💳 Cartão', '📱 Pix', '🔒 SSL Seguro'].map((s, i) => (
-              <span key={i} className="text-white/30 text-[10px] font-bold flex items-center gap-1">{s}</span>
+              <span key={i} className="text-white/30 text-[10px] font-bold">{s}</span>
             ))}
           </div>
         </div>
 
-        {/* O que está incluído */}
+        {/* Included items */}
         <div className="flex flex-col gap-3 mb-6">
           <p style={{ color: '#FFD700' }} className="font-black text-sm uppercase tracking-wider">✨ O que você recebe:</p>
           {[
@@ -230,11 +547,10 @@ function BumbumSalesInner() {
           ))}
         </div>
 
-        {/* Carrossel de depoimentos */}
+        {/* Testimonial carousel */}
         <div className="flex flex-col gap-3 mb-6">
           <p style={{ color: '#FFD700' }} className="font-black text-sm text-center">RESULTADOS REAIS DAS NOSSAS ALUNAS:</p>
 
-          {/* Container do carrossel — sangra nas bordas para aproveitar a tela toda */}
           <div className="-mx-5 relative">
             <div
               className="flex gap-3 overflow-x-auto px-5 pb-2"
@@ -267,7 +583,7 @@ function BumbumSalesInner() {
               ))}
             </div>
 
-            {/* Mãozinha flutuante */}
+            {/* Swipe hint hand */}
             <div
               className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none"
               style={{ animation: 'swipe-hint 1.2s ease-in-out infinite' }}
@@ -276,7 +592,6 @@ function BumbumSalesInner() {
             </div>
           </div>
 
-          {/* Indicadores de ponto */}
           <div className="flex justify-center gap-1.5">
             {[0, 1].map(i => (
               <div key={i} className="w-1.5 h-1.5 rounded-full" style={{ background: i === 0 ? '#E91E8C' : '#E91E8C30' }} />
@@ -284,7 +599,7 @@ function BumbumSalesInner() {
           </div>
         </div>
 
-        {/* Prova social */}
+        {/* Social proof */}
         <div style={{ background: '#1A0010', border: '1px solid #FFD70030' }} className="rounded-2xl p-4 flex items-center gap-3 mb-6">
           <span className="text-3xl flex-shrink-0">🏆</span>
           <div>
@@ -307,7 +622,10 @@ function BumbumSalesInner() {
                 className="w-full text-left px-4 py-4 flex items-center justify-between gap-3"
               >
                 <span className="text-white font-bold text-sm leading-snug">{item.q}</span>
-                <span className="font-black text-lg flex-shrink-0 transition-transform duration-200" style={{ transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0deg)', color: '#E91E8C' }}>+</span>
+                <span
+                  className="font-black text-lg flex-shrink-0 transition-transform duration-200"
+                  style={{ transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0deg)', color: '#E91E8C' }}
+                >+</span>
               </button>
               {openFaq === i && (
                 <div className="px-4 pb-4">
@@ -318,7 +636,7 @@ function BumbumSalesInner() {
           ))}
         </div>
 
-        {/* Garantia — ACIMA do CTA final */}
+        {/* Guarantee */}
         <div style={{ background: 'linear-gradient(135deg, #1A0010, #2D0020)', border: '2px solid #FFD70060' }} className="rounded-2xl p-4 mb-5 flex items-center gap-4">
           <span className="text-5xl flex-shrink-0">🛡️</span>
           <div>
@@ -329,7 +647,7 @@ function BumbumSalesInner() {
           </div>
         </div>
 
-        {/* CTA final */}
+        {/* Final CTA */}
         <div className="flex flex-col gap-3">
           <button
             onClick={handleCheckout}
