@@ -659,8 +659,7 @@ function BumbumSalesInner() {
             { icon: '🍑', title: 'Método Geo de Ativação Glútea', desc: 'A técnica exclusiva que faz o bumbum crescer de verdade, sem truques' },
             { icon: '🏠', title: 'Casa ou Academia', desc: 'Adaptações para qualquer ambiente — com ou sem equipamento' },
             { icon: '📊', title: 'Treino para Seu Perfil', desc: `Protocolo específico para ${profileLabel} — não é genérico, é feito para você` },
-            { icon: '💬', title: 'Suporte no Grupo VIP', desc: 'Comunidade exclusiva com outras alunas + acompanhamento direto' },
-            { icon: '🎯', title: 'Plano de Alimentação', desc: 'Guia nutricional para potencializar o crescimento muscular' },
+{ icon: '🎯', title: 'Plano de Alimentação', desc: 'Guia nutricional para potencializar o crescimento muscular' },
           ].map((item, i) => (
             <div key={i} style={{ background: '#1A0010', border: '1px solid #E91E8C20' }} className="rounded-xl p-3 flex items-start gap-3">
               <span className="text-2xl flex-shrink-0">{item.icon}</span>
