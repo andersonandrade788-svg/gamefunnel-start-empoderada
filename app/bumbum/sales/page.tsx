@@ -493,6 +493,15 @@ function BumbumSalesInner() {
           </p>
         </div>
 
+        {/* CTA before mentor */}
+        <button
+          onClick={handleCheckout}
+          style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}
+          className="w-full text-white font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 mb-5"
+        >
+          🍑 QUERO COMEÇAR AGORA — R$57
+        </button>
+
         {/* Mentor authority block */}
         <div className="mb-5 flex flex-col gap-4">
 
