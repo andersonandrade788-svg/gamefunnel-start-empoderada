@@ -493,6 +493,72 @@ function BumbumSalesInner() {
           </p>
         </div>
 
+        {/* Mentor authority block */}
+        <div
+          style={{ background: 'linear-gradient(135deg, #1A0010, #2D0020)', border: '1px solid #E91E8C40' }}
+          className="rounded-3xl p-5 mb-5 flex flex-col gap-4"
+        >
+          {/* Instagram-style header */}
+          <div className="flex items-center gap-3">
+            <div
+              className="flex-shrink-0 rounded-full overflow-hidden"
+              style={{ width: 68, height: 68, border: '3px solid #E91E8C', padding: 2, background: '#0D0005' }}
+            >
+              <img
+                src="/mentora.jpg"
+                alt="Geovana Bueno"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%', display: 'block' }}
+              />
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <div className="flex items-center gap-1.5">
+                <p className="text-white font-black text-base leading-tight">Geovana Bueno</p>
+                {/* Verified badge */}
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="8" r="8" fill="#E91E8C"/>
+                  <path d="M4.5 8l2.5 2.5 4.5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <p style={{ color: '#E91E8C' }} className="text-xs font-bold">Personal Trainer · 15+ anos</p>
+              <p className="text-white/40 text-xs">Especialista em emagrecimento feminino</p>
+            </div>
+          </div>
+
+          {/* Stats row */}
+          <div className="flex items-center justify-around">
+            {[
+              { value: '15+', label: 'Anos de exp.' },
+              { value: '3.200+', label: 'Alunas' },
+              { value: '4 sem.', label: 'Resultado' },
+            ].map((s, i) => (
+              <div key={i} className="flex flex-col items-center gap-0.5">
+                <span style={{ color: '#FFD700' }} className="font-black text-lg leading-none">{s.value}</span>
+                <span className="text-white/40 text-[10px] text-center">{s.label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Bio */}
+          <div style={{ borderTop: '1px solid #E91E8C20' }} className="pt-3 flex flex-col gap-2">
+            <p style={{ color: '#FFD700' }} className="font-black text-xs uppercase tracking-wider">Quem é Geovana Bueno?</p>
+            <p className="text-white/70 text-sm leading-relaxed">
+              Personal Trainer especializada em emagrecimento feminino, com{' '}
+              <span className="text-white font-bold">mais de 15 anos de experiência</span>{' '}
+              transformando o corpo e a autoestima de mulheres — especialmente acima dos 30 anos.
+            </p>
+            <p className="text-white/70 text-sm leading-relaxed">
+              Criadora de um método estratégico e prático, já ajudou{' '}
+              <span className="text-white font-bold">milhares de alunas</span>{' '}
+              a conquistarem resultados reais com treinos simples, eficientes e adaptáveis à rotina.
+            </p>
+            <p className="text-white/70 text-sm leading-relaxed">
+              No Desafio Bumbum Turbinado, ela entrega um{' '}
+              <span style={{ color: '#E91E8C' }} className="font-bold">passo a passo direto</span>{' '}
+              para glúteos mais firmes, definidos e volumosos — mesmo começando do zero.
+            </p>
+          </div>
+        </div>
+
         {/* Price block (scroll target) */}
         <div
           ref={priceRef}
