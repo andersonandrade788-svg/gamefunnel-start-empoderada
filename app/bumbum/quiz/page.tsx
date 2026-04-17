@@ -202,7 +202,7 @@ function BumbumQuizInner() {
     <div className="bumbum-page flex flex-col" style={{ background: '#0D0005' }}>
 
       {/* Notificações */}
-      <div className="fixed top-14 left-0 right-0 flex flex-col items-center gap-2 z-40 pointer-events-none px-6">
+      <div className="fixed top-20 left-0 right-0 flex flex-col items-center gap-2 z-40 pointer-events-none px-6">
         {(notifications ?? []).map(n => (
           <div
             key={n.id}

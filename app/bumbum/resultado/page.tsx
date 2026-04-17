@@ -129,7 +129,7 @@ function BumbumResultadoInner() {
             </div>
             <div>
               <p className="text-white/50 text-xs font-bold uppercase tracking-wider mb-1">Seu perfil</p>
-              <h2 style={{ color: profile.color }} className="font-black text-2xl">{profile.label}</h2>
+              <h2 style={{ color: profile.color }} className="font-black text-xl leading-tight">{profile.label}</h2>
             </div>
           </div>
 

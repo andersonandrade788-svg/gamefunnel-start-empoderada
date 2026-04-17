@@ -72,14 +72,14 @@ function BumbumLandingInner() {
 
           {/* Label ANTES — lado esquerdo */}
           <div className="absolute top-3 left-0 w-1/2 flex justify-center">
-            <span className="bg-black/75 text-white font-black px-4 py-1.5 rounded-full text-sm tracking-widest">
+            <span className="bg-black/75 text-white font-black px-4 py-1.5 rounded-full text-sm tracking-wide">
               ANTES
             </span>
           </div>
 
           {/* Label DEPOIS — lado direito */}
           <div className="absolute top-3 right-0 w-1/2 flex justify-center">
-            <span className="text-white font-black px-4 py-1.5 rounded-full text-sm tracking-widest" style={{ background: '#E91E8C' }}>
+            <span className="text-white font-black px-4 py-1.5 rounded-full text-sm tracking-wide" style={{ background: '#E91E8C' }}>
               DEPOIS
             </span>
           </div>
@@ -99,7 +99,7 @@ function BumbumLandingInner() {
         </div>
 
         <p className="text-white/60 text-sm leading-relaxed text-center mb-4">
-          Responda <strong className="text-white">5 perguntas rápidas</strong> e receba seu diagnóstico personalizado com o protocolo exato para turbinar seu bumbum em 4 semanas.
+          Responda <strong className="text-white">8 perguntas rápidas</strong> e receba seu diagnóstico personalizado com o protocolo exato para turbinar seu bumbum em 4 semanas.
         </p>
 
         {/* Visualizadores */}

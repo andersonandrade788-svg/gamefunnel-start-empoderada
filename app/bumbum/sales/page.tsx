@@ -140,7 +140,7 @@ function BumbumSalesInner() {
 
           <span className="text-6xl">🍑</span>
           <div>
-            <p style={{ color: '#E91E8C' }} className="font-black text-sm uppercase tracking-wider">Protocolo personalizado para {profileLabel}</p>
+            <p style={{ color: '#E91E8C' }} className="font-black text-xs uppercase tracking-wide leading-relaxed">Protocolo personalizado para {profileLabel}</p>
             <h1 className="text-white font-black text-2xl leading-tight mt-2">
               Desafio do <span style={{ color: '#FFD700' }}>Bumbum Turbinado</span> em 4 Semanas
             </h1>
