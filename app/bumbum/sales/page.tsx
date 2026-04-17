@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState, useRef } from 'react'
 import { trackStep } from '@/lib/analytics'
 import { initiateCheckout } from '@/lib/pixel'
 
-const CHECKOUT_URL = 'https://pay.cakto.com.br/bumbum' // TODO: trocar pelo link real
+const CHECKOUT_URL = 'https://pay.cakto.com.br/orhu3er_850513'
 
 const PROFILE_LABELS: Record<string, string> = {
   iniciante: 'Iniciante Determinada',
