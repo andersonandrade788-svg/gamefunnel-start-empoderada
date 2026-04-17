@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
           ...(eventName === 'InitiateCheckout' ? {
             custom_data: {
               currency: 'BRL',
-              value: 37.00,
+              value: 57.00,
             },
           } : {}),
         },

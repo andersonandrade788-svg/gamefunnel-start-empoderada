@@ -122,7 +122,7 @@ function BumbumSalesInner() {
               </p>
               <div style={{ background: '#E91E8C15', border: '1px solid #E91E8C50' }} className="rounded-2xl p-4 flex flex-col gap-1">
                 <p className="text-white/40 text-xs line-through">De R$197,00</p>
-                <p style={{ color: '#FFD700' }} className="font-black text-4xl leading-none">R$37,00</p>
+                <p style={{ color: '#FFD700' }} className="font-black text-4xl leading-none">R$57,00</p>
                 <p className="text-white/40 text-xs">primeiro mês · cancele quando quiser</p>
               </div>
               <button
@@ -186,7 +186,7 @@ function BumbumSalesInner() {
             <p className="text-white/40 text-sm line-through">De R$197,00</p>
             <p className="text-white/60 text-sm">Por apenas</p>
             <div className="flex items-end gap-1">
-              <p style={{ color: '#FFD700' }} className="font-black text-5xl leading-none">R$37</p>
+              <p style={{ color: '#FFD700' }} className="font-black text-5xl leading-none">R$57</p>
               <p style={{ color: '#FFD700' }} className="font-black text-xl leading-none mb-1">,00</p>
             </div>
             <p className="text-white/40 text-xs">no primeiro mês · cancele quando quiser</p>
@@ -230,27 +230,34 @@ function BumbumSalesInner() {
           ))}
         </div>
 
-        {/* Depoimentos */}
+        {/* Carrossel de depoimentos */}
         <div className="flex flex-col gap-3 mb-6">
           <p style={{ color: '#FFD700' }} className="font-black text-sm text-center">O QUE NOSSAS ALUNAS DIZEM:</p>
-          {[
-            { nome: 'Camila R.', resultado: 'Bumbum cresceu 4cm em 28 dias', texto: '"Nunca acreditei que conseguiria tão rápido. O protocolo foi certeiro — identificou exatamente meu problema e mudou tudo!"' },
-            { nome: 'Jéssica M.', resultado: 'Perdeu a flacidez em 3 semanas', texto: '"Treino há anos mas nunca vi resultado assim. O método da Geo é diferente de tudo que já fiz. Bumbum firme, empinado!"' },
-            { nome: 'Patrícia V.', resultado: 'Resultado visível em 10 dias', texto: '"Estava desanimada depois de tantas tentativas. Em menos de 2 semanas com o protocolo certo já senti a diferença!"' },
-          ].map((d, i) => (
-            <div key={i} style={{ background: '#1A0010', border: '1px solid #E91E8C20' }} className="rounded-2xl p-4 flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-white font-bold text-sm">{d.nome}</p>
-                  <p className="text-xs font-semibold" style={{ color: '#E91E8C' }}>{d.resultado}</p>
-                </div>
-                <div className="flex gap-0.5">
-                  {[...Array(5)].map((_, i) => <span key={i} className="text-yellow-400 text-sm">★</span>)}
-                </div>
+          <div
+            className="flex gap-3 overflow-x-auto pb-3"
+            style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
+          >
+            {['/dep1.jpg', '/dep2.jpg', '/dep3.jpg'].map((src, i) => (
+              <div
+                key={i}
+                className="flex-shrink-0 rounded-2xl overflow-hidden"
+                style={{
+                  width: '78vw',
+                  maxWidth: '320px',
+                  scrollSnapAlign: 'start',
+                  border: '1px solid #E91E8C30',
+                }}
+              >
+                <img
+                  src={src}
+                  alt={`Depoimento aluna ${i + 1}`}
+                  className="w-full h-auto object-cover"
+                  loading="lazy"
+                />
               </div>
-              <p className="text-white/50 text-xs leading-relaxed italic">{d.texto}</p>
-            </div>
-          ))}
+            ))}
+          </div>
+          <p className="text-white/30 text-xs text-center">← arraste para ver mais →</p>
         </div>
 
         {/* Prova social */}
@@ -305,7 +312,7 @@ function BumbumSalesInner() {
             style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}
             className="w-full text-white font-black text-xl py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200"
           >
-            🍑 GARANTIR MINHA VAGA POR R$37
+            🍑 GARANTIR MINHA VAGA POR R$57
           </button>
           <p className="text-white/30 text-xs text-center">
             ⏰ Expira em {mins}:{secs} · 🔒 Pagamento seguro · Cancele quando quiser

@@ -17,7 +17,7 @@ export function initiateCheckout() {
   if (typeof window !== 'undefined' && window.fbq) {
     window.fbq('track', 'InitiateCheckout', {
       currency: 'BRL',
-      value: 37.00,
+      value: 57.00,
     })
   }
 }
