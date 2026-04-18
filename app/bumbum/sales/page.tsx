@@ -660,15 +660,88 @@ function BumbumSalesInner() {
           </div>
         </div>
 
-        {/* Included items */}
-        <div className="flex flex-col gap-3 mb-6">
-          <p style={{ color: '#FFD700' }} className="font-black text-sm uppercase tracking-wider">✨ O que você recebe:</p>
+        {/* What you get */}
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex flex-col gap-1">
+            <p style={{ color: '#FFD700' }} className="font-black text-sm uppercase tracking-wider">✨ O que você recebe:</p>
+            <p className="text-white/50 text-xs">Acesso imediato a todas as videoaulas no seu celular</p>
+          </div>
+
+          {/* Course preview — mock área de membros */}
+          <div
+            style={{ background: '#0D0D1A', border: '1px solid #E91E8C40', borderRadius: 16, overflow: 'hidden' }}
+          >
+            {/* Header da área */}
+            <div
+              style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)', padding: '10px 14px' }}
+              className="flex items-center gap-2"
+            >
+              <span className="text-white text-sm">🎬</span>
+              <span className="text-white font-black text-sm">Desafio Bumbum Turbinado 4 Semanas</span>
+            </div>
+
+            {/* Lista de aulas */}
+            <div className="flex flex-col">
+              {[
+                { num: 1, title: 'Comece aqui', tag: 'BÔNUS' },
+                { num: 2, title: 'Agachamento búlgaro' },
+                { num: 3, title: 'Agachamento sumo' },
+                { num: 4, title: 'Elevação pélvica' },
+                { num: 5, title: 'Step up' },
+                { num: 6, title: 'Cadeira abdutora' },
+                { num: 7, title: 'BUMBUM turbinado 1.0 🚀', tag: 'EXCLUSIVO' },
+              ].map((aula, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-3 px-4 py-3"
+                  style={{
+                    borderBottom: i < 6 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                    background: i === 0 ? 'rgba(233,30,140,0.08)' : 'transparent',
+                  }}
+                >
+                  {/* Ícone play */}
+                  <div
+                    className="flex-shrink-0 flex items-center justify-center rounded-lg"
+                    style={{ width: 32, height: 32, background: 'rgba(233,30,140,0.15)', border: '1px solid #E91E8C40' }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="#E91E8C">
+                      <path d="M2 1.5l8 4.5-8 4.5z"/>
+                    </svg>
+                  </div>
+
+                  <span className="text-white/80 text-sm flex-1 leading-snug">{aula.title}</span>
+
+                  {aula.tag && (
+                    <span
+                      className="text-[9px] font-black px-1.5 py-0.5 rounded flex-shrink-0"
+                      style={{
+                        background: aula.tag === 'BÔNUS' ? 'rgba(255,215,0,0.15)' : 'rgba(233,30,140,0.2)',
+                        color: aula.tag === 'BÔNUS' ? '#FFD700' : '#E91E8C',
+                        border: `1px solid ${aula.tag === 'BÔNUS' ? '#FFD70040' : '#E91E8C40'}`,
+                      }}
+                    >
+                      {aula.tag}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Rodapé */}
+            <div
+              style={{ background: 'rgba(233,30,140,0.06)', borderTop: '1px solid rgba(233,30,140,0.15)', padding: '10px 14px' }}
+              className="flex items-center justify-between"
+            >
+              <span className="text-white/40 text-xs">7 videoaulas · acesso imediato</span>
+              <span style={{ color: '#E91E8C' }} className="text-xs font-black">+ futuras aulas grátis</span>
+            </div>
+          </div>
+
+          {/* Extras */}
           {[
-            { icon: '📱', title: 'Protocolo de 4 Semanas', desc: 'Treinos diários com vídeos explicativos, passo a passo para o seu nível' },
-            { icon: '🍑', title: 'Método Geo de Ativação Glútea', desc: 'A técnica exclusiva que faz o bumbum crescer de verdade, sem truques' },
             { icon: '🏠', title: 'Casa ou Academia', desc: 'Adaptações para qualquer ambiente — com ou sem equipamento' },
-            { icon: '📊', title: 'Treino para Seu Perfil', desc: `Protocolo específico para ${profileLabel} — não é genérico, é feito para você` },
-{ icon: '🎯', title: 'Plano de Alimentação', desc: 'Guia nutricional para potencializar o crescimento muscular' },
+            { icon: '📊', title: `Protocolo para ${profileLabel}`, desc: 'Não é genérico — os exercícios são orientados para o seu perfil' },
+            { icon: '🎯', title: 'Guia de Alimentação', desc: 'O que comer para potencializar o crescimento muscular do glúteo' },
           ].map((item, i) => (
             <div key={i} style={{ background: '#1A0010', border: '1px solid #E91E8C20' }} className="rounded-xl p-3 flex items-start gap-3">
               <span className="text-2xl flex-shrink-0">{item.icon}</span>
