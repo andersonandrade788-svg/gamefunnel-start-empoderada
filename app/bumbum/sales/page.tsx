@@ -127,20 +127,28 @@ const CONFETTI = Array.from({ length: 40 }, (_, i) => {
 
 const FAQ = [
   {
-    q: 'Funciona para quem nunca treinou?',
-    a: 'Sim! O protocolo tem versão para iniciantes completas. Você recebe treinos adaptados ao seu nível, começando do zero com exercícios simples e progredindo no ritmo certo.',
+    q: 'Funciona sem academia ou equipamento?',
+    a: 'Sim! As videoaulas foram gravadas pensando em quem treina em casa. Você não precisa de nada — nem elástico, nem haltere. Se tiver, ainda melhor, mas não é obrigatório.',
   },
   {
-    q: 'Precisa de academia ou equipamento?',
-    a: 'Não! O método funciona em casa, sem equipamento. Se tiver elástico ou haltere, ainda melhor — mas não é obrigatório.',
+    q: 'Tenho pouco tempo. Consigo encaixar na rotina?',
+    a: 'Os treinos foram desenhados para serem curtos e eficientes. Você consegue fazer em 20 a 30 minutos, 3x por semana. Sem enrolação — cada exercício tem um motivo específico para o glúteo crescer.',
+  },
+  {
+    q: 'Já tentei outros métodos e não funcionou. Por que esse é diferente?',
+    a: 'A maioria dos métodos são genéricos. O que muda aqui é o diagnóstico — você recebe um protocolo baseado no SEU perfil (iniciante, intermediária ou avançada). Isso evita os erros que fazem o bumbum estagnar.',
+  },
+  {
+    q: 'Funciona para quem tem mais de 40 anos?',
+    a: 'Sim! O método da Geo foi desenvolvido especialmente pensando em mulheres acima dos 30 e 40 anos. O foco é em ativação correta do glúteo, que funciona em qualquer idade.',
+  },
+  {
+    q: 'É seguro comprar? Tenho medo de cair em golpe.',
+    a: 'Totalmente seguro. O pagamento é processado por uma plataforma certificada com SSL. Além disso, você tem 7 dias de garantia: se não gostar por qualquer motivo, devolvemos 100% do seu dinheiro — sem perguntas.',
   },
   {
     q: 'Em quanto tempo vejo resultado?',
-    a: 'A maioria das alunas sente diferença na firmeza entre 7 e 10 dias. Resultado visual mais evidente aparece entre a 2ª e 3ª semana seguindo o protocolo.',
-  },
-  {
-    q: 'Como funciona o cancelamento?',
-    a: 'Cancele quando quiser, sem burocracia. Basta enviar uma mensagem para o suporte e cancelamos na hora, sem perguntas.',
+    a: 'A maioria das alunas sente diferença na firmeza entre 7 e 10 dias. Resultado visual mais evidente aparece entre a 2ª e 3ª semana seguindo o protocolo corretamente.',
   },
 ]
 
@@ -493,6 +501,46 @@ function BumbumSalesInner() {
           </p>
         </div>
 
+        {/* Como funciona em 3 passos */}
+        <div className="flex flex-col gap-3 mb-6">
+          <p style={{ color: '#FFD700' }} className="font-black text-sm uppercase tracking-wider text-center">⚡ Como funciona</p>
+          <div className="flex flex-col gap-2">
+            {[
+              {
+                step: '01',
+                title: 'Diagnóstico feito',
+                desc: 'Seu perfil já foi identificado — você sabe exatamente o que está travando seu resultado.',
+                color: '#22C55E',
+              },
+              {
+                step: '02',
+                title: 'Acesse as videoaulas',
+                desc: 'Diretamente no celular, quando e onde quiser. Treinos curtos, diretos e com a técnica certa.',
+                color: '#E91E8C',
+              },
+              {
+                step: '03',
+                title: 'Resultado em 4 semanas',
+                desc: 'Bumbum mais firme, volumoso e empinado — seguindo o protocolo específico para o seu corpo.',
+                color: '#FFD700',
+              },
+            ].map((s, i) => (
+              <div key={i} style={{ background: '#1A0010', border: '1px solid #E91E8C20' }} className="rounded-2xl p-4 flex items-start gap-4">
+                <div
+                  className="flex-shrink-0 flex items-center justify-center rounded-full font-black text-sm"
+                  style={{ width: 40, height: 40, background: `${s.color}20`, border: `2px solid ${s.color}`, color: s.color }}
+                >
+                  {s.step}
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <p className="text-white font-black text-sm">{s.title}</p>
+                  <p className="text-white/50 text-xs leading-relaxed">{s.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* CTA before mentor */}
         <button
           onClick={handleCheckout}
@@ -631,10 +679,20 @@ function BumbumSalesInner() {
         <div
           ref={priceRef}
           style={{ background: 'linear-gradient(135deg, #1A0010, #2D0020)', border: '2px solid #E91E8C' }}
-          className="rounded-3xl p-5 mb-5 text-center flex flex-col gap-3"
+          className="rounded-3xl p-5 mb-5 flex flex-col gap-4"
         >
-          <p style={{ color: '#FFD700' }} className="font-black text-xs uppercase tracking-wider">🔥 Oferta especial por diagnóstico</p>
+          {/* Transformação prometida */}
+          <div className="text-center flex flex-col gap-1">
+            <p style={{ color: '#FFD700' }} className="font-black text-xs uppercase tracking-wider">🔥 Seu bumbum turbinado começa aqui</p>
+            <h2 className="text-white font-black text-lg leading-tight">
+              Acesso completo ao método Geo por menos que uma pizza
+            </h2>
+            <p className="text-white/50 text-xs leading-relaxed">
+              7 videoaulas · protocolo personalizado · acesso imediato pelo celular
+            </p>
+          </div>
 
+          {/* Preço */}
           <div className="flex flex-col items-center gap-0.5">
             <p className="text-white/40 text-sm line-through">De R$197,00</p>
             <p className="text-white/60 text-sm">Por apenas</p>
@@ -642,7 +700,21 @@ function BumbumSalesInner() {
               <p style={{ color: '#FFD700' }} className="font-black text-5xl leading-none">R$57</p>
               <p style={{ color: '#FFD700' }} className="font-black text-xl leading-none mb-1">,00</p>
             </div>
-            <p className="text-white/40 text-xs">no primeiro mês · cancele quando quiser</p>
+            <p className="text-white/40 text-xs">acesso imediato · cancele quando quiser</p>
+          </div>
+
+          {/* Garantia DENTRO do bloco — antes do CTA */}
+          <div
+            style={{ background: 'rgba(255,215,0,0.07)', border: '1px solid #FFD70040', borderRadius: 14 }}
+            className="flex items-center gap-3 p-3"
+          >
+            <span className="text-3xl flex-shrink-0">🛡️</span>
+            <div>
+              <p style={{ color: '#FFD700' }} className="font-black text-xs">Garantia de 7 dias sem risco</p>
+              <p className="text-white/50 text-[11px] leading-snug mt-0.5">
+                Não gostou? Devolvemos <strong className="text-white">100% do dinheiro</strong>. Sem perguntas.
+              </p>
+            </div>
           </div>
 
           <button
@@ -751,6 +823,42 @@ function BumbumSalesInner() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Para quem é / não é */}
+        <div className="flex flex-col gap-3 mb-6">
+          <p style={{ color: '#FFD700' }} className="font-black text-sm uppercase tracking-wider text-center">🎯 Esse método é para você?</p>
+
+          {/* Para quem É */}
+          <div style={{ background: '#0D1A0D', border: '1px solid #22C55E40' }} className="rounded-2xl p-4 flex flex-col gap-2">
+            <p className="text-green-400 font-black text-xs uppercase tracking-wider mb-1">✅ É para você se...</p>
+            {[
+              'Quer bumbum maior, firme e empinado de verdade',
+              'Treina mas não vê o glúteo crescer',
+              'Quer começar do zero do jeito certo',
+              'Tem pouco tempo mas quer resultado de verdade',
+              'Está acima dos 30 e quer recuperar a forma',
+            ].map((t, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <span className="text-green-400 text-xs font-black flex-shrink-0 mt-0.5">✓</span>
+                <p className="text-white/70 text-xs leading-snug">{t}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Para quem NÃO É */}
+          <div style={{ background: '#1A0D0D', border: '1px solid #EF444440' }} className="rounded-2xl p-4 flex flex-col gap-2">
+            <p className="text-red-400 font-black text-xs uppercase tracking-wider mb-1">❌ Não é para você se...</p>
+            {[
+              'Quer resultado sem fazer absolutamente nada',
+              'Não está disposta a treinar ao menos 3x por semana',
+            ].map((t, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <span className="text-red-400 text-xs font-black flex-shrink-0 mt-0.5">✗</span>
+                <p className="text-white/50 text-xs leading-snug">{t}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Testimonial carousel */}
@@ -865,17 +973,6 @@ function BumbumSalesInner() {
               )}
             </div>
           ))}
-        </div>
-
-        {/* Guarantee */}
-        <div style={{ background: 'linear-gradient(135deg, #1A0010, #2D0020)', border: '2px solid #FFD70060' }} className="rounded-2xl p-4 mb-5 flex items-center gap-4">
-          <span className="text-5xl flex-shrink-0">🛡️</span>
-          <div>
-            <p style={{ color: '#FFD700' }} className="font-black text-sm">Garantia Total de 7 Dias</p>
-            <p className="text-white/60 text-xs leading-relaxed mt-1">
-              Se em 7 dias você não estiver satisfeita, devolvemos <strong className="text-white">100% do seu dinheiro</strong>. Sem perguntas, sem burocracia.
-            </p>
-          </div>
         </div>
 
         {/* Final CTA */}
