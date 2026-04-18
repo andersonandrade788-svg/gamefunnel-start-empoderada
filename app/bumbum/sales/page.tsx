@@ -734,9 +734,37 @@ function BumbumSalesInner() {
 
         {/* What you get */}
         <div className="flex flex-col gap-4 mb-6">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-3">
             <p style={{ color: '#FFD700' }} className="font-black text-sm uppercase tracking-wider">✨ O que você recebe:</p>
-            <p className="text-white/50 text-xs">Acesso imediato a todas as videoaulas no seu celular</p>
+
+            {/* Experiências / transformações */}
+            <div style={{ background: 'linear-gradient(135deg, #1A0010, #2D0020)', border: '1px solid #E91E8C40' }} className="rounded-2xl p-4 flex flex-col gap-3">
+              {[
+                { icon: '🤫', text: 'Os exercícios que muitas artistas usam e escondem' },
+                { icon: '💪', text: 'A diferença do glúteo começando a endurecer de verdade' },
+                { icon: '🪞', text: 'A sensação de olhar no espelho e ver o bumbum mais alto, mais firme' },
+                { icon: '👙', text: 'Aquela confiança de finalmente colocar um biquíni sem se esconder' },
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <span className="text-xl flex-shrink-0">{item.icon}</span>
+                  <p className="text-white/80 text-sm leading-snug">{item.text}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Método */}
+            <div style={{ background: '#0D1A0D', border: '1px solid #22C55E40' }} className="rounded-2xl p-4 flex flex-col gap-2">
+              <p className="text-white/60 text-xs leading-relaxed mb-1">E tudo isso com um método que:</p>
+              {[
+                'Ativa o músculo certo',
+                'Muda a resposta do seu corpo em poucos dias',
+              ].map((t, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-green-400 font-black text-sm flex-shrink-0">✓</span>
+                  <p className="text-white font-bold text-sm">{t}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Course preview — mock área de membros */}
