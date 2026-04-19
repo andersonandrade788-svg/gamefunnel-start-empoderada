@@ -1095,7 +1095,7 @@ function BumbumSalesInner() {
       {/* ── WhatsApp floating button ───────────────────────────────────────── */}
       {spinPhase === 'done' && (
         <a
-          href="https://wa.me/5500000000000?text=Oi%20Geo!%20Vi%20o%20m%C3%A9todo%20do%20bumbum%20e%20tenho%20uma%20d%C3%BAvida%20antes%20de%20comprar%20%F0%9F%8D%91"
+          href="https://wa.me/5511915306467?text=Oi%20Geo!%20Vi%20o%20m%C3%A9todo%20do%20bumbum%20e%20tenho%20uma%20d%C3%BAvida%20antes%20de%20comprar%20%F0%9F%8D%91"
           target="_blank"
           rel="noopener noreferrer"
           className="fixed z-50 flex items-center gap-2 rounded-full shadow-2xl active:scale-95 transition-all duration-200 animate-fadeIn"
