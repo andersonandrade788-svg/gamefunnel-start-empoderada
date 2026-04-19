@@ -74,6 +74,7 @@ function BumbumResultadoInner() {
 
   const perfil = (searchParams.get('perfil') ?? 'intermediario') as keyof typeof PROFILES
   const profile = PROFILES[perfil] ?? PROFILES.intermediario
+  const nome = searchParams.get('nome') ?? ''
 
   useEffect(() => {
     trackStep('Bumbum_Resultado', 3)
@@ -128,7 +129,9 @@ function BumbumResultadoInner() {
               {profile.emoji}
             </div>
             <div>
-              <p className="text-white/50 text-xs font-bold uppercase tracking-wider mb-1">Seu perfil</p>
+              <p className="text-white/50 text-xs font-bold uppercase tracking-wider mb-1">
+                {nome ? `${nome}, seu perfil é` : 'Seu perfil'}
+              </p>
               <h2 style={{ color: profile.color }} className="font-black text-xl leading-tight">{profile.label}</h2>
             </div>
           </div>
