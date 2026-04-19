@@ -261,7 +261,31 @@ function AfterPurchaseTimeline() {
 
 function BumbumSalesInner() {
   const searchParams = useSearchParams()
-  const [countdown, setCountdown] = useState(900)
+  const COUNTDOWN_KEY = 'bumbum_sales_expire'
+  const COUNTDOWN_DURATION = 15 * 60 // 15 min in seconds
+
+  function getInitialCountdown() {
+    if (typeof window === 'undefined') return COUNTDOWN_DURATION
+    try {
+      const expire = localStorage.getItem(COUNTDOWN_KEY)
+      if (expire) {
+        const remaining = Math.floor((Number(expire) - Date.now()) / 1000)
+        if (remaining > 0) return remaining
+      }
+      const newExpire = Date.now() + COUNTDOWN_DURATION * 1000
+      localStorage.setItem(COUNTDOWN_KEY, String(newExpire))
+      return COUNTDOWN_DURATION
+    } catch {
+      return COUNTDOWN_DURATION
+    }
+  }
+
+  const [countdown, setCountdown] = useState(COUNTDOWN_DURATION)
+  // Initialise on client (useState lazy init doesn't work well with localStorage + SSR)
+  useEffect(() => {
+    setCountdown(getInitialCountdown())
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const [showExit, setShowExit] = useState(false)
   const [viewers, setViewers] = useState(0)
   const [buyers, setBuyers] = useState(0)
@@ -288,7 +312,15 @@ function BumbumSalesInner() {
   }, [])
 
   useEffect(() => {
-    const interval = setInterval(() => setCountdown(c => (c > 0 ? c - 1 : 0)), 1000)
+    const interval = setInterval(() => {
+      setCountdown(c => {
+        if (c <= 1) {
+          try { localStorage.removeItem(COUNTDOWN_KEY) } catch {}
+          return 0
+        }
+        return c - 1
+      })
+    }, 1000)
     return () => clearInterval(interval)
   }, [])
 
