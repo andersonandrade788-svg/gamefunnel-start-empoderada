@@ -61,29 +61,13 @@ function BumbumLandingInner() {
           </p>
         </div>
 
-        {/* Antes e Depois */}
-        <div className="relative rounded-3xl overflow-hidden mb-4 shadow-2xl" style={{ border: '2px solid #E91E8C60' }}>
+        {/* Foto resultado */}
+        <div className="rounded-3xl overflow-hidden mb-4 shadow-2xl" style={{ border: '2px solid #E91E8C60' }}>
           <img
-            src="/bumbum-antes-depois.jpg"
-            alt="Resultado real — Antes e Depois Geovana"
+            src="/dep-a.jpg"
+            alt="Resultado real — método Geo"
             className="w-full object-cover"
           />
-
-          <div className="absolute top-0 left-0 right-0 h-16" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.6), transparent)' }} />
-
-          <div className="absolute top-3 left-0 w-1/2 flex justify-center">
-            <span className="bg-black/75 text-white font-black px-4 py-1.5 rounded-full text-sm tracking-wide">ANTES</span>
-          </div>
-          <div className="absolute top-3 right-0 w-1/2 flex justify-center">
-            <span className="text-white font-black px-4 py-1.5 rounded-full text-sm tracking-wide" style={{ background: '#E91E8C' }}>DEPOIS</span>
-          </div>
-          <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-0.5" style={{ background: 'rgba(255,255,255,0.3)' }} />
-          <div className="absolute bottom-0 left-0 right-0 h-16" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75), transparent)' }} />
-          <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-3">
-            <span className="text-white font-black px-5 py-2 rounded-full text-xs" style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}>
-              ✨ Resultado real em 28 dias — método Geo
-            </span>
-          </div>
         </div>
 
         {/* Bullets rápidos — substituem o parágrafo */}
