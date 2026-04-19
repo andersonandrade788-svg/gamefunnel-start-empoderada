@@ -21,7 +21,6 @@ async function getStepCounts(db: any, since: string) {
         .from('funnel_events')
         .select('session_id', { count: 'exact', head: true })
         .eq('step_name', step.name)
-        .eq('source', 'ad')
         .gte('created_at', since)
       return { ...step, count: count ?? 0 }
     })
