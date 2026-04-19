@@ -12,10 +12,13 @@ const STEPS = [
   { name: 'Abandono',          number: 8,  label: 'Abandono' },
   { name: 'Compra',            number: 9,  label: 'Compra' },
   // Bumbum funnel
-  { name: 'Bumbum_Landing',    number: 10, label: 'Bumbum Landing' },
-  { name: 'Bumbum_Quiz',       number: 11, label: 'Bumbum Quiz' },
-  { name: 'Bumbum_Resultado',  number: 12, label: 'Bumbum Resultado' },
-  { name: 'Bumbum_Vendas',     number: 13, label: 'Bumbum Oferta' },
+  { name: 'Bumbum_Landing',       number: 10, label: 'Bumbum Landing' },
+  { name: 'Bumbum_Quiz',          number: 11, label: 'Bumbum Quiz' },
+  { name: 'Bumbum_Resultado',     number: 12, label: 'Bumbum Resultado' },
+  { name: 'Bumbum_Vendas',        number: 13, label: 'Bumbum Oferta' },
+  { name: 'Bumbum_SpinStart',     number: 14, label: 'Girou Roleta' },
+  { name: 'Bumbum_SpinClaimed',   number: 15, label: 'Resgatou Prêmio' },
+  { name: 'Bumbum_CheckoutClick', number: 16, label: 'Clicou Comprar' },
 ]
 
 function getDateFilter(period: string): { since: string | null; until?: string } {

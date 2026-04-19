@@ -15,11 +15,13 @@ const ORIGINAL_STEPS_META = [
 ]
 
 const BUMBUM_STEPS_META = [
-  { name: 'Bumbum_Landing',   emoji: '🍑', label: 'Landing Page',  color: '#E91E8C' },
-  { name: 'Bumbum_Quiz',      emoji: '📋', label: 'Quiz',          color: '#f472b6' },
-  { name: 'Bumbum_Resultado', emoji: '📊', label: 'Resultado',     color: '#fbbf24' },
-  { name: 'Bumbum_Vendas',    emoji: '👀', label: 'Viu a Oferta',  color: '#22c55e' },
-  { name: 'Compra',           emoji: '💰', label: 'Comprou',       color: '#f59e0b' },
+  { name: 'Bumbum_Landing',       emoji: '🍑', label: 'Landing Page',    color: '#E91E8C' },
+  { name: 'Bumbum_Quiz',          emoji: '📋', label: 'Quiz',            color: '#f472b6' },
+  { name: 'Bumbum_Resultado',     emoji: '📊', label: 'Resultado',       color: '#fbbf24' },
+  { name: 'Bumbum_Vendas',        emoji: '👀', label: 'Viu a Oferta',    color: '#22c55e' },
+  { name: 'Bumbum_SpinStart',     emoji: '🎰', label: 'Girou a Roleta',  color: '#a78bfa' },
+  { name: 'Bumbum_SpinClaimed',   emoji: '🏆', label: 'Resgatou Prêmio', color: '#60a5fa' },
+  { name: 'Bumbum_CheckoutClick', emoji: '💳', label: 'Clicou Comprar',  color: '#f59e0b' },
 ]
 
 interface Step { name: string; label: string; number: number; count: number }
@@ -174,19 +176,19 @@ export default function DashboardPage() {
 
   const kpis = funnelType === 'bumbum'
     ? (() => {
-        const landing = countFor('Bumbum_Landing')
-        const quiz    = countFor('Bumbum_Quiz')
-        const result  = countFor('Bumbum_Resultado')
-        const vendas  = countFor('Bumbum_Vendas')
-        const compra  = countFor('Compra')
-        const taxa    = landing > 0 ? ((vendas / landing) * 100).toFixed(1) : '0.0'
+        const landing  = countFor('Bumbum_Landing')
+        const quiz     = countFor('Bumbum_Quiz')
+        const result   = countFor('Bumbum_Resultado')
+        const vendas   = countFor('Bumbum_Vendas')
+        const checkout = countFor('Bumbum_CheckoutClick')
+        const taxa     = landing > 0 ? ((checkout / landing) * 100).toFixed(1) : '0.0'
         return [
-          { label: 'Landing Page',   value: landing,        icon: '🍑', color: '#E91E8C', desc: 'entraram na landing' },
-          { label: 'Fizeram o Quiz', value: quiz,           icon: '📋', color: '#f472b6', desc: landing > 0 ? `${((quiz/landing)*100).toFixed(0)}% do total` : '—' },
-          { label: 'Viram Resultado',value: result,         icon: '📊', color: '#fbbf24', desc: landing > 0 ? `${((result/landing)*100).toFixed(0)}% do total` : '—' },
-          { label: 'Viram a Oferta', value: vendas,         icon: '👀', color: '#22c55e', desc: landing > 0 ? `${((vendas/landing)*100).toFixed(0)}% do total` : '—' },
-          { label: 'Compraram',      value: compra,         icon: '💰', color: '#f59e0b', desc: landing > 0 ? `${((compra/landing)*100).toFixed(0)}% do total` : '—' },
-          { label: 'Taxa do Funil',  value: `${taxa}%`,     icon: '🏆', color: '#fb923c', desc: 'Landing → Oferta' },
+          { label: 'Landing Page',    value: landing,        icon: '🍑', color: '#E91E8C', desc: 'entraram na landing' },
+          { label: 'Fizeram o Quiz',  value: quiz,           icon: '📋', color: '#f472b6', desc: landing > 0 ? `${((quiz/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Viram Resultado', value: result,         icon: '📊', color: '#fbbf24', desc: landing > 0 ? `${((result/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Viram a Oferta',  value: vendas,         icon: '👀', color: '#22c55e', desc: landing > 0 ? `${((vendas/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Clicaram Comprar',value: checkout,       icon: '💳', color: '#f59e0b', desc: landing > 0 ? `${((checkout/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Taxa do Funil',   value: `${taxa}%`,     icon: '🏆', color: '#fb923c', desc: 'Landing → Checkout' },
         ]
       })()
     : (() => {
@@ -411,11 +413,11 @@ export default function DashboardPage() {
             {/* Rodapé com resumo */}
             {(() => {
               const firstStep = STEPS_META[0]
-              const lastMainStep = funnelType === 'bumbum' ? STEPS_META[3] : STEPS_META[4]
+              const lastMainStep = funnelType === 'bumbum' ? STEPS_META[STEPS_META.length - 1] : STEPS_META[4]
               const firstCount = steps.find(s => s.name === firstStep.name)?.count ?? 0
               const lastCount  = steps.find(s => s.name === lastMainStep.name)?.count ?? 0
               const taxa = firstCount > 0 ? ((lastCount / firstCount) * 100).toFixed(1) : '0.0'
-              const label = funnelType === 'bumbum' ? 'Landing → Oferta' : 'Quiz → Oferta'
+              const label = funnelType === 'bumbum' ? 'Landing → Checkout' : 'Quiz → Oferta'
               return (
                 <div className="px-6 py-4 border-t border-white/5 flex items-center justify-between">
                   <p className="text-white/30 text-xs">Taxa geral do funil ({label})</p>
