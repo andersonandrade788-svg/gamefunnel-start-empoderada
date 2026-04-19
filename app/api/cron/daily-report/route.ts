@@ -5,11 +5,13 @@ import { createClient } from '@supabase/supabase-js'
 export const maxDuration = 30
 
 const STEPS = [
-  { name: 'Quiz',        label: 'Quiz',         emoji: '🎯' },
-  { name: 'TikTok',      label: 'TikTok',       emoji: '🎵' },
-  { name: 'IMC',         label: 'IMC',          emoji: '📊' },
-  { name: 'Diagnostico', label: 'Diagnóstico',  emoji: '🔍' },
-  { name: 'Vendas',      label: 'Viu a Oferta', emoji: '👀' },
+  { name: 'Bumbum_Landing',      label: 'Landing',          emoji: '🏠' },
+  { name: 'Bumbum_Quiz',         label: 'Quiz',             emoji: '🎯' },
+  { name: 'Bumbum_Resultado',    label: 'Resultado',        emoji: '📋' },
+  { name: 'Bumbum_Vendas',       label: 'Página de Vendas', emoji: '👀' },
+  { name: 'Bumbum_SpinStart',    label: 'Girou a Roleta',   emoji: '🎰' },
+  { name: 'Bumbum_SpinClaimed',  label: 'Resgatou Prêmio',  emoji: '🏆' },
+  { name: 'Bumbum_CheckoutClick',label: 'Clicou Comprar',   emoji: '💳' },
 ]
 
 async function getStepCounts(db: any, since: string) {
@@ -57,9 +59,9 @@ export async function GET(req: NextRequest) {
     .gte('created_at', todayStart.toISOString())
     .order('created_at', { ascending: false })
 
-  const top = todaySteps[0].count
-  const vendas = todaySteps[4].count
-  const taxaFunil = top > 0 ? ((vendas / top) * 100).toFixed(1) : '0.0'
+  const top = todaySteps[0].count           // Landing
+  const checkout = todaySteps[6].count      // CheckoutClick
+  const taxaFunil = top > 0 ? ((checkout / top) * 100).toFixed(1) : '0.0'
 
   const stepsHtml = todaySteps.map((step, i) => {
     const prev = i > 0 ? todaySteps[i - 1].count : step.count
@@ -116,7 +118,7 @@ export async function GET(req: NextRequest) {
         <!-- Resumo -->
         <div style="display:flex;gap:12px;margin-bottom:24px;">
           <div style="flex:1;background:#111;border:1px solid #1f1f1f;border-radius:12px;padding:16px;text-align:center;">
-            <p style="color:#555;font-size:11px;margin:0 0 4px;text-transform:uppercase;">Entraram no Quiz</p>
+            <p style="color:#555;font-size:11px;margin:0 0 4px;text-transform:uppercase;">Viram a Landing</p>
             <p style="color:#a78bfa;font-size:28px;font-weight:bold;margin:0;">${top}</p>
           </div>
           <div style="flex:1;background:#111;border:1px solid #1f1f1f;border-radius:12px;padding:16px;text-align:center;">
@@ -169,7 +171,7 @@ export async function GET(req: NextRequest) {
   await resend.emails.send({
     from: 'Dashboard <relatorio@resend.dev>',
     to: 'andersonandrade788@gmail.com',
-    subject: `📊 Relatório Diário — ${top} pessoas no funil hoje`,
+    subject: `📊 Relatório Diário — ${top} na landing · ${checkout} clicaram comprar`,
     html,
   })
 
