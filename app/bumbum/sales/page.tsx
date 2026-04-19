@@ -352,8 +352,17 @@ function BumbumSalesInner() {
 
   function handleCheckout() {
     initiateCheckout()
-    const params = searchParams.toString()
-    const url = params ? `${CHECKOUT_URL}?${params}` : CHECKOUT_URL
+
+    // Parâmetros de rastreamento que devem chegar no Cakto
+    const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'gclid']
+    const trackingParams = new URLSearchParams()
+    UTM_KEYS.forEach(key => {
+      const val = searchParams.get(key)
+      if (val) trackingParams.set(key, val)
+    })
+
+    const qs = trackingParams.toString()
+    const url = qs ? `${CHECKOUT_URL}?${qs}` : CHECKOUT_URL
     window.location.href = url
   }
 
