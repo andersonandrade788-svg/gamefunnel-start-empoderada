@@ -363,16 +363,19 @@ function BumbumSalesInner() {
 
   function spinWheel() {
     if (spinPhase !== 'idle') return
+    trackStep('Bumbum_SpinStart', 41)
     setSpinPhase('spinning')
     setWheelRotation(FINAL_ROTATION)
     playSpinSounds()
     setTimeout(() => {
       setSpinPhase('won')
       playVictorySound()
+      trackStep('Bumbum_SpinWon', 42)
     }, 4300)
   }
 
   function claimPrize() {
+    trackStep('Bumbum_SpinClaimed', 43)
     setSpinPhase('done')
     setTimeout(() => {
       priceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -383,6 +386,7 @@ function BumbumSalesInner() {
   const secs = String(countdown % 60).padStart(2, '0')
 
   function handleCheckout() {
+    trackStep('Bumbum_CheckoutClick', 5)
     initiateCheckout()
 
     // Parâmetros de rastreamento que devem chegar no Cakto
