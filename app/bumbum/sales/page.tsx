@@ -158,6 +158,105 @@ const PROFILE_LABELS: Record<string, string> = {
   avancado: 'Atleta de Alta Performance',
 }
 
+// ─── After Purchase Timeline ─────────────────────────────────────────────────
+
+const TIMELINE_STEPS = [
+  { icon: '📧', title: 'Acesso no e-mail', desc: 'Você recebe o link de acesso imediatamente após a compra', color: '#E91E8C' },
+  { icon: '📱', title: 'Abre no celular', desc: 'Um clique — as videoaulas ficam no seu celular, sem app', color: '#C2185B' },
+  { icon: '▶️', title: 'Começa hoje mesmo', desc: 'Assiste a primeira aula em minutos e já começa o protocolo', color: '#E91E8C' },
+  { icon: '🍑', title: 'Resultado em 4 semanas', desc: 'Bumbum mais firme, empinado e volumoso', color: '#FFD700', highlight: true },
+]
+
+function AfterPurchaseTimeline() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true) },
+      { threshold: 0.2 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div ref={containerRef} className="mb-6">
+      <p style={{ color: '#FFD700' }} className="font-black text-sm uppercase tracking-wider text-center mb-5">
+        🚀 O que acontece depois que você compra
+      </p>
+
+      <div className="flex flex-col" style={{ paddingLeft: 20 }}>
+        {TIMELINE_STEPS.map((step, i) => {
+          const isLast = i === TIMELINE_STEPS.length - 1
+          const delay = i * 200
+
+          return (
+            <div key={i} className="flex gap-4">
+              {/* Linha + círculo */}
+              <div className="flex flex-col items-center" style={{ width: 36, flexShrink: 0 }}>
+                {/* Círculo */}
+                <div
+                  className="flex items-center justify-center rounded-full text-base font-black z-10 transition-all"
+                  style={{
+                    width: 36, height: 36,
+                    background: step.highlight ? '#FFD700' : 'linear-gradient(135deg, #E91E8C, #C2185B)',
+                    boxShadow: step.highlight
+                      ? '0 0 16px rgba(255,215,0,0.5)'
+                      : '0 0 12px rgba(233,30,140,0.4)',
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? 'scale(1)' : 'scale(0.5)',
+                    transition: `opacity 0.4s ease ${delay}ms, transform 0.4s ease ${delay}ms`,
+                    flexShrink: 0,
+                  }}
+                >
+                  {step.icon}
+                </div>
+
+                {/* Linha vertical */}
+                {!isLast && (
+                  <div
+                    style={{
+                      width: 2,
+                      flex: 1,
+                      minHeight: 32,
+                      background: 'linear-gradient(to bottom, #E91E8C, #E91E8C30)',
+                      transformOrigin: 'top',
+                      transform: visible ? 'scaleY(1)' : 'scaleY(0)',
+                      transition: `transform 0.4s ease ${delay + 200}ms`,
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* Conteúdo */}
+              <div
+                className="pb-6 flex flex-col gap-0.5"
+                style={{
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? 'translateX(0)' : 'translateX(12px)',
+                  transition: `opacity 0.4s ease ${delay + 100}ms, transform 0.4s ease ${delay + 100}ms`,
+                  paddingTop: 6,
+                }}
+              >
+                <p
+                  className="font-black text-sm"
+                  style={{ color: step.highlight ? '#FFD700' : 'white' }}
+                >
+                  {step.title}
+                </p>
+                <p className="text-white/50 text-xs leading-relaxed">{step.desc}</p>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 function BumbumSalesInner() {
@@ -895,6 +994,9 @@ function BumbumSalesInner() {
             ))}
           </div>
         </div>
+
+        {/* O que acontece depois que você compra */}
+        <AfterPurchaseTimeline />
 
         {/* Social proof */}
         <div style={{ background: '#1A0010', border: '1px solid #FFD70030' }} className="rounded-2xl p-4 flex items-center gap-3 mb-6">
