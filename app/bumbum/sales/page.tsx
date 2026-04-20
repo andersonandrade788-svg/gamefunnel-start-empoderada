@@ -607,10 +607,10 @@ function BumbumSalesInner() {
               </button>
               <button
                 onClick={handleCheckout}
-                style={{ background: 'transparent', border: '1px solid #ffffff15' }}
-                className="w-full text-white/40 font-bold text-xs py-2.5 rounded-xl active:scale-95 transition-all"
+                style={{ background: '#1A0010', border: '1px solid #E91E8C60' }}
+                className="w-full text-white font-bold text-sm py-3.5 rounded-2xl active:scale-95 transition-all"
               >
-                💳 Cartão — R$57
+                💳 Pagar no cartão — R$57
               </button>
               <button onClick={() => setShowExit(false)} className="text-white/25 text-xs">
                 Não, prefiro perder essa chance
@@ -883,10 +883,10 @@ function BumbumSalesInner() {
           {/* Cartão — opção secundária */}
           <button
             onClick={handleCheckout}
-            style={{ background: 'transparent', border: '1px solid #ffffff20' }}
-            className="w-full text-white/50 font-bold text-sm py-3 rounded-2xl active:scale-95 transition-all duration-200"
+            style={{ background: '#1A0010', border: '1px solid #E91E8C60' }}
+            className="w-full text-white font-bold text-base py-4 rounded-2xl active:scale-95 transition-all duration-200"
           >
-            💳 Ou pagar com cartão por R$57
+            💳 Pagar no cartão — R$57
           </button>
 
           <div className="flex items-center justify-center gap-3 flex-wrap">
@@ -1112,10 +1112,10 @@ function BumbumSalesInner() {
           </button>
           <button
             onClick={handleCheckout}
-            style={{ background: 'transparent', border: '1px solid #ffffff15' }}
-            className="w-full text-white/40 font-bold text-sm py-3 rounded-2xl active:scale-95 transition-all duration-200"
+            style={{ background: '#1A0010', border: '1px solid #E91E8C60' }}
+            className="w-full text-white font-bold text-base py-4 rounded-2xl active:scale-95 transition-all duration-200"
           >
-            💳 Cartão — R$57
+            💳 Pagar no cartão — R$57
           </button>
           <p className="text-white/30 text-xs text-center">
             ⏰ Expira em {mins}:{secs} · 🔒 Pagamento seguro · Garantia 7 dias
