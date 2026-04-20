@@ -561,23 +561,12 @@ function BumbumSalesInner() {
                   <p className="text-white/60 text-xs mt-1">Desconto exclusivo desbloqueado — escolha como pagar:</p>
                 </div>
 
-                {/* PIX — opção principal */}
                 <button
-                  onClick={() => { claimPrize(); setTimeout(handleCheckoutPix, 200) }}
-                  style={{ background: 'linear-gradient(135deg, #22C55E, #16A34A)' }}
-                  className="w-full text-white font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 flex flex-col items-center gap-0.5"
+                  onClick={claimPrize}
+                  style={{ background: 'linear-gradient(135deg, #FFD700, #FFA500)' }}
+                  className="w-full text-black font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200"
                 >
-                  <span>💚 PAGAR COM PIX — R$47</span>
-                  <span className="text-xs font-bold opacity-80">Aprovação imediata · Mais barato</span>
-                </button>
-
-                {/* Cartão — opção secundária */}
-                <button
-                  onClick={() => { claimPrize(); setTimeout(handleCheckout, 200) }}
-                  style={{ background: '#1A0010', border: '1px solid #E91E8C50' }}
-                  className="w-full text-white font-bold text-sm py-3.5 rounded-2xl active:scale-95 transition-all duration-200"
-                >
-                  💳 Pagar com cartão — R$57
+                  🏆 VER MINHA OFERTA
                 </button>
 
                 <p className="text-white/30 text-xs text-center">🔒 Oferta válida somente agora</p>
