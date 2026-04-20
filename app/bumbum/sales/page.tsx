@@ -12,12 +12,12 @@ const CHECKOUT_URL_CARD  = 'https://pay.cakto.com.br/orhu3er_850513'  // R$57 ca
 
 const SEGMENTS = [
   { label: 'R$97',  color: '#7D0B4E', textColor: '#FFD700' }, // 0: 0°-45°
-  { label: 'R$57!', color: '#C2185B', textColor: '#FFFFFF' }, // 1: 45°-90°
+  { label: 'R$97',  color: '#C2185B', textColor: '#FFFFFF' }, // 1: 45°-90°
   { label: 'R$127', color: '#5A0035', textColor: '#FFD700' }, // 2: 90°-135°
   { label: 'R$197', color: '#9C0D63', textColor: '#FF8C00' }, // 3: 135°-180°
-  { label: 'R$57!', color: '#C2185B', textColor: '#FFFFFF' }, // 4: 180°-225°
-  { label: 'R$97',  color: '#7D0B4E', textColor: '#FFD700' }, // 5: 225°-270°
-  { label: 'R$57!', color: '#FFD700', textColor: '#000000' }, // 6: 270°-315° ← WINNER
+  { label: 'R$97',  color: '#C2185B', textColor: '#FFFFFF' }, // 4: 180°-225°
+  { label: 'R$127', color: '#7D0B4E', textColor: '#FFD700' }, // 5: 225°-270°
+  { label: 'R$47!', color: '#FFD700', textColor: '#000000' }, // 6: 270°-315° ← WINNER
   { label: 'R$127', color: '#5A0035', textColor: '#FFD700' }, // 7: 315°-360°
 ]
 
@@ -558,7 +558,12 @@ function BumbumSalesInner() {
                 >
                   <p className="text-4xl mb-1">🎉</p>
                   <p style={{ color: '#FFD700' }} className="font-black text-xl leading-tight">VOCÊ GANHOU!</p>
-                  <p className="text-white/60 text-xs mt-1">Desconto exclusivo desbloqueado — escolha como pagar:</p>
+                  <p className="text-white/60 text-xs mt-1 mb-2">Desconto exclusivo desbloqueado:</p>
+                  <div className="flex items-end justify-center gap-1">
+                    <span className="text-white/40 text-sm line-through self-center">R$197</span>
+                    <span style={{ color: '#FFD700' }} className="font-black text-5xl leading-none">R$47</span>
+                    <span style={{ color: '#FFD700' }} className="font-black text-2xl leading-none mb-0.5">,00</span>
+                  </div>
                 </div>
 
                 <button
