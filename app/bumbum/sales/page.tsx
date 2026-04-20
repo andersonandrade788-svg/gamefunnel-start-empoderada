@@ -5,7 +5,8 @@ import { Suspense, useEffect, useState, useRef } from 'react'
 import { trackStep } from '@/lib/analytics'
 import { initiateCheckout } from '@/lib/pixel'
 
-const CHECKOUT_URL = 'https://pay.cakto.com.br/orhu3er_850513'
+const CHECKOUT_URL_PIX   = 'https://pay.cakto.com.br/3bur66c'         // R$47 PIX
+const CHECKOUT_URL_CARD  = 'https://pay.cakto.com.br/orhu3er_850513'  // R$57 cartão
 
 // ─── Spin Wheel ───────────────────────────────────────────────────────────────
 
@@ -385,21 +386,25 @@ function BumbumSalesInner() {
   const mins = String(Math.floor(countdown / 60)).padStart(2, '0')
   const secs = String(countdown % 60).padStart(2, '0')
 
+  function buildTrackingQs() {
+    const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'gclid']
+    const p = new URLSearchParams()
+    UTM_KEYS.forEach(key => { const v = searchParams.get(key); if (v) p.set(key, v) })
+    return p.toString()
+  }
+
+  function handleCheckoutPix() {
+    trackStep('Bumbum_CheckoutClick', 5)
+    initiateCheckout()
+    const qs = buildTrackingQs()
+    window.location.href = qs ? `${CHECKOUT_URL_PIX}?${qs}` : CHECKOUT_URL_PIX
+  }
+
   function handleCheckout() {
     trackStep('Bumbum_CheckoutClick', 5)
     initiateCheckout()
-
-    // Parâmetros de rastreamento que devem chegar no Cakto
-    const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'gclid']
-    const trackingParams = new URLSearchParams()
-    UTM_KEYS.forEach(key => {
-      const val = searchParams.get(key)
-      if (val) trackingParams.set(key, val)
-    })
-
-    const qs = trackingParams.toString()
-    const url = qs ? `${CHECKOUT_URL}?${qs}` : CHECKOUT_URL
-    window.location.href = url
+    const qs = buildTrackingQs()
+    window.location.href = qs ? `${CHECKOUT_URL_CARD}?${qs}` : CHECKOUT_URL_CARD
   }
 
   return (
@@ -547,32 +552,35 @@ function BumbumSalesInner() {
 
             {spinPhase === 'won' && (
               <div className="flex flex-col items-center gap-3 w-full animate-scaleIn">
-                {/* Win card */}
                 <div
                   style={{ background: 'linear-gradient(135deg, #1A0010, #2D0020)', border: '2px solid #FFD700' }}
                   className="rounded-2xl p-4 text-center w-full"
                 >
                   <p className="text-4xl mb-1">🎉</p>
                   <p style={{ color: '#FFD700' }} className="font-black text-xl leading-tight">VOCÊ GANHOU!</p>
-                  <p className="text-white/60 text-xs mt-1 mb-3">Desconto exclusivo desbloqueado:</p>
-                  <div className="flex items-end justify-center gap-1.5">
-                    <span className="text-white/40 text-sm line-through self-center">R$197</span>
-                    <span style={{ color: '#FFD700' }} className="font-black text-5xl leading-none">R$57</span>
-                    <span style={{ color: '#FFD700' }} className="font-black text-2xl leading-none mb-0.5">,00</span>
-                  </div>
+                  <p className="text-white/60 text-xs mt-1">Desconto exclusivo desbloqueado — escolha como pagar:</p>
                 </div>
 
-                {/* Claim button */}
+                {/* PIX — opção principal */}
                 <button
-                  onClick={claimPrize}
-                  style={{ background: 'linear-gradient(135deg, #FFD700, #FFA500)' }}
-                  className="w-full text-black font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200"
+                  onClick={() => { claimPrize(); setTimeout(handleCheckoutPix, 200) }}
+                  style={{ background: 'linear-gradient(135deg, #22C55E, #16A34A)' }}
+                  className="w-full text-white font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 flex flex-col items-center gap-0.5"
                 >
-                  🏆 RESGATAR MEU DESCONTO
+                  <span>💚 PAGAR COM PIX — R$47</span>
+                  <span className="text-xs font-bold opacity-80">Aprovação imediata · Mais barato</span>
                 </button>
-                <p className="text-white/30 text-xs text-center">
-                  🔒 Oferta válida somente agora
-                </p>
+
+                {/* Cartão — opção secundária */}
+                <button
+                  onClick={() => { claimPrize(); setTimeout(handleCheckout, 200) }}
+                  style={{ background: '#1A0010', border: '1px solid #E91E8C50' }}
+                  className="w-full text-white font-bold text-sm py-3.5 rounded-2xl active:scale-95 transition-all duration-200"
+                >
+                  💳 Pagar com cartão — R$57
+                </button>
+
+                <p className="text-white/30 text-xs text-center">🔒 Oferta válida somente agora</p>
               </div>
             )}
 
@@ -593,15 +601,22 @@ function BumbumSalesInner() {
               </p>
               <div style={{ background: '#E91E8C15', border: '1px solid #E91E8C50' }} className="rounded-2xl p-4 flex flex-col gap-1">
                 <p className="text-white/40 text-xs line-through">De R$197,00</p>
-                <p style={{ color: '#FFD700' }} className="font-black text-4xl leading-none">R$57,00</p>
-                <p className="text-white/40 text-xs">primeiro mês · cancele quando quiser</p>
+                <p style={{ color: '#FFD700' }} className="font-black text-4xl leading-none">R$47,00</p>
+                <p className="text-white/40 text-xs">no PIX · acesso imediato</p>
               </div>
               <button
-                onClick={handleCheckout}
-                style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}
+                onClick={handleCheckoutPix}
+                style={{ background: 'linear-gradient(135deg, #22C55E, #16A34A)' }}
                 className="w-full text-white font-black text-base py-4 rounded-2xl active:scale-95 transition-all"
               >
-                🔥 QUERO COM DESCONTO AGORA
+                💚 PAGAR COM PIX — R$47
+              </button>
+              <button
+                onClick={handleCheckout}
+                style={{ background: 'transparent', border: '1px solid #ffffff15' }}
+                className="w-full text-white/40 font-bold text-xs py-2.5 rounded-xl active:scale-95 transition-all"
+              >
+                💳 Cartão — R$57
               </button>
               <button onClick={() => setShowExit(false)} className="text-white/25 text-xs">
                 Não, prefiro perder essa chance
@@ -687,11 +702,11 @@ function BumbumSalesInner() {
 
         {/* CTA before mentor */}
         <button
-          onClick={handleCheckout}
-          style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}
+          onClick={handleCheckoutPix}
+          style={{ background: 'linear-gradient(135deg, #22C55E, #16A34A)' }}
           className="w-full text-white font-black text-lg py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 mb-5"
         >
-          🍑 QUERO COMEÇAR AGORA — R$57
+          💚 PAGAR COM PIX — R$47
         </button>
 
         {/* Mentor authority block */}
@@ -841,10 +856,10 @@ function BumbumSalesInner() {
             <p className="text-white/40 text-sm line-through">De R$197,00</p>
             <p className="text-white/60 text-sm">Por apenas</p>
             <div className="flex items-end gap-1">
-              <p style={{ color: '#FFD700' }} className="font-black text-5xl leading-none">R$57</p>
+              <p style={{ color: '#FFD700' }} className="font-black text-5xl leading-none">R$47</p>
               <p style={{ color: '#FFD700' }} className="font-black text-xl leading-none mb-1">,00</p>
             </div>
-            <p className="text-white/40 text-xs">acesso imediato · cancele quando quiser</p>
+            <p className="text-white/40 text-xs">no PIX · acesso imediato</p>
           </div>
 
           {/* Garantia DENTRO do bloco — antes do CTA */}
@@ -861,16 +876,27 @@ function BumbumSalesInner() {
             </div>
           </div>
 
+          {/* PIX — botão principal */}
+          <button
+            onClick={handleCheckoutPix}
+            style={{ background: 'linear-gradient(135deg, #22C55E, #16A34A)' }}
+            className="w-full text-white font-black text-xl py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 flex flex-col items-center gap-0.5"
+          >
+            <span>💚 PAGAR COM PIX — R$47</span>
+            <span className="text-xs font-bold opacity-80">Aprovação imediata · Mais barato</span>
+          </button>
+
+          {/* Cartão — opção secundária */}
           <button
             onClick={handleCheckout}
-            style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}
-            className="w-full text-white font-black text-xl py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200"
+            style={{ background: 'transparent', border: '1px solid #ffffff20' }}
+            className="w-full text-white/50 font-bold text-sm py-3 rounded-2xl active:scale-95 transition-all duration-200"
           >
-            🍑 QUERO COMEÇAR AGORA
+            💳 Ou pagar com cartão por R$57
           </button>
 
           <div className="flex items-center justify-center gap-3 flex-wrap">
-            {['💳 Cartão', '📱 Pix', '🔒 SSL Seguro'].map((s, i) => (
+            {['📱 PIX', '💳 Cartão', '🔒 SSL Seguro'].map((s, i) => (
               <span key={i} className="text-white/30 text-[10px] font-bold">{s}</span>
             ))}
           </div>
@@ -1081,16 +1107,24 @@ function BumbumSalesInner() {
         </div>
 
         {/* Final CTA */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={handleCheckoutPix}
+            style={{ background: 'linear-gradient(135deg, #22C55E, #16A34A)' }}
+            className="w-full text-white font-black text-xl py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 flex flex-col items-center gap-0.5"
+          >
+            <span>💚 PAGAR COM PIX — R$47</span>
+            <span className="text-xs font-bold opacity-80">Aprovação imediata · Mais barato</span>
+          </button>
           <button
             onClick={handleCheckout}
-            style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)' }}
-            className="w-full text-white font-black text-xl py-5 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200"
+            style={{ background: 'transparent', border: '1px solid #ffffff15' }}
+            className="w-full text-white/40 font-bold text-sm py-3 rounded-2xl active:scale-95 transition-all duration-200"
           >
-            🍑 GARANTIR MINHA VAGA POR R$57
+            💳 Cartão — R$57
           </button>
           <p className="text-white/30 text-xs text-center">
-            ⏰ Expira em {mins}:{secs} · 🔒 Pagamento seguro · Cancele quando quiser
+            ⏰ Expira em {mins}:{secs} · 🔒 Pagamento seguro · Garantia 7 dias
           </p>
         </div>
 
@@ -1131,11 +1165,11 @@ function BumbumSalesInner() {
           }}
         >
           <button
-            onClick={handleCheckout}
-            style={{ background: 'linear-gradient(135deg, #E91E8C, #C2185B)', maxWidth: 430 }}
+            onClick={handleCheckoutPix}
+            style={{ background: 'linear-gradient(135deg, #22C55E, #16A34A)', maxWidth: 430 }}
             className="w-full text-white font-black text-base py-4 rounded-2xl shadow-2xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-2"
           >
-            <span>🍑 GARANTIR MINHA VAGA — R$57</span>
+            <span>💚 PIX — R$47</span>
             <span className="text-xs font-bold opacity-70">›</span>
           </button>
         </div>
