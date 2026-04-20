@@ -5,10 +5,16 @@ import { useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useState } from 'react'
 import { trackStep } from '@/lib/analytics'
 
+const CAROUSEL_IMAGES = [
+  { src: '/depoimento 1.1.jpg', alt: 'Resultado aluna 1 — método Geo' },
+  { src: '/depoimento 2.2.jpg', alt: 'Resultado aluna 2 — método Geo' },
+]
+
 function BumbumLandingInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [viewers, setViewers] = useState(0)
+  const [slide, setSlide] = useState(0)
 
   useEffect(() => {
     trackStep('Bumbum_Landing', 1)
@@ -18,6 +24,13 @@ function BumbumLandingInner() {
       setViewers(v => v + Math.floor(Math.random() * 7) - 3)
     }, 4000)
     return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSlide(s => (s + 1) % CAROUSEL_IMAGES.length)
+    }, 3000)
+    return () => clearInterval(timer)
   }, [])
 
   function goToQuiz() {
@@ -62,13 +75,37 @@ function BumbumLandingInner() {
           </p>
         </div>
 
-        {/* Foto resultado */}
-        <div className="rounded-3xl overflow-hidden mb-4 shadow-2xl" style={{ border: '2px solid #E91E8C60' }}>
-          <img
-            src="/dep-a.jpg"
-            alt="Resultado real — método Geo"
-            className="w-full object-cover"
-          />
+        {/* Carrossel de resultados */}
+        <div className="rounded-3xl overflow-hidden mb-4 shadow-2xl relative" style={{ border: '2px solid #E91E8C60' }}>
+          <div
+            className="flex transition-transform duration-500 ease-in-out"
+            style={{ transform: `translateX(-${slide * 100}%)` }}
+          >
+            {CAROUSEL_IMAGES.map((img, i) => (
+              <img
+                key={i}
+                src={img.src}
+                alt={img.alt}
+                className="w-full object-cover flex-shrink-0"
+                style={{ minWidth: '100%' }}
+              />
+            ))}
+          </div>
+          {/* Dots */}
+          <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
+            {CAROUSEL_IMAGES.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setSlide(i)}
+                className="rounded-full transition-all duration-300"
+                style={{
+                  width: slide === i ? 16 : 6,
+                  height: 6,
+                  background: slide === i ? '#E91E8C' : 'rgba(255,255,255,0.4)',
+                }}
+              />
+            ))}
+          </div>
         </div>
 
         {/* O que você vai descobrir */}
