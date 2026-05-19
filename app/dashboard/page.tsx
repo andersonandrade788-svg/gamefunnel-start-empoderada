@@ -132,7 +132,10 @@ function DashboardPageInner() {
   const [sourceFilter, setSourceFilter] = useState<'all' | 'ad' | 'organic'>('all')
   const [period, setPeriod] = useState<'today' | 'yesterday' | '7d' | 'all'>('today')
   const [leads, setLeads] = useState<Lead[]>([])
-  const [funnelType, setFunnelType] = useState<FunnelType>(() => parseFunnel(searchParams.get('funnel')))
+  const [funnelType, setFunnelType] = useState<FunnelType>(() => {
+    const fromUrl = searchParams.get('funnel')
+    return fromUrl ? parseFunnel(fromUrl) : 'ecn'
+  })
 
   const fetchData = useCallback(async (password: string, source: 'all' | 'ad' | 'organic' = 'all', per: 'today' | 'yesterday' | '7d' | 'all' = 'today') => {
     setLoading(true)
@@ -280,24 +283,10 @@ function DashboardPageInner() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap justify-end">
-            {/* Seletor de funil */}
-            <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden text-xs font-bold">
-              <button
-                onClick={() => setFunnelType('original')}
-                className={`px-3 py-2 transition-all flex items-center gap-1 ${funnelType === 'original' ? 'bg-[#22C55E] text-black' : 'text-white/40 hover:text-white'}`}
-              >💚 Original</button>
-              <button
-                onClick={() => setFunnelType('bumbum')}
-                className={`px-3 py-2 transition-all flex items-center gap-1 ${funnelType === 'bumbum' ? 'bg-[#E91E8C] text-white' : 'text-white/40 hover:text-white'}`}
-              >🍑 Bumbum</button>
-              <button
-                onClick={() => setFunnelType('bumbum2')}
-                className={`px-3 py-2 transition-all flex items-center gap-1 ${funnelType === 'bumbum2' ? 'bg-[#F43F75] text-white' : 'text-white/40 hover:text-white'}`}
-              >🌸 B2</button>
-              <button
-                onClick={() => setFunnelType('ecn')}
-                className={`px-3 py-2 transition-all flex items-center gap-1 ${funnelType === 'ecn' ? 'bg-[#E91E8C] text-white' : 'text-white/40 hover:text-white'}`}
-              >💊 ECN</button>
+            {/* Badge funil atual */}
+            <div className="flex items-center gap-1.5 bg-[#E91E8C]/15 border border-[#E91E8C]/30 rounded-xl px-3 py-2 text-xs font-bold text-[#E91E8C]">
+              <span>💊</span>
+              <span>Protocolo Caneta Natural</span>
             </div>
             {/* Filtro período */}
             <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden text-xs font-bold">
