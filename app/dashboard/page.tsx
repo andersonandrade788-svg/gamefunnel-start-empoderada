@@ -31,10 +31,10 @@ const BUMBUM2_STEPS_META = [
 ]
 
 const ECN_STEPS_META = [
-  { name: 'ECN_Landing',       emoji: '💊', label: 'Landing/Quiz',   color: '#E91E8C' },
-  { name: 'ECN_Resultado',     emoji: '📊', label: 'Resultado',      color: '#fbbf24' },
-  { name: 'ECN_Vendas',        emoji: '🎥', label: 'Viu o VSL',      color: '#22c55e' },
-  { name: 'ECN_CheckoutClick', emoji: '💳', label: 'Clicou Comprar', color: '#f59e0b' },
+  { name: 'ECN_Landing',       emoji: '💊', label: 'Landing/Quiz',         color: '#E91E8C' },
+  { name: 'ECN_Resultado',     emoji: '💬', label: 'Diagnóstico/WhatsApp', color: '#fbbf24' },
+  { name: 'ECN_Vendas',        emoji: '🎥', label: 'Viu o VSL',            color: '#22c55e' },
+  { name: 'ECN_CheckoutClick', emoji: '💳', label: 'Clicou Comprar',       color: '#f59e0b' },
 ]
 
 interface Step { name: string; label: string; number: number; count: number }
@@ -201,8 +201,8 @@ function DashboardPageInner() {
         const checkout  = countFor('ECN_CheckoutClick')
         const taxa      = landing > 0 ? ((checkout / landing) * 100).toFixed(1) : '0.0'
         return [
-          { label: 'Landing/Quiz',     value: landing,    icon: '💊', color: '#E91E8C', desc: 'entraram no funil' },
-          { label: 'Viram Resultado',  value: resultado,  icon: '📊', color: '#fbbf24', desc: landing > 0 ? `${((resultado/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Landing/Quiz',            value: landing,    icon: '💊', color: '#E91E8C', desc: 'entraram no funil' },
+          { label: 'Diagnóstico/WhatsApp',    value: resultado,  icon: '💬', color: '#fbbf24', desc: landing > 0 ? `${((resultado/landing)*100).toFixed(0)}% do total` : '—' },
           { label: 'Viram o VSL',      value: vendas,     icon: '🎥', color: '#22c55e', desc: landing > 0 ? `${((vendas/landing)*100).toFixed(0)}% do total` : '—' },
           { label: 'Clicaram Comprar', value: checkout,   icon: '💳', color: '#f59e0b', desc: landing > 0 ? `${((checkout/landing)*100).toFixed(0)}% do total` : '—' },
           { label: 'Taxa do Funil',    value: `${taxa}%`, icon: '🏆', color: '#fb923c', desc: 'Landing → Checkout' },

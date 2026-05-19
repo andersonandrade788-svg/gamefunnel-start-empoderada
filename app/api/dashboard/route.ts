@@ -25,7 +25,7 @@ const STEPS = [
   { name: 'B2_CheckoutClick', number: 22, label: 'B2 Checkout' },
   // Protocolo Efeito Caneta Natural (ECN)
   { name: 'ECN_Landing',        number: 30, label: 'ECN Landing' },
-  { name: 'ECN_Resultado',      number: 31, label: 'ECN Resultado' },
+  { name: 'ECN_Resultado',      number: 31, label: 'ECN Diagnóstico/WhatsApp' },
   { name: 'ECN_Vendas',         number: 32, label: 'ECN VSL' },
   { name: 'ECN_CheckoutClick',  number: 33, label: 'ECN Checkout' },
 ]
