@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 
 const ORIGINAL_STEPS_META = [
   { name: 'Quiz',              emoji: '🎯', label: 'Quiz',            color: '#a78bfa' },
@@ -22,6 +24,19 @@ const BUMBUM_STEPS_META = [
   { name: 'Bumbum_SpinStart',     emoji: '🎰', label: 'Girou a Roleta',  color: '#a78bfa' },
   { name: 'Bumbum_SpinClaimed',   emoji: '🏆', label: 'Resgatou Prêmio', color: '#60a5fa' },
   { name: 'Bumbum_CheckoutClick', emoji: '💳', label: 'Clicou Comprar',  color: '#f59e0b' },
+]
+
+const BUMBUM2_STEPS_META = [
+  { name: 'B2_Landing',       emoji: '🌸', label: 'Landing Page',   color: '#E91E8C' },
+  { name: 'B2_Vendas',        emoji: '👀', label: 'Viu a Oferta',   color: '#22c55e' },
+  { name: 'B2_CheckoutClick', emoji: '💳', label: 'Clicou Comprar', color: '#f59e0b' },
+]
+
+const ECN_STEPS_META = [
+  { name: 'ECN_Landing',       emoji: '💊', label: 'Landing/Quiz',   color: '#E91E8C' },
+  { name: 'ECN_Resultado',     emoji: '📊', label: 'Resultado',      color: '#fbbf24' },
+  { name: 'ECN_Vendas',        emoji: '🎥', label: 'Viu o VSL',      color: '#22c55e' },
+  { name: 'ECN_CheckoutClick', emoji: '💳', label: 'Clicou Comprar', color: '#f59e0b' },
 ]
 
 interface Step { name: string; label: string; number: number; count: number }
@@ -99,8 +114,15 @@ function LoginScreen({ onLogin }: { onLogin: (pwd: string) => void }) {
   )
 }
 
+type FunnelType = 'original' | 'bumbum' | 'bumbum2' | 'ecn'
+
+function parseFunnel(value: string | null): FunnelType {
+  return value === 'bumbum' || value === 'bumbum2' || value === 'ecn' ? value : 'original'
+}
+
 // ── Main Dashboard ─────────────────────────────────────────────────────────────
-export default function DashboardPage() {
+function DashboardPageInner() {
+  const searchParams = useSearchParams()
   const [authed, setAuthed] = useState(false)
   const [pwd, setPwd] = useState('')
   const [data, setData] = useState<DashboardData | null>(null)
@@ -110,7 +132,7 @@ export default function DashboardPage() {
   const [sourceFilter, setSourceFilter] = useState<'all' | 'ad' | 'organic'>('all')
   const [period, setPeriod] = useState<'today' | 'yesterday' | '7d' | 'all'>('today')
   const [leads, setLeads] = useState<Lead[]>([])
-  const [funnelType, setFunnelType] = useState<'original' | 'bumbum'>('original')
+  const [funnelType, setFunnelType] = useState<FunnelType>(() => parseFunnel(searchParams.get('funnel')))
 
   const fetchData = useCallback(async (password: string, source: 'all' | 'ad' | 'organic' = 'all', per: 'today' | 'yesterday' | '7d' | 'all' = 'today') => {
     setLoading(true)
@@ -165,7 +187,11 @@ export default function DashboardPage() {
 
   if (!authed) return <LoginScreen onLogin={handleLogin} />
 
-  const STEPS_META = funnelType === 'bumbum' ? BUMBUM_STEPS_META : ORIGINAL_STEPS_META
+  const STEPS_META =
+    funnelType === 'bumbum'  ? BUMBUM_STEPS_META  :
+    funnelType === 'bumbum2' ? BUMBUM2_STEPS_META :
+    funnelType === 'ecn'     ? ECN_STEPS_META     :
+                               ORIGINAL_STEPS_META
 
   const steps = data?.steps ?? []
   const recent = data?.recent ?? []
@@ -174,7 +200,35 @@ export default function DashboardPage() {
     return steps.find(s => s.name === name)?.count ?? 0
   }
 
-  const kpis = funnelType === 'bumbum'
+  const kpis = funnelType === 'ecn'
+    ? (() => {
+        const landing   = countFor('ECN_Landing')
+        const resultado = countFor('ECN_Resultado')
+        const vendas    = countFor('ECN_Vendas')
+        const checkout  = countFor('ECN_CheckoutClick')
+        const taxa      = landing > 0 ? ((checkout / landing) * 100).toFixed(1) : '0.0'
+        return [
+          { label: 'Landing/Quiz',     value: landing,    icon: '💊', color: '#E91E8C', desc: 'entraram no funil' },
+          { label: 'Viram Resultado',  value: resultado,  icon: '📊', color: '#fbbf24', desc: landing > 0 ? `${((resultado/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Viram o VSL',      value: vendas,     icon: '🎥', color: '#22c55e', desc: landing > 0 ? `${((vendas/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Clicaram Comprar', value: checkout,   icon: '💳', color: '#f59e0b', desc: landing > 0 ? `${((checkout/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Taxa do Funil',    value: `${taxa}%`, icon: '🏆', color: '#fb923c', desc: 'Landing → Checkout' },
+        ]
+      })()
+    : funnelType === 'bumbum2'
+    ? (() => {
+        const landing  = countFor('B2_Landing')
+        const vendas   = countFor('B2_Vendas')
+        const checkout = countFor('B2_CheckoutClick')
+        const taxa     = landing > 0 ? ((checkout / landing) * 100).toFixed(1) : '0.0'
+        return [
+          { label: 'Landing Page',     value: landing,    icon: '🌸', color: '#E91E8C', desc: 'entraram na landing' },
+          { label: 'Viram a Oferta',   value: vendas,     icon: '👀', color: '#22c55e', desc: landing > 0 ? `${((vendas/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Clicaram Comprar', value: checkout,   icon: '💳', color: '#f59e0b', desc: landing > 0 ? `${((checkout/landing)*100).toFixed(0)}% do total` : '—' },
+          { label: 'Taxa do Funil',    value: `${taxa}%`, icon: '🏆', color: '#fb923c', desc: 'Landing → Checkout' },
+        ]
+      })()
+    : funnelType === 'bumbum'
     ? (() => {
         const landing  = countFor('Bumbum_Landing')
         const quiz     = countFor('Bumbum_Quiz')
@@ -236,6 +290,14 @@ export default function DashboardPage() {
                 onClick={() => setFunnelType('bumbum')}
                 className={`px-3 py-2 transition-all flex items-center gap-1 ${funnelType === 'bumbum' ? 'bg-[#E91E8C] text-white' : 'text-white/40 hover:text-white'}`}
               >🍑 Bumbum</button>
+              <button
+                onClick={() => setFunnelType('bumbum2')}
+                className={`px-3 py-2 transition-all flex items-center gap-1 ${funnelType === 'bumbum2' ? 'bg-[#F43F75] text-white' : 'text-white/40 hover:text-white'}`}
+              >🌸 B2</button>
+              <button
+                onClick={() => setFunnelType('ecn')}
+                className={`px-3 py-2 transition-all flex items-center gap-1 ${funnelType === 'ecn' ? 'bg-[#E91E8C] text-white' : 'text-white/40 hover:text-white'}`}
+              >💊 ECN</button>
             </div>
             {/* Filtro período */}
             <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden text-xs font-bold">
@@ -413,11 +475,11 @@ export default function DashboardPage() {
             {/* Rodapé com resumo */}
             {(() => {
               const firstStep = STEPS_META[0]
-              const lastMainStep = funnelType === 'bumbum' ? STEPS_META[STEPS_META.length - 1] : STEPS_META[4]
+              const lastMainStep = STEPS_META[STEPS_META.length - 1]
               const firstCount = steps.find(s => s.name === firstStep.name)?.count ?? 0
               const lastCount  = steps.find(s => s.name === lastMainStep.name)?.count ?? 0
               const taxa = firstCount > 0 ? ((lastCount / firstCount) * 100).toFixed(1) : '0.0'
-              const label = funnelType === 'bumbum' ? 'Landing → Checkout' : 'Quiz → Oferta'
+              const label = funnelType === 'original' ? 'Quiz → Oferta' : 'Landing → Checkout'
               return (
                 <div className="px-6 py-4 border-t border-white/5 flex items-center justify-between">
                   <p className="text-white/30 text-xs">Taxa geral do funil ({label})</p>
@@ -522,5 +584,13 @@ export default function DashboardPage() {
         <p className="text-white/15 text-xs text-center pb-4">↺ Atualiza automaticamente a cada 60 segundos</p>
       </main>
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0D0D0D]" />}>
+      <DashboardPageInner />
+    </Suspense>
   )
 }

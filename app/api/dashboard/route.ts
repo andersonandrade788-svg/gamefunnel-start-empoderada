@@ -19,6 +19,15 @@ const STEPS = [
   { name: 'Bumbum_SpinStart',     number: 14, label: 'Girou Roleta' },
   { name: 'Bumbum_SpinClaimed',   number: 15, label: 'Resgatou Prêmio' },
   { name: 'Bumbum_CheckoutClick', number: 16, label: 'Clicou Comprar' },
+  // Bumbum2 funnel (A/B test — sem quiz, direto p/ vendas)
+  { name: 'B2_Landing',       number: 20, label: 'B2 Landing' },
+  { name: 'B2_Vendas',        number: 21, label: 'B2 Oferta' },
+  { name: 'B2_CheckoutClick', number: 22, label: 'B2 Checkout' },
+  // Protocolo Efeito Caneta Natural (ECN)
+  { name: 'ECN_Landing',        number: 30, label: 'ECN Landing' },
+  { name: 'ECN_Resultado',      number: 31, label: 'ECN Resultado' },
+  { name: 'ECN_Vendas',         number: 32, label: 'ECN VSL' },
+  { name: 'ECN_CheckoutClick',  number: 33, label: 'ECN Checkout' },
 ]
 
 function getDateFilter(period: string): { since: string | null; until?: string } {

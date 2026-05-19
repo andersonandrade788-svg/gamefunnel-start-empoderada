@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
-import { viewContent } from '@/lib/pixel'
+import { trackStep } from '@/lib/analytics'
 
 const PINK = '#E91E8C'
 const PINK2 = '#F43F75'
@@ -135,7 +135,7 @@ function ECNQuizInner() {
   const [nome, setNome] = useState('')
 
   useEffect(() => {
-    viewContent('Quiz_ProtocoloCaneta')
+    trackStep('ECN_Landing', 30)
   }, [])
 
   useEffect(() => {

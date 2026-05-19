@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useRef, useState } from 'react'
-import { viewContent } from '@/lib/pixel'
+import { trackStep } from '@/lib/analytics'
 
 type Perfil = 'fome' | 'inchaco' | 'tempo' | 'definir' | 'geral'
 
@@ -114,7 +114,7 @@ function ECNResultadoInner() {
   const chatRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    viewContent('Resultado_ProtocoloCaneta')
+    trackStep('ECN_Resultado', 31)
   }, [])
 
   useEffect(() => {
