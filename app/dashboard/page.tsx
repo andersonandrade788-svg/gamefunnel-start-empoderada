@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { Suspense } from 'react'
 
 const ORIGINAL_STEPS_META = [
   { name: 'Quiz',              emoji: '🎯', label: 'Quiz',            color: '#a78bfa' },
@@ -116,13 +114,8 @@ function LoginScreen({ onLogin }: { onLogin: (pwd: string) => void }) {
 
 type FunnelType = 'original' | 'bumbum' | 'bumbum2' | 'ecn'
 
-function parseFunnel(value: string | null): FunnelType {
-  return value === 'bumbum' || value === 'bumbum2' || value === 'ecn' ? value : 'original'
-}
-
 // ── Main Dashboard ─────────────────────────────────────────────────────────────
 function DashboardPageInner() {
-  const searchParams = useSearchParams()
   const [authed, setAuthed] = useState(false)
   const [pwd, setPwd] = useState('')
   const [data, setData] = useState<DashboardData | null>(null)
@@ -132,10 +125,7 @@ function DashboardPageInner() {
   const [sourceFilter, setSourceFilter] = useState<'all' | 'ad' | 'organic'>('all')
   const [period, setPeriod] = useState<'today' | 'yesterday' | '7d' | 'all'>('today')
   const [leads, setLeads] = useState<Lead[]>([])
-  const [funnelType, setFunnelType] = useState<FunnelType>(() => {
-    const fromUrl = searchParams.get('funnel')
-    return fromUrl ? parseFunnel(fromUrl) : 'ecn'
-  })
+  const funnelType = 'ecn' as FunnelType
 
   const fetchData = useCallback(async (password: string, source: 'all' | 'ad' | 'organic' = 'all', per: 'today' | 'yesterday' | '7d' | 'all' = 'today') => {
     setLoading(true)
@@ -577,9 +567,5 @@ function DashboardPageInner() {
 }
 
 export default function DashboardPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0D0D0D]" />}>
-      <DashboardPageInner />
-    </Suspense>
-  )
+  return <DashboardPageInner />
 }
