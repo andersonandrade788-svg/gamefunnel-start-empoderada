@@ -42,7 +42,18 @@ function ECNSalesInner() {
   const searchParams = useSearchParams()
   const [countdown, setCountdown] = useState(900)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [muted, setMuted] = useState(true)
   const ofertaRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  function unmuteVideo() {
+    const v = videoRef.current
+    if (!v) return
+    v.muted = false
+    v.volume = 1
+    if (v.paused) v.play().catch(() => {})
+    setMuted(false)
+  }
 
   useEffect(() => {
     const KEY = 'ecn_sales_expire'
@@ -112,6 +123,7 @@ function ECNSalesInner() {
 
         {/* Vídeo vertical 9:16 */}
         <div style={{
+          position: 'relative',
           borderRadius: 24, overflow: 'hidden', marginBottom: 20,
           background: '#000', border: `1px solid #FCE7F3`,
           aspectRatio: '9/16', maxWidth: 320, width: '100%',
@@ -119,12 +131,47 @@ function ECNSalesInner() {
           boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
         }}>
           <video
+            ref={videoRef}
             src="/vsl.mp4"
-            controls
+            autoPlay
+            muted
             playsInline
-            preload="metadata"
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            preload="auto"
+            controls={!muted}
+            onClick={muted ? unmuteVideo : undefined}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', cursor: muted ? 'pointer' : 'default' }}
           />
+          {muted && (
+            <button
+              onClick={unmuteVideo}
+              style={{
+                ...BTN,
+                position: 'absolute', inset: 0,
+                width: '100%', height: '100%',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                gap: 12, padding: 16,
+                background: 'rgba(0,0,0,0.35)',
+                color: '#fff',
+              }}
+              aria-label="Ativar som do vídeo"
+            >
+              <div style={{
+                width: 72, height: 72, borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: `linear-gradient(135deg, ${PINK2}, ${PINK})`,
+                boxShadow: `0 6px 24px ${PINK}88`,
+                fontSize: 30,
+              }}>
+                🔊
+              </div>
+              <span style={{
+                fontWeight: 900, fontSize: 15, textAlign: 'center',
+                background: 'rgba(0,0,0,0.55)', padding: '8px 14px', borderRadius: 999,
+              }}>
+                Toque para ativar o som
+              </span>
+            </button>
+          )}
         </div>
 
         <button onClick={scrollToOferta} style={{
