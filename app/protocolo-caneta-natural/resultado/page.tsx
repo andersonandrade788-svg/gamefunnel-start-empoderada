@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useRef, useState } from 'react'
+import { viewContent } from '@/lib/pixel'
 
 type Perfil = 'fome' | 'inchaco' | 'tempo' | 'definir' | 'geral'
 
@@ -111,6 +112,10 @@ function ECNResultadoInner() {
   const [typing, setTyping] = useState(false)
   const [done, setDone] = useState(false)
   const chatRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    viewContent('Resultado_ProtocoloCaneta')
+  }, [])
 
   useEffect(() => {
     if (visibleCount >= messages.length) {

@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { initiateCheckout, viewContent } from '@/lib/pixel'
 
 const CHECKOUT_URL = 'https://pay.cakto.com.br/3b43hgj_864016'
 
@@ -72,10 +73,15 @@ function ECNSalesInner() {
     return () => clearInterval(iv)
   }, [])
 
+  useEffect(() => {
+    viewContent('VSL_ProtocoloCaneta')
+  }, [])
+
   const mins = String(Math.floor(countdown / 60)).padStart(2, '0')
   const secs = String(countdown % 60).padStart(2, '0')
 
   function goToCheckout() {
+    initiateCheckout()
     const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'gclid']
     const p = new URLSearchParams()
     UTM_KEYS.forEach(k => { const v = searchParams.get(k); if (v) p.set(k, v) })

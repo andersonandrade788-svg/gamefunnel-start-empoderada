@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { viewContent } from '@/lib/pixel'
 
 const PINK = '#E91E8C'
 const PINK2 = '#F43F75'
@@ -132,6 +133,10 @@ function ECNQuizInner() {
   const [loadingPhrase, setLoadingPhrase] = useState(0)
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [nome, setNome] = useState('')
+
+  useEffect(() => {
+    viewContent('Quiz_ProtocoloCaneta')
+  }, [])
 
   useEffect(() => {
     if (phase !== 'loading') return
